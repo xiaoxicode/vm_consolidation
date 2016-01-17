@@ -2,9 +2,8 @@ package site.mwq.gene;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 
-import site.mwq.comps.CrowComp;
-import site.mwq.comps.ObjComp;
 import site.mwq.objects.Objs;
 
 /**
@@ -105,7 +104,7 @@ public class Nsga2 {
 		
 		for(int i=0;i<Objs.OBJNUM;i++){
 			
-			Collections.sort(inds,new ObjComp(i));		//TODO 验证排序，根据特定目标值对总个体升序排序
+			Collections.sort(inds,new ObjectComparator(i));		//TODO 验证排序，根据特定目标值对总个体升序排序
 			
 			double objImin =inds.get(0).objVals[i];		 	//目标的最小值
 			double objImax = inds.get(len-1).objVals[i];  	//目标的最大值
@@ -142,7 +141,7 @@ public class Nsga2 {
 		}
 		
 		crowingDistanceAssign(rankedInds.get(i));
-		Collections.sort(rankedInds.get(i),new CrowComp());
+		Collections.sort(rankedInds.get(i),new CrowdComp());
 		
 		int j=0;
 		while(nextGeneration.size()<Population.N){
@@ -153,4 +152,33 @@ public class Nsga2 {
 		return nextGeneration;
 	}
 	
+}
+
+
+/**
+ * 按照Individual的rank升序排列，然后安装拥挤距离降序排列
+ * 
+ * @author E-mail:qiuweimin@126.com
+ * @version 创建时间：2015年12月24日 下午5:12:58
+ */
+class CrowdComp implements Comparator<Individual> {
+
+	@Override
+	public int compare(Individual o1, Individual o2) {
+		
+		if(o1.nsgaRank < o2.nsgaRank){				//rank升序
+			return -1;
+		}else if(o1.nsgaRank > o2.nsgaRank){
+			return 1;
+		}else{
+			if(o1.nsgaCrowDis > o2.nsgaCrowDis){	//拥挤距离 降序
+				return -1;
+			}else if(o1.nsgaCrowDis < o2.nsgaCrowDis){
+				return 1;
+			}
+		}
+		
+		return 0;
+	}
+
 }
