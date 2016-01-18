@@ -1,7 +1,6 @@
 package site.mwq.cloudsim;
 
 import org.cloudbus.cloudsim.DatacenterBroker;
-import org.cloudbus.cloudsim.Host;
 import org.cloudbus.cloudsim.Log;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.core.CloudSimTags;
@@ -31,17 +30,20 @@ public class DcBroker extends DatacenterBroker{
 		int result = data[2];
 
 		if (result == CloudSimTags.TRUE) {
+			
 			getVmsToDatacentersMap().put(vmId, datacenterId);
 			getVmsCreatedList().add(VmList.getById(getVmList(), vmId));
+			
+			//虚拟机所在的host的id
+			int hostId = VmList.getById(getVmsCreatedList(), vmId).getHost().getId();
+			
 			Log.printLine(CloudSim.clock() + ": " + getName() + ": VM #" + vmId
 					+ " has been created in Datacenter #" + datacenterId + ", Host #"
-					+ VmList.getById(getVmsCreatedList(), vmId).getHost().getId());
+					+ hostId);
 			
 			/**将vm记录在host中**/
-			
-			Host targetHost = VmList.getById(getVmsCreatedList(), vmId).getHost();
-			DataSet.hostVmMap.get(targetHost.getId()).add(vmId);
-			
+			DataSet.hostVmMap.get(hostId).add(vmId);
+			DataSet.vmHostMap.put(vmId, hostId);
 			/****/
 		} else {
 			Log.printLine(CloudSim.clock() + ": " + getName() + ": Creation of VM #" + vmId

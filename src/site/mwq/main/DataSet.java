@@ -18,7 +18,10 @@ public class DataSet {
 	public static List<Host> hosts = new ArrayList<Host>();
 	
 	/**key为hostId，value为包含的vm，用vmId表示*/
-	public static Map<Integer,ArrayList<Integer>> hostVmMap = new TreeMap<Integer,ArrayList<Integer>>();
+	public static Map<Integer,ArrayList<Integer>> hostVmMap;
+	
+	/**key为vmId，value为hostId*/
+	public static Map<Integer,Integer> vmHostMap;
 	
 	/**
 	 * 初始化数据集合，用host数和vm数
@@ -26,6 +29,10 @@ public class DataSet {
 	 * @param vmNum
 	 */
 	public static void init(int hostNum,int vmNum){
+		hostVmMap = new TreeMap<Integer,ArrayList<Integer>>();
+		vmHostMap = new TreeMap<Integer,Integer>();
+		
+		
 		for(int i=0;i<hostNum;i++){
 			hostVmMap.put(i, new ArrayList<Integer>());
 		}

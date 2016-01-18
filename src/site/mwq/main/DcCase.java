@@ -10,7 +10,6 @@ import org.cloudbus.cloudsim.Cloudlet;
 import org.cloudbus.cloudsim.Datacenter;
 import org.cloudbus.cloudsim.DatacenterBroker;
 import org.cloudbus.cloudsim.DatacenterCharacteristics;
-import org.cloudbus.cloudsim.Host;
 import org.cloudbus.cloudsim.Log;
 import org.cloudbus.cloudsim.Storage;
 import org.cloudbus.cloudsim.UtilizationModel;
@@ -19,6 +18,7 @@ import org.cloudbus.cloudsim.Vm;
 import org.cloudbus.cloudsim.core.CloudSim;
 
 import site.mwq.cloudsim.DcBroker;
+import site.mwq.cloudsim.HostDc;
 import site.mwq.policy.VmAllocationPolicySimpleModify;
 import site.mwq.utils.Utils;
 
@@ -70,7 +70,7 @@ public class DcCase {
 
 		
 		//根据三层网络结构，创建18台物理机，8核，每个核1000Mips，4G内存
-		List<Host> hosts = Factory.createHost(hostNum);
+		List<HostDc> hosts = Factory.createHost(hostNum);
 
 		LinkedList<Storage> storageList = new LinkedList<Storage>(); // we are not adding SAN devices by now
 

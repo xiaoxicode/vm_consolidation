@@ -2,6 +2,8 @@ package site.mwq.model;
 
 import java.util.ArrayList;
 
+import site.mwq.cloudsim.HostDc;
+
 /**
  * 机架交换机
  *
@@ -11,10 +13,10 @@ import java.util.ArrayList;
 public class RackSwitch {
 	
 	public ClusterSwitch clusterSwitch;
-	public ArrayList<Host> hosts;
+	public ArrayList<HostDc> hosts;
 	
 	public RackSwitch(){
 		this.clusterSwitch = new ClusterSwitch();
-		this.hosts = new ArrayList<Host>();
+		this.hosts = new ArrayList<HostDc>();
 	}
 }

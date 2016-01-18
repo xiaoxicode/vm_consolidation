@@ -2,7 +2,9 @@ package site.mwq.gene;
 
 import java.util.ArrayList;
 
-import site.mwq.model.Host;
+import org.cloudbus.cloudsim.Host;
+
+import site.mwq.cloudsim.HostDc;
 import site.mwq.objects.Objs;
 
 /**
@@ -15,7 +17,7 @@ import site.mwq.objects.Objs;
 public class Individual {
 	
 	/**这个解的染色体*/
-	public ArrayList<Host> hosts = null;
+	public ArrayList<HostDc> hosts = null;
 	
 	/** nsga2算法中的Np，即支配这个解的解的个数*/
 	public int nsgaNp;
@@ -33,7 +35,7 @@ public class Individual {
 	public double[] objVals = new double[Objs.OBJNUM];
 	
 	public Individual(){
-		this.hosts = new ArrayList<Host>();
+		this.hosts = new ArrayList<HostDc>();
 	}
 	
 	/**

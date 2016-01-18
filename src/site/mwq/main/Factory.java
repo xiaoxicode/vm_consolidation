@@ -14,6 +14,8 @@ import org.cloudbus.cloudsim.provisioners.BwProvisionerSimple;
 import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
 import org.cloudbus.cloudsim.provisioners.RamProvisionerSimple;
 
+import site.mwq.cloudsim.HostDc;
+
 public class Factory {
  
 	//Host description
@@ -84,16 +86,16 @@ public class Factory {
 	}
 	
 	/**
-	 * 使用默认参数创建Host，每个Host都是同质的
+	 * 使用默认参数创建Host，每个Host都是同质的，创建的host都是自定义Host
 	 * @param num	创建host的个数
 	 * @return List<Host> host列表
 	 */
-	public static List<Host> createHost(int num){
-		List<Host> hosts = new ArrayList<Host>();
+	public static List<HostDc> createHost(int num){
+		List<HostDc> hosts = new ArrayList<HostDc>();
 		
 		for(int i=0;i<num;i++){
 			List<Pe> pes = createPes(peNumOfHost); 
-			hosts.add(new Host(
+			hosts.add(new HostDc(
 					hostId++, 
 					new RamProvisionerSimple(ramOfHost),
 					new BwProvisionerSimple(bwOfHost),
@@ -110,7 +112,7 @@ public class Factory {
 	 * @param hosts
 	 * @return
 	 */
-	public static DatacenterCharacteristics createDcCharacteristics(List<Host> hosts){
+	public static DatacenterCharacteristics createDcCharacteristics(List<HostDc> hosts){
 	
 		DatacenterCharacteristics characteristics = new DatacenterCharacteristics(
 				arch, os, vmm, hosts, time_zone, cost, costPerMem,
