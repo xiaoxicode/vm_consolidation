@@ -1,12 +1,27 @@
 package site.mwq.utils;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.cloudbus.cloudsim.Datacenter;
 import org.cloudbus.cloudsim.Host;
 import org.cloudbus.cloudsim.Vm;
 
 public class Utils {
+	
+	/**
+	 * 打印vm host映射数组
+	 * @param hostVmMap
+	 */
+	public static void disVmHostMap(Map<Integer,ArrayList<Integer>> hostVmMap){
+		for(int hostId:hostVmMap.keySet()){
+			
+			System.out.println(hostId+" : "+hostVmMap.get(hostId));
+			
+		}
+	}
+	
 	
 	/**
 	 * 打印每个vm所在的Host，这个函数目前报NullPointerException

@@ -42,12 +42,13 @@ public class VmAllocationPolicySimpleModify extends VmAllocationPolicy {
 		super(list);
 
 		setFreePes(new ArrayList<Integer>());
-		for (Host host : getHostList()) {
+		
+		for (Host host : getHostList()) {							//刚开始所有的Pe都是free的
 			getFreePes().add(host.getNumberOfPes());
 
 		}
 
-		setVmTable(new HashMap<String, Host>());
+		setVmTable(new HashMap<String, Host>());					//都是对三个参数的初始化
 		setUsedPes(new HashMap<String, Integer>());
 	}
 
@@ -65,8 +66,8 @@ public class VmAllocationPolicySimpleModify extends VmAllocationPolicy {
 		boolean result = false;
 		int tries = 0;
 		List<Integer> freePesTmp = new ArrayList<Integer>();
-		for (Integer freePes : getFreePes()) {
-			freePesTmp.add(freePes);
+		for (Integer freePes : getFreePes()) {						//List复制操作
+			freePesTmp.add(freePes);			
 		}
 
 		if (!getVmTable().containsKey(vm.getUid())) { // if this vm was not created
@@ -75,7 +76,7 @@ public class VmAllocationPolicySimpleModify extends VmAllocationPolicy {
 				int idx = -1;
 
 				// we want the host with less pes in use
-				for (int i = 0; i < freePesTmp.size(); i++) {
+				for (int i = 0; i < freePesTmp.size(); i++) {		//选一个剩余Pe最多的host
 					if (freePesTmp.get(i) > moreFree) {
 						moreFree = freePesTmp.get(i);
 						idx = i;
@@ -92,7 +93,7 @@ public class VmAllocationPolicySimpleModify extends VmAllocationPolicy {
 					result = true;
 					break;
 				} else {
-					freePesTmp.set(idx, Integer.MIN_VALUE);
+					freePesTmp.set(idx, Integer.MIN_VALUE);		//此host不能用，将其剩余Pe设置为最小值，这也是为什么使用Tmp的原因
 				}
 				tries++;
 			} while (!result && tries < getFreePes().size());
@@ -218,6 +219,7 @@ public class VmAllocationPolicySimpleModify extends VmAllocationPolicy {
 	 */
 	@Override
 	public boolean allocateHostForVm(Vm vm, Host host) {
+		
 		if (host.vmCreate(vm)) { // if vm has been succesfully created in the host
 			getVmTable().put(vm.getUid(), host);
 

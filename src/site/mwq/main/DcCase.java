@@ -18,7 +18,9 @@ import org.cloudbus.cloudsim.UtilizationModelFull;
 import org.cloudbus.cloudsim.Vm;
 import org.cloudbus.cloudsim.core.CloudSim;
 
+import site.mwq.cloudsim.DcBroker;
 import site.mwq.policy.VmAllocationPolicySimpleModify;
+import site.mwq.utils.Utils;
 
 /**
  * 程序运行入口，一个数据中心实例
@@ -27,53 +29,26 @@ import site.mwq.policy.VmAllocationPolicySimpleModify;
  */
 public class DcCase {
 
+	/**默认创建的host数和虚拟机数**/
 	public static final int hostNum = 18;
 	public static final int vmNum = 40;
 	
 	public static void main(String[] args) {
+		
+		DataSet.init(hostNum, vmNum); 								//初始化数据集合
+		
 		DcCase dcCase = new DcCase();
 		@SuppressWarnings("unused")
-		Datacenter dc = dcCase.createDatacenter("balabala");
-		DatacenterBroker dcb = dcCase.createBroker();
+		Datacenter dc = dcCase.createDatacenter("MyDataCenter");	//创建数据中心
+		DatacenterBroker dcb = dcCase.createBroker();				//创建自定义代理
 		
-		List<Vm> vms = Factory.createVmsRandomly(vmNum, dcb.getId());
+		//vmNum = 40
+		List<Vm> vms = Factory.createVmsRandomly(vmNum, dcb.getId());	//创建一些列VM
 		dcb.submitVmList(vms);
 		
-		///
-		// Cloudlet properties
-		
-		List<Cloudlet> cloudletList = new ArrayList<Cloudlet>();
-					int id = 0;
-					long length = 400000;
-					long fileSize = 300;
-					long outputSize = 300;
-					UtilizationModel utilizationModel = new UtilizationModelFull();
-
-					Cloudlet cloudlet = new Cloudlet(id, length, 1, fileSize, outputSize, utilizationModel, utilizationModel, utilizationModel);
-					cloudlet.setUserId(dcb.getId());
-					cloudlet.setVmId(0);
-
-					// add the cloudlet to the list
-					cloudletList.add(cloudlet);
-
-					// submit cloudlet list to the broker
-					dcb.submitCloudletList(cloudletList);
-
-					// Sixth step: Starts the simulation
-					
-					
-					CloudSim.startSimulation();
-					CloudSim.stopSimulation();
-
-					//Final step: Print results when simulation is over
-					List<Cloudlet> newList = dcb.getCloudletReceivedList();
-					dcCase.printCloudletList(newList);
-
-					Log.printLine("CloudSimExample1 finished!");
-		///
-		
+		dcCase.runCloudlets(dcb);							//运行Cloudlets
+		Utils.disVmHostMap(DataSet.hostVmMap);				//打印 VM host映射
 	}
-	
 	
 	/**
 	 * 构造函数
@@ -116,13 +91,13 @@ public class DcCase {
 	// We strongly encourage users to develop their own broker policies, to
 	// submit vms and cloudlets according to the specific rules of the simulated scenario
 	/**
-	 * Creates the broker.
+	 * 创建代理，这里的代理是自己的代理，重写了原代理的部分方法
 	 * @return the datacenter broker
 	 */
 	public DatacenterBroker createBroker() {
 		DatacenterBroker broker = null;
 		try {
-			broker = new DatacenterBroker("Broker");
+			broker = new DcBroker("Broker");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
@@ -163,6 +138,39 @@ public class DcCase {
 						+ dft.format(cloudlet.getFinishTime()));
 			}
 		}
+	}
+	
+	public void runCloudlets(DatacenterBroker dcb ){
+		// Cloudlet properties
+		
+		List<Cloudlet> cloudletList = new ArrayList<Cloudlet>();
+		int id = 0;
+		long length = 400000;
+		long fileSize = 300;
+		long outputSize = 300;
+		UtilizationModel utilizationModel = new UtilizationModelFull();
+
+		Cloudlet cloudlet = new Cloudlet(id, length, 1, fileSize, outputSize, utilizationModel, utilizationModel, utilizationModel);
+		cloudlet.setUserId(dcb.getId());
+		cloudlet.setVmId(0);
+
+		// add the cloudlet to the list
+		cloudletList.add(cloudlet);
+
+		// submit cloudlet list to the broker
+		dcb.submitCloudletList(cloudletList);
+
+		// Sixth step: Starts the simulation
+		
+		
+		CloudSim.startSimulation();
+		CloudSim.stopSimulation();
+
+		//Final step: Print results when simulation is over
+		List<Cloudlet> newList = dcb.getCloudletReceivedList();
+		printCloudletList(newList);
+
+		Log.printLine("CloudSimExample1 finished!");
 	}
 	
 }
