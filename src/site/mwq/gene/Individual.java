@@ -3,7 +3,7 @@ package site.mwq.gene;
 import java.util.ArrayList;
 
 import site.mwq.cloudsim.HostDc;
-import site.mwq.objects.Objs;
+import site.mwq.targets.Objs;
 
 /**
  *基因算法中的个体，也即多目标优化算法的一个解 

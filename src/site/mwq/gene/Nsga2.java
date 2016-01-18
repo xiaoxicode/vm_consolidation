@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-import site.mwq.objects.Objs;
+import site.mwq.targets.Objs;
 
 /**
  * 实现NSGA2算法

@@ -14,11 +14,11 @@ import org.cloudbus.cloudsim.Log;
 import org.cloudbus.cloudsim.Storage;
 import org.cloudbus.cloudsim.UtilizationModel;
 import org.cloudbus.cloudsim.UtilizationModelFull;
-import org.cloudbus.cloudsim.Vm;
 import org.cloudbus.cloudsim.core.CloudSim;
 
-import site.mwq.cloudsim.DcBroker;
+import site.mwq.cloudsim.BrokerDc;
 import site.mwq.cloudsim.HostDc;
+import site.mwq.cloudsim.VmDc;
 import site.mwq.policy.VmAllocationPolicySimpleModify;
 import site.mwq.utils.Utils;
 
@@ -43,7 +43,7 @@ public class DcCase {
 		DatacenterBroker dcb = dcCase.createBroker();				//创建自定义代理
 		
 		//vmNum = 40
-		List<Vm> vms = Factory.createVmsRandomly(vmNum, dcb.getId());	//创建一些列VM
+		List<VmDc> vms = Factory.createVmsRandomly(vmNum, dcb.getId());	//创建一些列VM
 		dcb.submitVmList(vms);
 		
 		dcCase.runCloudlets(dcb);							//运行Cloudlets
@@ -97,7 +97,7 @@ public class DcCase {
 	public DatacenterBroker createBroker() {
 		DatacenterBroker broker = null;
 		try {
-			broker = new DcBroker("Broker");
+			broker = new BrokerDc("Broker");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
@@ -164,7 +164,7 @@ public class DcCase {
 		
 		
 		CloudSim.startSimulation();
-		CloudSim.stopSimulation();
+		//CloudSim.stopSimulation();
 
 		//Final step: Print results when simulation is over
 		List<Cloudlet> newList = dcb.getCloudletReceivedList();

@@ -7,13 +7,13 @@ import java.util.Random;
 import org.cloudbus.cloudsim.CloudletSchedulerTimeShared;
 import org.cloudbus.cloudsim.DatacenterCharacteristics;
 import org.cloudbus.cloudsim.Pe;
-import org.cloudbus.cloudsim.Vm;
 import org.cloudbus.cloudsim.VmSchedulerTimeShared;
 import org.cloudbus.cloudsim.provisioners.BwProvisionerSimple;
 import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
 import org.cloudbus.cloudsim.provisioners.RamProvisionerSimple;
 
 import site.mwq.cloudsim.HostDc;
+import site.mwq.cloudsim.VmDc;
 
 public class Factory {
  
@@ -103,6 +103,9 @@ public class Factory {
 					new VmSchedulerTimeShared(pes)));
 		}
 		
+		//同时添加到数据集合中
+		DataSet.hosts = hosts;
+		
 		return hosts;
 	}
 	
@@ -126,8 +129,8 @@ public class Factory {
 	 * @param num 要生成的Vm数量
 	 * @return List 
 	 */
-	public static List<Vm> createVmsRandomly(int num,int brokerId){
-		List<Vm> vms = new ArrayList<Vm>();
+	public static List<VmDc> createVmsRandomly(int num,int brokerId){
+		List<VmDc> vms = new ArrayList<VmDc>();
 		
 		int[] mems = {512,1024,1536,2048};
 		int[] pes = {1,2,3,4};
@@ -137,7 +140,7 @@ public class Factory {
 			int memsId = random.nextInt(4);
 			int pesId = random.nextInt(4);
 			
-			Vm vm = new Vm(vmId++, brokerId, mipsOfVm, pes[pesId], mems[memsId], 
+			VmDc vm = new VmDc(vmId++, brokerId, mipsOfVm, pes[pesId], mems[memsId], 
 					bwOfVm, sizeOfVm, vmm, new CloudletSchedulerTimeShared());
 
 			vms.add(vm);

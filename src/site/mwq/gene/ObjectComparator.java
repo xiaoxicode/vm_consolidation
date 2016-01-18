@@ -2,7 +2,7 @@ package site.mwq.gene;
 
 import java.util.Comparator;
 
-import site.mwq.objects.ObjInterface;
+import site.mwq.targets.ObjInterface;
 
 /**
  * 适用于各个目标函数的比较器，构造函数指明使用的目标

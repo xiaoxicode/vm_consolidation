@@ -8,6 +8,8 @@ import org.cloudbus.cloudsim.Datacenter;
 import org.cloudbus.cloudsim.Host;
 import org.cloudbus.cloudsim.Vm;
 
+import site.mwq.main.DataSet;
+
 public class Utils {
 	
 	/**
@@ -17,7 +19,7 @@ public class Utils {
 	public static void disVmHostMap(Map<Integer,ArrayList<Integer>> hostVmMap){
 		for(int hostId:hostVmMap.keySet()){
 			
-			System.out.println(hostId+" : "+hostVmMap.get(hostId));
+			System.out.println(hostId+" : "+hostVmMap.get(hostId)+" . "+DataSet.hosts.get(hostId).getRamProvisioner().getAvailableRam());
 			
 		}
 	}

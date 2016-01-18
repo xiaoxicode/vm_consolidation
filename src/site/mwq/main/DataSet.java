@@ -5,7 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.cloudbus.cloudsim.Host;
+import site.mwq.cloudsim.HostDc;
+import site.mwq.cloudsim.VmDc;
 
 /**
  * 数据集合，所有数据中心中的数据都保存在这里
@@ -15,7 +16,9 @@ import org.cloudbus.cloudsim.Host;
 public class DataSet {
 
 	
-	public static List<Host> hosts = new ArrayList<Host>();
+	public static List<HostDc> hosts = new ArrayList<HostDc>();
+	public static List<VmDc> vms = new ArrayList<VmDc>();
+	
 	
 	/**key为hostId，value为包含的vm，用vmId表示*/
 	public static Map<Integer,ArrayList<Integer>> hostVmMap;
