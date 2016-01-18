@@ -1,6 +1,6 @@
 package site.mwq.utils;
 
-import site.mwq.utils.Util;
+import site.mwq.utils.Utils;
 
 /**
  * 
@@ -78,7 +78,7 @@ public class Migration {
 	
 	public static void main(String[] args) {
 		
-		Util.disArray(Migration.performaceModel(1000,20,21));
+		Utils.disArray(Migration.performaceModel(1000,20,21));
 	}
 	
 }
