@@ -2,8 +2,6 @@ package site.mwq.gene;
 
 import java.util.ArrayList;
 
-import org.cloudbus.cloudsim.Host;
-
 import site.mwq.cloudsim.HostDc;
 import site.mwq.objects.Objs;
 
