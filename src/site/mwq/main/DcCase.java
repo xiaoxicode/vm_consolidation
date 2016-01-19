@@ -19,9 +19,7 @@ import org.cloudbus.cloudsim.core.CloudSim;
 import site.mwq.cloudsim.BrokerDc;
 import site.mwq.cloudsim.HostDc;
 import site.mwq.cloudsim.VmDc;
-import site.mwq.gene.Individual;
 import site.mwq.policy.VmAllocationPolicySimpleModify;
-import site.mwq.targets.Balance;
 import site.mwq.utils.Utils;
 
 /**
@@ -50,15 +48,10 @@ public class DcCase {
 		
 		dcb.submitVmList(vms);
 		
-		dcCase.runCloudlets(dcb);							//运行Cloudlets
+		dcCase.runCloudlets(dcb);							//运行Cloudlets，模拟开始与结束
+		DataSet.initFirstInd();
 		
-		Individual ind = new Individual(DataSet.hostVmMap);
-		ind.getUtilityRate();
-		Utils.disHostVmMap(ind.hostVmMap);					//打印host  VM 映射
-		Utils.disVmHostMap(ind.vmHostMap);
-		
-		Balance b = new Balance();
-		System.out.println(b.objValue(ind));
+		Utils.disHostVmMapDetail(DataSet.hostVmMap);					//打印host  VM 映射
 	}
 	
 	/**
@@ -172,8 +165,6 @@ public class DcCase {
 		dcb.submitCloudletList(cloudletList);
 
 		// Sixth step: Starts the simulation
-		
-		
 		CloudSim.startSimulation();
 		CloudSim.stopSimulation();
 

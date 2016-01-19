@@ -8,13 +8,17 @@ import java.util.ArrayList;
  * @date 2016年1月17日
  */
 public class Activity {
-	public String label;	//活动标签,如A1
-	public double duration;		//活动持续时间
+	public String label;					//活动标签,如A1
+	public double migTime;				//活动持续时间
 	public ArrayList<Activity> depends;		//依赖关系
+	
+	//起始host与目的host
+	public int from;
+	public int to;
 	
 	public Activity(String label,double duration){
 		this.label = label;
-		this.duration = duration;
+		this.migTime = duration;
 		this.depends = new ArrayList<Activity>();
 		
 	}

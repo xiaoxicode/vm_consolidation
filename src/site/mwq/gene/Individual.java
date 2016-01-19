@@ -118,6 +118,7 @@ public class Individual {
 			hostInds.get(i).setMemAvail(availMem);
 			hostInds.get(i).setNetAvail(availNet);
 			hostInds.get(i).setPeAvail(availPe);
+			//System.out.println("id:"+i+" mem "+hostInds.get(i).getMemRate()+" pe "+hostInds.get(i).getPeRate());
 		}
 	}
 

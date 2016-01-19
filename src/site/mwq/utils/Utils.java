@@ -9,10 +9,26 @@ import org.cloudbus.cloudsim.Datacenter;
 import org.cloudbus.cloudsim.Host;
 import org.cloudbus.cloudsim.Vm;
 
+import site.mwq.cloudsim.VmDc;
+import site.mwq.main.DataSet;
+
 public class Utils {
 	
 	/**随机数生成器，项目所有的随机数均由其生成*/
 	public static Random random = new Random(System.currentTimeMillis());
+	
+	
+	public static void disMatrix(int[][] matrix){
+		int row = matrix.length;
+		int col = matrix[0].length;
+		
+		for(int i=0;i<row;i++){
+			for(int j=0;j<col;j++){
+				System.out.print(matrix[i][j]+" ");
+			}
+			System.out.println();
+		}
+	}
 	
 	/**
 	 * 打印host vm映射数组
@@ -21,6 +37,26 @@ public class Utils {
 	public static void disHostVmMap(Map<Integer,ArrayList<Integer>> hostVmMap){
 		for(int hostId:hostVmMap.keySet()){ 
 			System.out.println(hostId+" : "+hostVmMap.get(hostId));
+		}
+	}
+	
+	/**
+	 * 打印host vm映射数组
+	 * @param hostVmMap
+	 */
+	public static void disHostVmMapDetail(Map<Integer,ArrayList<Integer>> hostVmMap){
+		for(int hostId:hostVmMap.keySet()){ 
+			System.out.print(hostId+": ");
+			System.out.print("pe "+DataSet.hosts.get(hostId).getPeList().size()+" ");
+			System.out.print("mem "+DataSet.hosts.get(hostId).getRam()+" ");
+			
+			List<Integer> vms = hostVmMap.get(hostId);
+			System.out.print("[");
+			for(int vmId:vms){
+				System.out.print(vmId+": pe "+DataSet.vms.get(vmId).getNumberOfPes()+" ");
+				System.out.print("mem "+DataSet.vms.get(vmId).getRam()+"; ");
+			}
+			System.out.println(" ]");
 		}
 	}
 	

@@ -128,15 +128,18 @@ public class Factory {
 	public static List<VmDc> createVmsRandomly(int num,int brokerId){
 		List<VmDc> vms = new ArrayList<VmDc>();
 		
-		int[] mems = {512,1024,1536,2048};
+//		int[] mems = {512,1024,1536,2048};
+
+		//vm使用的内存，改为从512到2018随机产生
+		int memUsed = 0;
 		int[] pes = {1,2,3,4};
 		
 		for(int i=0;i<num;i++){
 			
-			int memsId = Utils.random.nextInt(4);
 			int pesId = Utils.random.nextInt(4);
+			memUsed = 512+Utils.random.nextInt(1536);	//随机产生内存，范围512-2048
 			
-			VmDc vm = new VmDc(vmId++, brokerId, mipsOfVm, pes[pesId], mems[memsId], 
+			VmDc vm = new VmDc(vmId++, brokerId, mipsOfVm, pes[pesId], memUsed, 
 					bwOfVm, sizeOfVm, vmm, new CloudletSchedulerTimeShared());
 
 			vms.add(vm);
