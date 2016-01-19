@@ -3,24 +3,34 @@ package site.mwq.utils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.cloudbus.cloudsim.Datacenter;
 import org.cloudbus.cloudsim.Host;
 import org.cloudbus.cloudsim.Vm;
 
-import site.mwq.main.DataSet;
-
 public class Utils {
+	
+	/**随机数生成器，项目所有的随机数均由其生成*/
+	public static Random random = new Random(System.currentTimeMillis());
+	
+	/**
+	 * 打印host vm映射数组
+	 * @param hostVmMap
+	 */
+	public static void disHostVmMap(Map<Integer,ArrayList<Integer>> hostVmMap){
+		for(int hostId:hostVmMap.keySet()){ 
+			System.out.println(hostId+" : "+hostVmMap.get(hostId));
+		}
+	}
 	
 	/**
 	 * 打印vm host映射数组
-	 * @param hostVmMap
+	 * @param vmHostMap
 	 */
-	public static void disVmHostMap(Map<Integer,ArrayList<Integer>> hostVmMap){
-		for(int hostId:hostVmMap.keySet()){
-			
-			System.out.println(hostId+" : "+hostVmMap.get(hostId)+" . "+DataSet.hosts.get(hostId).getRamProvisioner().getAvailableRam());
-			
+	public static void disVmHostMap(Map<Integer,Integer> vmHostMap){
+		for(int vmId:vmHostMap.keySet()){ 
+			System.out.println(vmId+" : "+vmHostMap.get(vmId));
 		}
 	}
 	

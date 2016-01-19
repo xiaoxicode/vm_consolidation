@@ -19,17 +19,20 @@ public class AttemptVmAllocationPolicy extends VmAllocationPolicy{
 	 * vmTable的String存储VM的Uid(Uid是userId-id的组合，即包含user的id，也包含vmid)，
 	 * Host则对应VM所在的Host
 	 */
+	@SuppressWarnings("unused")
 	private Map<String, Host> vmTable;
 	
 	/**
 	 * usedPes的String存储VM的Uid(Uid是userId-id的组合，即包含user的id，也包含vmid)，
 	 * Integer则对应VM所使用或已使用的pes数
 	 */
+	@SuppressWarnings("unused")
 	private Map<String, Integer> usedPes;
 	
 	/**
 	 * 对应着hostList，对应存储着每台host未使用的pes数
 	 */
+	@SuppressWarnings("unused")
 	private List<Integer> freePes;
 	
 	

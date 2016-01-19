@@ -1,6 +1,7 @@
 package site.mwq.targets;
 
 import site.mwq.gene.Individual;
+import site.mwq.main.DataSet;
 
 /**
  *  总的需要迁移的VM数
@@ -10,9 +11,16 @@ import site.mwq.gene.Individual;
 public class MigCnt implements ObjInterface {
 
 	@Override
-	public double objValue(Individual ind) {
-		// TODO Auto-generated method stub
-		return 0.3;
+	public double objValue(Individual ind) {	//通过比较这个解与原始解得出迁移次数
+		int cnt = 0;
+		
+		for(int i: ind.vmHostMap.keySet()){
+			if(ind.vmHostMap.get(i) != DataSet.vmHostMap.get(i)){
+				cnt++;
+			}
+		}
+		
+		return cnt;
 	}
 
 }

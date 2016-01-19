@@ -47,9 +47,9 @@ public class BrokerDc extends DatacenterBroker{
 					+ hostId);
 			
 			/**将vm记录在host中**/
+			
 			DataSet.hostVmMap.get(hostId).add(vmId);
 			DataSet.vmHostMap.put(vmId, hostId);
-			
 			
 			/****/
 		} else {

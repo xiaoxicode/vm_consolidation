@@ -10,8 +10,8 @@ import site.mwq.gene.Individual;
 public class MigTime implements ObjInterface {
 
 	@Override
-	public double objValue(Individual ind) {
-		// TODO Auto-generated method stub
+	public double objValue(Individual ind) {	
+		//TODO 
 		return 0.4;
 	}
 

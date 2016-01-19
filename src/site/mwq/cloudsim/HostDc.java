@@ -15,10 +15,89 @@ import org.cloudbus.cloudsim.provisioners.RamProvisioner;
  */
 public class HostDc extends Host{
 
+	//各种资源数据，包括已经使用的，以及剩余的
+	private int memUsed;
+	private int memAvail;
+	private int peUsed;
+	private int peAvail;
+	private long netUsed;
+	private long netAvail;
+	
+	
 	public HostDc(int id, RamProvisioner ramProvisioner,
 			BwProvisioner bwProvisioner, long storage,
 			List<? extends Pe> peList, VmScheduler vmScheduler) {
 		super(id, ramProvisioner, bwProvisioner, storage, peList, vmScheduler);
+	}
+
+
+	public int getMemUsed() {
+		return memUsed;
+	}
+
+
+	public void setMemUsed(int memUsed) {
+		this.memUsed = memUsed;
+	}
+
+
+	public int getMemAvail() {
+		return memAvail;
+	}
+
+
+	public void setMemAvail(int memAvail) {
+		this.memAvail = memAvail;
+	}
+
+
+	public int getPeUsed() {
+		return peUsed;
+	}
+
+
+	public void setPeUsed(int peUsed) {
+		this.peUsed = peUsed;
+	}
+
+
+	public int getPeAvail() {
+		return peAvail;
+	}
+
+
+	public void setPeAvail(int peAvail) {
+		this.peAvail = peAvail;
+	}
+
+
+	public long getNetUsed() {
+		return netUsed;
+	}
+
+
+	public void setNetUsed(long netUsed) {
+		this.netUsed = netUsed;
+	}
+
+
+	public long getNetAvail() {
+		return netAvail;
+	}
+
+
+	public void setNetAvail(long netAvail) {
+		this.netAvail = netAvail;
+	}
+
+
+	public double getMemRate() {
+		return (double)memUsed/super.getRam();
+	}
+
+
+	public double getPeRate() {
+		return (double)peUsed/super.getPeList().size();
 	}
 
 }

@@ -19,7 +19,9 @@ import org.cloudbus.cloudsim.core.CloudSim;
 import site.mwq.cloudsim.BrokerDc;
 import site.mwq.cloudsim.HostDc;
 import site.mwq.cloudsim.VmDc;
+import site.mwq.gene.Individual;
 import site.mwq.policy.VmAllocationPolicySimpleModify;
+import site.mwq.targets.Balance;
 import site.mwq.utils.Utils;
 
 /**
@@ -35,7 +37,7 @@ public class DcCase {
 	
 	public static void main(String[] args) {
 		
-		DataSet.init(hostNum, vmNum); 								//初始化数据集合
+		DataSet.init(hostNum, vmNum); 				//初始化数据集合
 		
 		DcCase dcCase = new DcCase();
 		@SuppressWarnings("unused")
@@ -44,10 +46,19 @@ public class DcCase {
 		
 		//vmNum = 40
 		List<VmDc> vms = Factory.createVmsRandomly(vmNum, dcb.getId());	//创建一些列VM
+		DataSet.vms.addAll(vms);							//添加到数据集合中	
+		
 		dcb.submitVmList(vms);
 		
 		dcCase.runCloudlets(dcb);							//运行Cloudlets
-		Utils.disVmHostMap(DataSet.hostVmMap);				//打印 VM host映射
+		
+		Individual ind = new Individual(DataSet.hostVmMap);
+		ind.getUtilityRate();
+		Utils.disHostVmMap(ind.hostVmMap);					//打印host  VM 映射
+		Utils.disVmHostMap(ind.vmHostMap);
+		
+		Balance b = new Balance();
+		System.out.println(b.objValue(ind));
 	}
 	
 	/**
@@ -164,7 +175,7 @@ public class DcCase {
 		
 		
 		CloudSim.startSimulation();
-		//CloudSim.stopSimulation();
+		CloudSim.stopSimulation();
 
 		//Final step: Print results when simulation is over
 		List<Cloudlet> newList = dcb.getCloudletReceivedList();

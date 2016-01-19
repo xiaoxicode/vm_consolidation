@@ -2,7 +2,6 @@ package site.mwq.main;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import org.cloudbus.cloudsim.CloudletSchedulerTimeShared;
 import org.cloudbus.cloudsim.DatacenterCharacteristics;
@@ -14,6 +13,7 @@ import org.cloudbus.cloudsim.provisioners.RamProvisionerSimple;
 
 import site.mwq.cloudsim.HostDc;
 import site.mwq.cloudsim.VmDc;
+import site.mwq.utils.Utils;
 
 public class Factory {
  
@@ -46,10 +46,6 @@ public class Factory {
 	public static int peId = 0;
 	public static int hostId = 0;
 	public static int vmId = 0;
-	
-	
-	/**随机数生成器*/
-	public static Random random = new Random(System.currentTimeMillis());
 	
 	/**
 	 * 创建Pe（CPU核）list
@@ -137,8 +133,8 @@ public class Factory {
 		
 		for(int i=0;i<num;i++){
 			
-			int memsId = random.nextInt(4);
-			int pesId = random.nextInt(4);
+			int memsId = Utils.random.nextInt(4);
+			int pesId = Utils.random.nextInt(4);
 			
 			VmDc vm = new VmDc(vmId++, brokerId, mipsOfVm, pes[pesId], mems[memsId], 
 					bwOfVm, sizeOfVm, vmm, new CloudletSchedulerTimeShared());

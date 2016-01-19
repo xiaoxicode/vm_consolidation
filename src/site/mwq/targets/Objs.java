@@ -6,7 +6,7 @@ public class Objs {
 	public static ObjInterface[] OBJS = new ObjInterface[OBJNUM];
 	
 	static {
-		OBJS[0] = new PmNum();
+		OBJS[0] = new PmCnt();
 		OBJS[1] = new ComCost();
 		OBJS[2] = new MigTime();
 		OBJS[3] = new MigCnt();
