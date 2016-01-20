@@ -38,9 +38,9 @@ public class DataSet {
 	public static void initFirstInd(){
 		firstInd = new Individual(hostVmMap);
 		firstInd.getUtilityRate();
-		for(int i : firstInd.hostVmMap.keySet()){
-			System.out.println(firstInd.hostInds.get(i).getMemRate());
-		}
+//		for(int i : firstInd.hostVmMap.keySet()){
+//			System.out.println(firstInd.hostInds.get(i).getMemRate());
+//		}
 	}
 	
 	/**

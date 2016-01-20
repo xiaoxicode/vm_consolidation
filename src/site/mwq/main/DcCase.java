@@ -14,12 +14,15 @@ import org.cloudbus.cloudsim.Log;
 import org.cloudbus.cloudsim.Storage;
 import org.cloudbus.cloudsim.UtilizationModel;
 import org.cloudbus.cloudsim.UtilizationModelFull;
+import org.cloudbus.cloudsim.VmAllocationPolicySimple;
 import org.cloudbus.cloudsim.core.CloudSim;
 
 import site.mwq.cloudsim.BrokerDc;
 import site.mwq.cloudsim.HostDc;
 import site.mwq.cloudsim.VmDc;
-import site.mwq.policy.VmAllocationPolicySimpleModify;
+import site.mwq.gene.Individual;
+import site.mwq.gene.Population;
+import site.mwq.policy.RandomVmAllocationPolicy;
 import site.mwq.utils.Utils;
 
 /**
@@ -35,11 +38,13 @@ public class DcCase {
 	
 	public static void main(String[] args) {
 		
-		DataSet.init(hostNum, vmNum); 				//初始化数据集合
+		//首先使用VmAllocationPolicySimple策略生成一个数据中心
+		//并生成初始解，后续解都与这个解对比
 		
+		DataSet.init(hostNum, vmNum); 				//初始化数据集合
 		DcCase dcCase = new DcCase();
 		@SuppressWarnings("unused")
-		Datacenter dc = dcCase.createDatacenter("MyDataCenter");	//创建数据中心
+		Datacenter dc = dcCase.createDcSimpleVmAlloc("MyDataCenter");	//创建数据中心
 		DatacenterBroker dcb = dcCase.createBroker();				//创建自定义代理
 		
 		//vmNum = 40
@@ -47,12 +52,51 @@ public class DcCase {
 		DataSet.vms.addAll(vms);							//添加到数据集合中	
 		
 		dcb.submitVmList(vms);
-		
 		dcCase.runCloudlets(dcb);							//运行Cloudlets，模拟开始与结束
 		DataSet.initFirstInd();
 		
-		Utils.disHostVmMapDetail(DataSet.hostVmMap);					//打印host  VM 映射
+		Factory.hostId = 0;
+		Factory.vmId = 0;
+		Factory.peId = 0;
+		System.out.println("-------####--------");
+		
+		Utils.disHostVmMap(DataSet.hostVmMap);
+		
+		for(int i=0;i<200;i++){
+			Population.inds.add(new Individual(DataSet.hostVmMap));
+		}
+		
+		
+		
+		//下面以随机方式生成800个解
+		for(int i=0;i<800;i++){
+			
+			//清空原来的映射
+			for(int j=0;j<DataSet.hostVmMap.size();j++){
+				DataSet.hostVmMap.get(j).clear();
+			}
+			DataSet.vmHostMap.clear();
+			
+			DcCase dcCaseTmp = new DcCase();
+			@SuppressWarnings("unused")
+			Datacenter dcTmp = dcCase.createDcRandomVmAlloc("MyDataCenter"+i);	//创建数据中心
+			DatacenterBroker dcbTmp = dcCase.createBroker();				//创建自定义代理
+			List<VmDc> vmsTmp = Factory.copyVmsWithAnotherId(vms, dcbTmp.getId());
+			dcbTmp.submitVmList(vmsTmp);
+			dcCaseTmp.runCloudlets(dcb);							//运行Cloudlets，模拟开始与结束
+			Factory.hostId = 0;
+			Factory.vmId = 0;
+			Factory.peId = 0;
+			
+			Population.inds.add(new Individual(DataSet.hostVmMap));
+		}
+		
+		
+		Utils.disPopu();
+		
 	}
+		
+		
 	
 	/**
 	 * 构造函数
@@ -70,7 +114,7 @@ public class DcCase {
 	 * @param name 数据中心的名字
 	 * @return Datacenter 数据中心的实例
 	 */
-	public Datacenter createDatacenter(String name) {
+	public Datacenter createDcRandomVmAlloc(String name) {
 
 		
 		//根据三层网络结构，创建18台物理机，8核，每个核1000Mips，4G内存
@@ -84,13 +128,41 @@ public class DcCase {
 		//创建数据中心，指定VM分配策略
 		Datacenter datacenter = null;
 		try {
-			datacenter = new Datacenter(name, characteristics, new VmAllocationPolicySimpleModify(hosts), storageList, 0);
+			datacenter = new Datacenter(name, characteristics, new RandomVmAllocationPolicy(hosts), storageList, 0);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 		return datacenter;
 	}
+	
+	/**
+	 * 创建一个数据中心
+	 * @param name 数据中心的名字
+	 * @return Datacenter 数据中心的实例
+	 */
+	public Datacenter createDcSimpleVmAlloc(String name) {
+
+		
+		//根据三层网络结构，创建18台物理机，8核，每个核1000Mips，4G内存
+		List<HostDc> hosts = Factory.createHost(hostNum);
+
+		LinkedList<Storage> storageList = new LinkedList<Storage>(); // we are not adding SAN devices by now
+
+		//用默认参数创建DatacenterCharacteristics
+		DatacenterCharacteristics characteristics = Factory.createDcCharacteristics(hosts);
+
+		//创建数据中心，指定VM分配策略
+		Datacenter datacenter = null;
+		try {
+			datacenter = new Datacenter(name, characteristics, new VmAllocationPolicySimple(hosts), storageList, 0);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return datacenter;
+	}
+	
 
 	// We strongly encourage users to develop their own broker policies, to
 	// submit vms and cloudlets according to the specific rules of the simulated scenario

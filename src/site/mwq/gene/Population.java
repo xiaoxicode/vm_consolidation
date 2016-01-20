@@ -18,12 +18,8 @@ public class Population {
 	public static int N = 1000;
 	
 	/**个体集合，可能包含重复的解*/
-	public ArrayList<Individual> inds = null;
+	public static ArrayList<Individual> inds = new ArrayList<Individual>();
 	
-	public Population(){
-		inds = new ArrayList<Individual>();
-	}
-
 	/**
 	 * 基因算法选择操作，锦标赛算法
 	 * 随机选择两个个体，选择较好的那一个解

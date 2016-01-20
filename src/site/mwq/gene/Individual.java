@@ -49,7 +49,16 @@ public class Individual {
 	public Individual(Map<Integer,ArrayList<Integer>> hostVmMap){
 		hostInds = new ArrayList<HostDc>();	//从DataSet拷贝一份Host的信息
 		hostInds.addAll(DataSet.hosts);
-		this.hostVmMap = new TreeMap<Integer,ArrayList<Integer>>(hostVmMap);
+		
+		
+//		this.hostVmMap = new TreeMap<Integer,ArrayList<Integer>>(hostVmMap);
+		
+		//TODO 手动复制TreeMap，必须手动复制
+		this.hostVmMap = new TreeMap<Integer,ArrayList<Integer>>();
+		
+		for(int i:hostVmMap.keySet()){
+			this.hostVmMap.put(i, new ArrayList<Integer>(hostVmMap.get(i)));
+		}
 		
 		vmHostMap = new TreeMap<Integer,Integer>();
 		for(int i:hostVmMap.keySet()){						//i是host的Id

@@ -5,11 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import org.cloudbus.cloudsim.Datacenter;
-import org.cloudbus.cloudsim.Host;
-import org.cloudbus.cloudsim.Vm;
-
 import site.mwq.cloudsim.VmDc;
+import site.mwq.gene.Population;
 import site.mwq.main.DataSet;
 
 public class Utils {
@@ -72,41 +69,23 @@ public class Utils {
 	
 	
 	/**
-	 * 打印每个vm所在的Host，这个函数目前报NullPointerException
+	 * 打印每个vm的详细信息
 	 * @param vms
 	 */
-	public static void disVms(List<Vm> vms){
+	public static void disVms(List<VmDc> vms){
 		
 		int width = 10;
 		
 		for(int i=0;i<vms.size();i++){
 			
-			System.out.print(vms.get(i).getId()+"："+vms.get(i).getHost().getId());
+			System.out.println(vms.get(i).getId()+"："+vms.get(i).getNumberOfPes()+","+vms.get(i).getRam());
 			
 			if(i%width == 0){
-				System.out.println();
+				//System.out.println();
 			}
 		}
 	}
 	
-	/**
-	 * 此方法目前同样不可用
-	 * @param dc
-	 */
-	public static void disDC(Datacenter dc){
-		List<Host> hosts = dc.getHostList();
-		int width = 10;
-		
-		for(int i=0;i<hosts.size();i++){
-			
-			System.out.print("###Test###"+hosts.get(i).getVmList());
-			
-			if(i%width == 0){
-				System.out.println();
-			}
-		}
-		
-	}
 	
 	/**
 	 * 打印数组
@@ -116,5 +95,18 @@ public class Utils {
 		for(int i=0;i<objs.length;i++){
 			System.out.print(objs[i]+" ");
 		}
+	}
+	
+	/**
+	 * 打印整个种群的host vm映射
+	 */
+	public static void disPopu(){ 
+		for(int i=0;i<Population.inds.size();i++){
+			
+			disHostVmMap(Population.inds.get(i).hostVmMap);
+			System.out.println("------------");
+		}
+		
+		System.out.println("Population size:"+Population.inds.size());
 	}
 }

@@ -120,7 +120,7 @@ public class Factory {
 	}
 	
 	/**
-	 * 随机产生一定数量 Vm ，内存从[512，1024，1536,2048]中选一个。
+	 * 随机产生一定数量 Vm ，内存从从512到2018随机产生
 	 * pe数量从 1-4 随机
 	 * @param num 要生成的Vm数量
 	 * @return List 
@@ -143,6 +143,20 @@ public class Factory {
 					bwOfVm, sizeOfVm, vmm, new CloudletSchedulerTimeShared());
 
 			vms.add(vm);
+		}
+		
+		return vms;
+	}
+	
+	
+	public static List<VmDc> copyVmsWithAnotherId(List<VmDc> oldVms,int brokerId){
+		List<VmDc> vms = new ArrayList<VmDc>();
+
+		for(int i=0;i<oldVms.size();i++){
+			VmDc oldVm = oldVms.get(i);
+			VmDc newVm = new VmDc(oldVm.getId(),brokerId,mipsOfVm,oldVm.getNumberOfPes(),oldVm.getRam(),
+					bwOfVm,sizeOfVm,vmm,new CloudletSchedulerTimeShared());
+			vms.add(newVm);
 		}
 		
 		return vms;
