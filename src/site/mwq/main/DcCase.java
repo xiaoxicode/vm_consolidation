@@ -23,7 +23,6 @@ import site.mwq.cloudsim.VmDc;
 import site.mwq.gene.Individual;
 import site.mwq.gene.Population;
 import site.mwq.policy.RandomVmAllocationPolicy;
-import site.mwq.targets.MigTime;
 import site.mwq.utils.Utils;
 
 /**
@@ -101,10 +100,10 @@ public class DcCase {
 	}
 		
 		
-		MigTime mt = new MigTime();
+	//	MigTime mt = new MigTime();
 		
 		
-		mt.objValue(Population.inds.get(7));
+	//	mt.objValue(Population.inds.get(7));
 		
 	}
 		

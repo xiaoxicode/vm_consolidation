@@ -8,6 +8,8 @@ import org.cloudbus.cloudsim.VmScheduler;
 import org.cloudbus.cloudsim.provisioners.BwProvisioner;
 import org.cloudbus.cloudsim.provisioners.RamProvisioner;
 
+import site.mwq.main.DataSet;
+
 /**
  * 继承自Cloudsim中的Host，是对Host的扩展，代码中实际使用的 主机类
  * @author Email:qiuweimin@126.com
@@ -35,6 +37,7 @@ public class HostDc extends Host{
 	public HostDc(int id, RamProvisioner ramProvisioner,
 			BwProvisioner bwProvisioner, long storage,
 			List<? extends Pe> peList, VmScheduler vmScheduler) {
+		
 		super(id, ramProvisioner, bwProvisioner, storage, peList, vmScheduler);
 	}
 
@@ -75,6 +78,44 @@ public class HostDc extends Host{
 		
 		return false;
 	}
+	
+	/**
+	 * 移除一台vm，同时更新内存，pe,带宽数据
+	 * @param vmId
+	 */
+	public void removeVm(int vmId){
+		
+		VmDc vm = DataSet.vms.get(vmId);
+		
+		this.memAvail += vm.getRam();
+		this.memUsed -= vm.getRam();
+		this.netAvail += vm.getBw();
+		this.netUsed -= vm.getBw();
+		this.peAvail += vm.getNumberOfPes();
+		this.peUsed -= vm.getNumberOfPes();
+		
+		//TODO super.getVmList().remove(vmId)，有待确认
+		super.getVmList().remove(vm);
+	}
+	
+	/**
+	 * 将一台vm加入到此host，同时更新数据
+	 * @param vmId
+	 */
+	public void addVm(int vmId){
+		VmDc vm = DataSet.vms.get(vmId);
+		
+		this.memAvail -= vm.getRam();
+		this.memUsed += vm.getRam();
+		this.netAvail -= vm.getBw();
+		this.netUsed += vm.getBw();
+		this.peAvail -= vm.getNumberOfPes();
+		this.peUsed += vm.getNumberOfPes();
+		
+		//TODO super.getVmList().add(vmId)，有待确认
+		super.getVmList().add(vm);
+	}
+	
 	
 	public int getMemUsed() {
 		return memUsed;

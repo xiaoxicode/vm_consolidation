@@ -1,6 +1,7 @@
 package site.mwq.utils;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -31,7 +32,7 @@ public class Utils {
 	 * 打印host vm映射数组
 	 * @param hostVmMap
 	 */
-	public static void disHostVmMap(Map<Integer,ArrayList<Integer>> hostVmMap){
+	public static void disHostVmMap(Map<Integer,HashSet<Integer>> hostVmMap){
 		for(int hostId:hostVmMap.keySet()){ 
 			System.out.println(hostId+" : "+hostVmMap.get(hostId));
 		}

@@ -1,6 +1,7 @@
 package site.mwq.gene;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -21,7 +22,7 @@ public class Individual {
 	public List<HostDc> hostInds;
 	
 	/**key为hostId，value为包含的vm，用vmId表示*/
-	public Map<Integer,ArrayList<Integer>> hostVmMap;		//host到vm的映射，均用id表示
+	public TreeMap<Integer,HashSet<Integer>> hostVmMap;		//host到vm的映射，均用id表示
 	
 	/**key为vmId，value为hostId*/
 	public Map<Integer,Integer> vmHostMap;					//vm到host的映射，均用id表示
@@ -46,7 +47,7 @@ public class Individual {
 	 * 通过这个映射得到vm到host的映射
 	 * @param hostVmMap
 	 */
-	public Individual(Map<Integer,ArrayList<Integer>> hostVmMap){
+	public Individual(Map<Integer,HashSet<Integer>> hostVmMap){
 		
 		hostInds = new ArrayList<HostDc>();	//从DataSet拷贝一份Host的信息
 		//TODO 手动复制host数组
@@ -58,15 +59,15 @@ public class Individual {
 		//this.hostVmMap = new TreeMap<Integer,ArrayList<Integer>>(hostVmMap);
 		
 		//TODO 手动复制hostVmMap，必须手动复制
-		this.hostVmMap = new TreeMap<Integer,ArrayList<Integer>>();
+		this.hostVmMap = new TreeMap<Integer,HashSet<Integer>>();
 		for(int i:hostVmMap.keySet()){
-			this.hostVmMap.put(i, new ArrayList<Integer>(hostVmMap.get(i)));
+			this.hostVmMap.put(i, new HashSet<Integer>(hostVmMap.get(i)));
 		}
 		
 		vmHostMap = new TreeMap<Integer,Integer>();
 		for(int i:this.hostVmMap.keySet()){						//i是host的Id
-			for(int j=0;j<this.hostVmMap.get(i).size();j++){		//vm的Id是hostVmMap.get(i).get(j)
-				vmHostMap.put(this.hostVmMap.get(i).get(j), i);
+			for(int j:this.hostVmMap.get(i)){			//vm的Id是hostVmMap.get(i).get(j)
+				vmHostMap.put(j, i);
 			}
 		}
 	}
@@ -112,11 +113,11 @@ public class Individual {
 			
 			usedMem = 0; usedPe = 0; usedNet = 0;
 			
-			List<Integer> vmsInHosti = hostVmMap.get(i);
-			for(int j=0;j<vmsInHosti.size();j++){
-				usedMem += DataSet.vms.get(vmsInHosti.get(j)).getRam();
-				usedPe += DataSet.vms.get(vmsInHosti.get(j)).getNumberOfPes();
-				usedNet += DataSet.vms.get(vmsInHosti.get(j)).getBw();
+			HashSet<Integer> vmsInHosti = hostVmMap.get(i);
+			for(int j:vmsInHosti){
+				usedMem += DataSet.vms.get(j).getRam();
+				usedPe += DataSet.vms.get(j).getNumberOfPes();
+				usedNet += DataSet.vms.get(j).getBw();
 			}
 			
 			availMem = DataSet.hosts.get(i).getRam()-usedMem;

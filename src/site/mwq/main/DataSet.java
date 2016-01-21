@@ -1,6 +1,7 @@
 package site.mwq.main;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -25,7 +26,7 @@ public class DataSet {
 	public static List<VmDc> vms = new ArrayList<VmDc>();
 	
 	/**key为hostId,value为这个host包含的vm的id*/
-	public static Map<Integer,ArrayList<Integer>> hostVmMap;		//host到vm的映射，均用id表示
+	public static Map<Integer,HashSet<Integer>> hostVmMap;		//host到vm的映射，均用id表示
 	/**key为vmId，value为这个vm所在的host的id*/
 	public static Map<Integer,Integer> vmHostMap;					//vm到host的映射，均用id表示
 	
@@ -51,9 +52,9 @@ public class DataSet {
 	 */
 	public static void init(int hostNum,int vmNum){
 		
-		hostVmMap = new TreeMap<Integer,ArrayList<Integer>>();
+		hostVmMap = new TreeMap<Integer,HashSet<Integer>>();
 		for(int i=0;i<hostNum;i++){
-			hostVmMap.put(i, new ArrayList<Integer>());
+			hostVmMap.put(i, new HashSet<Integer>());
 		}
 		vmHostMap = new TreeMap<Integer,Integer>();
 		

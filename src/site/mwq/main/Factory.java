@@ -37,10 +37,10 @@ public class Factory {
 
 	//VM description
 	public static final int mipsOfVm = 1000;
-	public static final long sizeOfVm = 10000; 				// image size (MB)
-	public static final int ramOfVm = 512; 					// vm memory (MB), 最好（512，1024，1536,2048）选一个
+	public static final long sizeOfVm = 10000; 				// image size (MB)，硬盘大小
+//	public static final int ramOfVm = 512; 					// vm memory (MB), 最好（512，1024，1536,2048）选一个
 	public static final long bwOfVm = 1000;					// 带宽
-	public static final int pesNumberOfVm = 1; 				// number of cpus，最好（1-3随机）
+//	public static final int pesNumberOfVm = 1; 				// number of cpus，最好（1-3随机）
 	
 	
 	////////自增Id/////////////

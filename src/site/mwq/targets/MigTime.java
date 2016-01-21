@@ -67,6 +67,7 @@ public class MigTime implements ObjInterface {
 			Activity act = acts.get(i);
 			
 			//TODO 目的host不能容纳待迁移的vm，选择一个待迁出的vm作为依赖，目前是选择了第一个，可能不满足条件
+			//资源依赖，同一个host同一时间只能有一个Activity，这两种依赖，第一种依赖从当前向前找
 			if(!hosts.get(act.to).canHold(DataSet.vms.get(act.vmId))){	
 				try{
 					act.depend(sendHosts.get(act.to).get(0));
