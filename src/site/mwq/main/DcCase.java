@@ -23,6 +23,7 @@ import site.mwq.cloudsim.VmDc;
 import site.mwq.gene.Individual;
 import site.mwq.gene.Population;
 import site.mwq.policy.RandomVmAllocationPolicy;
+import site.mwq.targets.MigTime;
 import site.mwq.utils.Utils;
 
 /**
@@ -35,6 +36,17 @@ public class DcCase {
 	/**默认创建的host数和虚拟机数**/
 	public static final int hostNum = 18;
 	public static final int vmNum = 40;
+	
+	/**
+	 * 构造函数
+	 * 运行Cloudsim的第一步，初始化相关参数
+	 */
+	public DcCase(){
+		int num_user = 1; 								// number of cloud users
+		Calendar calendar = Calendar.getInstance();
+		boolean trace_flag = false; 					// mean trace events
+		CloudSim.init(num_user, calendar, trace_flag);	// Initialize the CloudSim library
+	}
 	
 	public static void main(String[] args) {
 		
@@ -62,51 +74,70 @@ public class DcCase {
 		
 		Utils.disHostVmMap(DataSet.hostVmMap);
 		
-		for(int i=0;i<200;i++){
+//		for(int i=0;i<1000;i++){
 			Population.inds.add(new Individual(DataSet.hostVmMap));
+//		}
+		
+		for(int i=0;i<8;i++){
+		
+		//清空原来的映射
+		for(int j=0;j<DataSet.hostVmMap.size();j++){
+			DataSet.hostVmMap.get(j).clear();
 		}
+		DataSet.vmHostMap.clear();
 		
+		DcCase dcCaseTmp = new DcCase();
+		@SuppressWarnings("unused")
+		Datacenter dcTmp = dcCase.createDcRandomVmAlloc("MyDataCenter"+i);	//创建数据中心
+		DatacenterBroker dcbTmp = dcCase.createBroker();				//创建自定义代理
+		List<VmDc> vmsTmp = Factory.copyVmsWithAnotherId(vms, dcbTmp.getId());
+		dcbTmp.submitVmList(vmsTmp);
+		dcCaseTmp.runCloudlets(dcb);							//运行Cloudlets，模拟开始与结束
+		Factory.hostId = 0;
+		Factory.vmId = 0;
+		Factory.peId = 0;
 		
-		
-		//下面以随机方式生成800个解
-		for(int i=0;i<800;i++){
-			
-			//清空原来的映射
-			for(int j=0;j<DataSet.hostVmMap.size();j++){
-				DataSet.hostVmMap.get(j).clear();
-			}
-			DataSet.vmHostMap.clear();
-			
-			DcCase dcCaseTmp = new DcCase();
-			@SuppressWarnings("unused")
-			Datacenter dcTmp = dcCase.createDcRandomVmAlloc("MyDataCenter"+i);	//创建数据中心
-			DatacenterBroker dcbTmp = dcCase.createBroker();				//创建自定义代理
-			List<VmDc> vmsTmp = Factory.copyVmsWithAnotherId(vms, dcbTmp.getId());
-			dcbTmp.submitVmList(vmsTmp);
-			dcCaseTmp.runCloudlets(dcb);							//运行Cloudlets，模拟开始与结束
-			Factory.hostId = 0;
-			Factory.vmId = 0;
-			Factory.peId = 0;
-			
-			Population.inds.add(new Individual(DataSet.hostVmMap));
-		}
-		
-		
-		Utils.disPopu();
-		
+		Population.inds.add(new Individual(DataSet.hostVmMap));
 	}
 		
 		
+		MigTime mt = new MigTime();
+		
+		
+		mt.objValue(Population.inds.get(7));
+		
+	}
+		
+	
+	
+	
 	
 	/**
-	 * 构造函数
-	 * 运行Cloudsim的第一步，初始化相关参数
+	 * 随机生成一定数量的解
 	 */
-	public DcCase(){
-		int num_user = 1; 								// number of cloud users
-		Calendar calendar = Calendar.getInstance();
-		boolean trace_flag = false; 					// mean trace events
-		CloudSim.init(num_user, calendar, trace_flag);	// Initialize the CloudSim library
+	public void createIndRandomly(){
+		//下面以随机方式生成800个解
+//		for(int i=0;i<800;i++){
+//			
+//			//清空原来的映射
+//			for(int j=0;j<DataSet.hostVmMap.size();j++){
+//				DataSet.hostVmMap.get(j).clear();
+//			}
+//			DataSet.vmHostMap.clear();
+//			
+//			DcCase dcCaseTmp = new DcCase();
+//			@SuppressWarnings("unused")
+//			Datacenter dcTmp = dcCase.createDcRandomVmAlloc("MyDataCenter"+i);	//创建数据中心
+//			DatacenterBroker dcbTmp = dcCase.createBroker();				//创建自定义代理
+//			List<VmDc> vmsTmp = Factory.copyVmsWithAnotherId(vms, dcbTmp.getId());
+//			dcbTmp.submitVmList(vmsTmp);
+//			dcCaseTmp.runCloudlets(dcb);							//运行Cloudlets，模拟开始与结束
+//			Factory.hostId = 0;
+//			Factory.vmId = 0;
+//			Factory.peId = 0;
+//			
+//			Population.inds.add(new Individual(DataSet.hostVmMap));
+//		}
 	}
 	
 	/**

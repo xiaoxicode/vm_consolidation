@@ -24,10 +24,10 @@ public class Nsga2 {
 	 * 此方法一定先于dominant方法调用
 	 * @param pop
 	 */
-	public void calculateObj(Population pop){
-		for(int i=0;i<pop.inds.size();i++){
+	public void calculateObj(){
+		for(int i=0;i<Population.inds.size();i++){
 			
-			Individual ind = pop.inds.get(i);
+			Individual ind = Population.inds.get(i);
 			for(int j=0;j<ind.objVals.length;j++){	//对ind调用每个目标函数
 				ind.objVals[j] = Objs.OBJS[j].objValue(ind);
 			}

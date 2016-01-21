@@ -24,8 +24,9 @@ public class DataSet {
 	public static List<HostDc> hosts = new ArrayList<HostDc>();
 	public static List<VmDc> vms = new ArrayList<VmDc>();
 	
-	//初始的vm与host映射关系
+	/**key为hostId,value为这个host包含的vm的id*/
 	public static Map<Integer,ArrayList<Integer>> hostVmMap;		//host到vm的映射，均用id表示
+	/**key为vmId，value为这个vm所在的host的id*/
 	public static Map<Integer,Integer> vmHostMap;					//vm到host的映射，均用id表示
 	
 	/**由初始映射关系得到的初始解*/

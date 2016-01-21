@@ -20,25 +20,30 @@ public class Population {
 	/**个体集合，可能包含重复的解*/
 	public static ArrayList<Individual> inds = new ArrayList<Individual>();
 	
+	//子代
+	public static ArrayList<Individual> children = new ArrayList<Individual>();
+	
 	/**
 	 * 基因算法选择操作，锦标赛算法
 	 * 随机选择两个个体，选择较好的那一个解
 	 */
-	public void select(){
-		//TODO 选择操作
+	public static void select(){
+		for(int i=0;i<N;i++){
+			
+		}
 	}
 	
 	/**
 	 * 基因算法交叉操作
 	 */
-	public void crossover(){
+	public static void crossover(){
 		//TODO 交叉操作
 	}
 	
 	/**
 	 * 基因算法变异操作
 	 */
-	public void mutation(){
+	public static void mutation(){
 		//TODO 变异操作
 	}
 }

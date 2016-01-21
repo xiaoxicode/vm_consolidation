@@ -23,14 +23,59 @@ public class HostDc extends Host{
 	private long netUsed;
 	private long netAvail;
 	
-	
+	/**
+	 * 普通构造方法
+	 * @param id
+	 * @param ramProvisioner
+	 * @param bwProvisioner
+	 * @param storage
+	 * @param peList
+	 * @param vmScheduler
+	 */
 	public HostDc(int id, RamProvisioner ramProvisioner,
 			BwProvisioner bwProvisioner, long storage,
 			List<? extends Pe> peList, VmScheduler vmScheduler) {
 		super(id, ramProvisioner, bwProvisioner, storage, peList, vmScheduler);
 	}
 
-
+	/**
+	 * 拷贝构造方法
+	 * @param hostDc
+	 */
+	public HostDc(HostDc hostDc){
+		super(hostDc.getId(), 
+				hostDc.getRamProvisioner(), 
+				hostDc.getBwProvisioner(),
+				hostDc.getStorage(), 
+				hostDc.getPeList(), 
+				hostDc.getVmScheduler());
+		this.setMemAvail(hostDc.getMemAvail());
+		this.setMemUsed(hostDc.getMemUsed());
+		this.setPeUsed(hostDc.getPeUsed());
+		this.setPeAvail(hostDc.getPeAvail());
+		this.setNetAvail(hostDc.getNetAvail());
+		this.setNetUsed(hostDc.getNetUsed());
+	}
+	
+	
+	/**
+	 * 用来判断一个host是否能容纳一个vm
+	 * 考虑内存、cpu、带宽三种资源
+	 * @param vm
+	 * @param host
+	 * @return
+	 */
+	public boolean canHold(VmDc vm){
+		
+		if(getMemAvail() >= vm.getRam()
+				&& getPeAvail() >= vm.getNumberOfPes()
+				&& getNetAvail() >= vm.getBw()){
+			return true;
+		}
+		
+		return false;
+	}
+	
 	public int getMemUsed() {
 		return memUsed;
 	}

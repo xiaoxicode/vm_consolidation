@@ -1,9 +1,16 @@
 package site.mwq.targets;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import site.mwq.cloudsim.HostDc;
+import site.mwq.dependence.Activity;
 import site.mwq.gene.Individual;
+import site.mwq.main.DataSet;
 
 /**
- * 总的预测迁移时间
+ * TODO 总的预测迁移时间 【先放弃】
  * @author E-mail:qiuweimin@126.com
  * @version 创建时间：2015年12月23日 上午11:53:29
  */
@@ -26,12 +33,76 @@ public class MigTime implements ObjInterface {
 	/**在目的物理机恢复VM的时间，暂不考虑*/
 	private static final double Tresume = 0;
 
-	@Override
-	public double objValue(Individual ind) {	
-		//TODO 预测迁移时间，难点
-		return 0.4;
-	}
 	
+	/**
+	 * TODO 计算总的迁移时间（累加时间），这个不容易
+	 */
+	@Override
+	public double objValue(Individual ind) {
+		
+		List<Activity> acts = new ArrayList<Activity>();						//活动集合
+		
+		//key为hostId，value为要从这个host移出的vm的 活动
+		HashMap<Integer,ArrayList<Activity>> sendHosts = new HashMap<Integer,ArrayList<Activity>>();
+		
+		for(int vmId:DataSet.vmHostMap.keySet()){
+			if(DataSet.vmHostMap.get(vmId) != ind.vmHostMap.get(vmId)){			//如果所在物理节点不一致则创建一个活动
+				int from = DataSet.vmHostMap.get(vmId);
+				int to = ind.vmHostMap.get(vmId);
+				
+				Activity activity = new Activity(vmId,from,to);
+				acts.add(activity);
+				if(sendHosts.containsKey(from)){
+					sendHosts.get(from).add(activity);
+				}else{
+					ArrayList<Activity> activitys = new ArrayList<Activity>();
+					activitys.add(activity);
+					sendHosts.put(from, activitys);
+				}
+			}
+		}
+		
+		List<HostDc> hosts = ind.hostInds;
+		for(int i=0;i<acts.size();i++){
+			Activity act = acts.get(i);
+			
+			//TODO 目的host不能容纳待迁移的vm，选择一个待迁出的vm作为依赖，目前是选择了第一个，可能不满足条件
+			if(!hosts.get(act.to).canHold(DataSet.vms.get(act.vmId))){	
+				try{
+					act.depend(sendHosts.get(act.to).get(0));
+				}catch(NullPointerException e){
+					System.err.println("null pointer Exception");
+					System.out.println(DataSet.firstInd.hostVmMap.get(act.to));
+					System.out.println(ind.hostVmMap.get(act.to));
+				}
+			}
+			
+			//检查初始host
+			for(int j=i-1;j>=0;j--){
+				if(acts.get(j).relatedHosts.contains(act.from)){
+					act.depend(acts.get(j));
+					break;
+				}
+			}
+			
+			//检查目的host
+			for(int j=i-1;j>=0;j--){
+				if(acts.get(j).relatedHosts.contains(act.to)){
+					act.depend(acts.get(j));
+					break;
+				}
+			}
+			
+		}
+		
+		//打印依赖关系
+		
+		for(int i=0;i<acts.size();i++){
+			System.out.println(acts.get(i));
+		}
+		
+		return 1;
+	}
 	
 	/**
 	 * 
@@ -74,7 +145,6 @@ public class MigTime implements ObjInterface {
 			Vi = Vi1;
 		}
 		
-		System.out.println();
 		res[0] = Tmig;
 		res[1] = Tdown;
 		res[2] = Vmig;

@@ -47,23 +47,26 @@ public class Individual {
 	 * @param hostVmMap
 	 */
 	public Individual(Map<Integer,ArrayList<Integer>> hostVmMap){
+		
 		hostInds = new ArrayList<HostDc>();	//从DataSet拷贝一份Host的信息
-		hostInds.addAll(DataSet.hosts);
+		//TODO 手动复制host数组
+		for(int i=0;i<DataSet.hosts.size();i++){
+			hostInds.add(new HostDc(DataSet.hosts.get(i)));
+		}
 		
 		
-//		this.hostVmMap = new TreeMap<Integer,ArrayList<Integer>>(hostVmMap);
+		//this.hostVmMap = new TreeMap<Integer,ArrayList<Integer>>(hostVmMap);
 		
-		//TODO 手动复制TreeMap，必须手动复制
+		//TODO 手动复制hostVmMap，必须手动复制
 		this.hostVmMap = new TreeMap<Integer,ArrayList<Integer>>();
-		
 		for(int i:hostVmMap.keySet()){
 			this.hostVmMap.put(i, new ArrayList<Integer>(hostVmMap.get(i)));
 		}
 		
 		vmHostMap = new TreeMap<Integer,Integer>();
-		for(int i:hostVmMap.keySet()){						//i是host的Id
-			for(int j=0;j<hostVmMap.get(i).size();j++){		//vm的Id是hostVmMap.get(i).get(j)
-				vmHostMap.put(hostVmMap.get(i).get(j), i);
+		for(int i:this.hostVmMap.keySet()){						//i是host的Id
+			for(int j=0;j<this.hostVmMap.get(i).size();j++){		//vm的Id是hostVmMap.get(i).get(j)
+				vmHostMap.put(this.hostVmMap.get(i).get(j), i);
 			}
 		}
 	}

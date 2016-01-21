@@ -19,8 +19,9 @@ public class Factory {
  
 	//Host description
 	public static final int peDefaultMips = 1000;			//一个cpu的计算能力
-	public static final int peNumOfHost = 8;				//每个host的核数
-	public static final int ramOfHost = 4096;				//host内存（MB）
+	public static final int peNumOfHost = 16;				//每个host的核数
+//	public static final int ramOfHost = 4096;				//host内存（MB）
+	public static final int ramOfHost = 8192;				//host内存（MB）
 	public static final long storageOfHost = 1000000; 		//host storage	(MB)
 	public static final int bwOfHost = 10000;				//host 带宽
 	
