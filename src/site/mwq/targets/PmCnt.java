@@ -10,7 +10,7 @@ import site.mwq.gene.Individual;
 public class PmCnt implements ObjInterface {
 
 	@Override
-	public double objValue(Individual ind) {
+	public double objVal(Individual ind) {
 		
 		int cnt = 0;
 		

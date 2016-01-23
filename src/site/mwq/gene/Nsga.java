@@ -28,7 +28,7 @@ public class Nsga {
 		for(int i=0;i<Pop.inds.size();i++){
 			Individual ind = Pop.inds.get(i);
 			for(int j=0;j<ind.objVals.length;j++){	//对ind调用每个目标函数
-				ind.objVals[j] = Objs.OBJS[j].objValue(ind);
+				ind.objVals[j] = Objs.OBJS[j].objVal(ind);
 			//			System.out.print(ind.objVals[j]+"  ");
 
 			}
@@ -39,7 +39,7 @@ public class Nsga {
 		for(int i=0;i<Pop.children.size();i++){
 			Individual ind = Pop.children.get(i);
 			for(int j=0;j<ind.objVals.length;j++){	//对ind调用每个目标函数
-				ind.objVals[j] = Objs.OBJS[j].objValue(ind);
+				ind.objVals[j] = Objs.OBJS[j].objVal(ind);
 		//		System.out.print(ind.objVals[j]+"  ");
 //				if(j==0 && ind.objVals[j]==17){
 //					Utils.disVmHostMap(ind.vmHostMap); 
@@ -114,11 +114,11 @@ public class Nsga {
 			sameRanks = i1ranks;
 		}
 		
-		System.out.print("rankedInds size:"+rankedInds.size()+" -  ");
-		for(int j=0;j<rankedInds.size();j++){
-			System.out.print(rankedInds.get(j).size()+" ");
-		}
-		System.out.println();
+	//	System.out.print("rankedInds size:"+rankedInds.size()+" -  ");
+//		for(int j=0;j<rankedInds.size();j++){
+//			System.out.print(rankedInds.get(j).size()+" ");
+//		}
+//		System.out.println();
 		return rankedInds;
 	}
 	
@@ -135,7 +135,7 @@ public class Nsga {
 
 		for(int i=0;i<Objs.OBJNUM;i++){
 			
-			Collections.sort(inds,new ObjectComparator(i));		//TODO 验证排序，根据特定目标值对总个体升序排序
+			Collections.sort(inds,new ObjectComp(i));		//TODO 验证排序，根据特定目标值对总个体升序排序
 			
 			double objImin =inds.get(0).objVals[i];		 	//目标的最小值
 			double objImax = inds.get(len-1).objVals[i];  	//目标的最大值

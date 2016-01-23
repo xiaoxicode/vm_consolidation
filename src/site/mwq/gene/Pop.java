@@ -22,7 +22,7 @@ public class Pop {
 	public static double muProb = 0.2;
 	
 	/** 种群规模*/
-	public static int N = 1000;
+	public static int N = 100;
 	
 	/**个体集合，可能包含重复的解*/
 	public static ArrayList<Individual> inds = new ArrayList<Individual>();

@@ -11,7 +11,7 @@ import site.mwq.main.DataSet;
 public class MigCnt implements ObjInterface {
 
 	@Override
-	public double objValue(Individual ind) {	//通过比较这个解与原始解得出迁移次数
+	public double objVal(Individual ind) {	//通过比较这个解与原始解得出迁移次数
 		int cnt = 0;
 		
 		for(int i: ind.vmHostMap.keySet()){

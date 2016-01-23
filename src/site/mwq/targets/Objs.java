@@ -11,7 +11,7 @@ public class Objs {
 		OBJS[1] = new ComCost();
 		OBJS[2] = new MigCnt();
 	//	OBJS[3] = new Balance();
-	//	OBJS[2] = new MigTime();
+	//	OBJS[4] = new MigTime();
 
 	}
 }

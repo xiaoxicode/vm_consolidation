@@ -10,18 +10,18 @@ import site.mwq.targets.ObjInterface;
  * @author E-mail:qiuweimin@126.com
  * @version 创建时间：2015年12月23日 下午1:05:41
  */
-public class ObjectComparator implements Comparator<Individual>{
+public class ObjectComp implements Comparator<Individual>{
 
 	public ObjInterface obj = null;
 	
 	public int objIndex;
 	
-	public ObjectComparator(ObjInterface obj){
+	public ObjectComp(ObjInterface obj){
 		this.obj = obj;
 		System.out.println("比较器构造函数被调用");
 	}
 	
-	public ObjectComparator(int i){
+	public ObjectComp(int i){
 		this.objIndex = i;
 	}
 	

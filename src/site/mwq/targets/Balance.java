@@ -15,14 +15,14 @@ public class Balance implements ObjInterface {
 	 * 在实现的时候说明是Balance目标，用于验证程序正确性
 	 */
 	@Override
-	public double objValue(Individual ind) {
+	public double objVal(Individual ind) {
 		double balance = 0;
 		
 		double avgMem = getAvgMem(ind);
-		double avgCpu = getAvgPe(ind);
+		double avgCpu = getAvgCpu(ind);
 		
 		for(int i=0;i<ind.hostInds.size();i++){
-			balance += Math.sqrt(Math.pow(ind.hostInds.get(i).getPeRate()-avgCpu, 2)+
+			balance += Math.sqrt(Math.pow(ind.hostInds.get(i).getCpuRate()-avgCpu, 2)+
 					Math.pow(ind.hostInds.get(i).getMemRate()-avgMem, 2));
 		}
 		
@@ -46,10 +46,10 @@ public class Balance implements ObjInterface {
 	 * 获得平均CPU利用率
 	 * @return
 	 */
-	private double getAvgPe(Individual ind) {
+	private double getAvgCpu(Individual ind) {
 		double res = 0;
 		for(int i=0;i<ind.hostInds.size();i++){
-			res += ind.hostInds.get(i).getPeRate();
+			res += ind.hostInds.get(i).getCpuRate();
 		}
 		res /= ind.hostInds.size();
 		return res;

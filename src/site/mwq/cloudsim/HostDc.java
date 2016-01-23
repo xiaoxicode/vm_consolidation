@@ -9,6 +9,7 @@ import org.cloudbus.cloudsim.provisioners.BwProvisioner;
 import org.cloudbus.cloudsim.provisioners.RamProvisioner;
 
 import site.mwq.main.DataSet;
+import site.mwq.sandpiper.Sandpiper;
 
 /**
  * 继承自Cloudsim中的Host，是对Host的扩展，代码中实际使用的 主机类
@@ -80,6 +81,26 @@ public class HostDc extends Host{
 	}
 	
 	/**
+	 * 判断一个host能否容纳一个vm，并且各个资源都不超过阈值
+	 * @param vm
+	 * @return
+	 */
+	public boolean canHoldAndNotOverLoad(VmDc vm){
+	
+		double memUsed = this.memUsed+vm.getRam();
+		double cpuUsed = this.peUsed+vm.getNumberOfPes();
+		double netUsed = this.netUsed+vm.getBw();
+		
+		if(memUsed/getRam()<Sandpiper.memThreshold
+				&& cpuUsed/getNumberOfPes()<Sandpiper.cpuThreshold
+				&& netUsed/getBw()<Sandpiper.netThreshold){
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/**
 	 * 移除一台vm，同时更新内存，pe,带宽数据
 	 * @param vmId
 	 */
@@ -116,6 +137,29 @@ public class HostDc extends Host{
 	//	super.getVmList().add(vm);
 	}
 	
+	/**
+	 * sandpiper算法中的volume值，衡量一个vm或host负载的变量
+	 * @return double
+	 */
+	public double getVol(){
+		
+		double cpuRate = getCpuRate();
+		double netRate = getNetRate();
+		double memRate = getMemRate();
+		
+		if(cpuRate==1){
+			cpuRate = 1-Sandpiper.littleValue;
+		}
+		if(netRate==1){
+			netRate = 1-Sandpiper.littleValue;
+		}
+		if(memRate==1){
+			memRate = 1-Sandpiper.littleValue;
+		}
+		
+		double vol = (1/(1-cpuRate))*(1/(1-netRate))*(1/(1-memRate));
+		return vol;
+	}
 	
 	public int getMemUsed() {
 		return memUsed;
@@ -182,8 +226,45 @@ public class HostDc extends Host{
 	}
 
 
-	public double getPeRate() {
-		return (double)peUsed/super.getPeList().size();
+	public double getCpuRate() {
+		return (double)peUsed/super.getNumberOfPes();
 	}
 
+	public double getNetRate() {
+		return (double)netUsed/super.getBw();
+	}
+	
+	/**
+	 * 获取host的vsr, 即 volume/size
+	 * @return
+	 */
+	public double getVsr(){
+		double vsr = 0;
+		
+		vsr = getVol()/getMemUsed();
+		
+		return vsr;
+	}
+	
+	/**
+	 * 判断一个host是否overload，只要有一个资源利用率超过阈值，
+	 * 即认为是overload 
+	 * @return
+	 */
+	public boolean isOverLoad(){
+		if(getMemRate() > Sandpiper.memThreshold
+				|| getCpuRate() > Sandpiper.cpuThreshold
+				|| getNetRate() > Sandpiper.netThreshold){
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * 打印资源利用率
+	 */
+	public void displayRate(){
+		System.out.println("vsr: "+getVsr()+" mem:"+getMemRate()+
+				" cpu:"+getCpuRate()+" net:"+getNetRate());
+	}
 }

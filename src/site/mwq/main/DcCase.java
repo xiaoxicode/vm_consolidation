@@ -3,6 +3,7 @@ package site.mwq.main;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -19,11 +20,14 @@ import org.cloudbus.cloudsim.core.CloudSim;
 import site.mwq.cloudsim.BrokerDc;
 import site.mwq.cloudsim.HostDc;
 import site.mwq.cloudsim.VmDc;
+import site.mwq.gene.IndComp;
 import site.mwq.gene.Individual;
 import site.mwq.gene.Nsga;
 import site.mwq.gene.Pop;
 import site.mwq.policy.RandomVmAllocationPolicy;
 import site.mwq.policy.VmAllocationPolicySimpleModify;
+import site.mwq.sandpiper.Sandpiper;
+import site.mwq.utils.Utils;
 
 /**
  * 程序运行入口，一个数据中心实例
@@ -34,7 +38,7 @@ public class DcCase {
 
 	/**默认创建的host数和虚拟机数**/
 	public static final int hostNum = 18;
-	public static final int vmNum = 40;
+	public static final int vmNum = 70;
 	
 	/**
 	 * 构造函数
@@ -73,10 +77,11 @@ public class DcCase {
 		
 		//Utils.disHostVmMap(DataSet.hostVmMap);
 		
-		for(int i=0;i<1000;i++){
+		for(int i=0;i<100;i++){
 			Pop.inds.add(new Individual(DataSet.hostVmMap));
 		}
 		
+		Sandpiper sand = new Sandpiper(DataSet.hostVmMap);
 		
 //		for(int i=0;i<1000;i++){
 //			Pop.crossover(Pop.inds);
@@ -85,7 +90,7 @@ public class DcCase {
 		
 		Pop.copyParentToChild();
 		
-		for(int i=0;i<1000;i++){
+		for(int i=0;i<100;i++){
 			Nsga.calculateObj();
 			Pop.inds = Nsga.nsgaMain(Pop.inds, Pop.children);
 			Pop.children.clear();
@@ -93,6 +98,14 @@ public class DcCase {
 			Pop.crossover(Pop.children);
 			Pop.mutation(Pop.children);
 		}
+		
+		Collections.sort(Pop.inds,new IndComp());
+		
+		for(int i=0;i<20;i++){
+			Utils.disIndVal(Pop.inds.get(i));
+		}
+		System.out.println("-------分割线------");
+		sand.moveVm();
 	}
 		
 	

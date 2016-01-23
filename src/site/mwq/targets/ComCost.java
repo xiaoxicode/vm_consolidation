@@ -11,7 +11,7 @@ import site.mwq.main.DataSet;
 public class ComCost implements ObjInterface {
 
 	@Override
-	public double objValue(Individual ind) {
+	public double objVal(Individual ind) {
 		
 		int row = DataSet.comMatrix.length;
 		int col = DataSet.comMatrix[0].length;

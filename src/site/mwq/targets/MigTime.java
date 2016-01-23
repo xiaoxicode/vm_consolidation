@@ -39,7 +39,7 @@ public class MigTime implements ObjInterface {
 	 * TODO 计算总的迁移时间（累加时间），这个不容易
 	 */
 	@Override
-	public double objValue(Individual ind) {
+	public double objVal(Individual ind) {
 		
 		List<Activity> acts = new ArrayList<Activity>();						//活动集合
 		

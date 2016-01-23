@@ -11,8 +11,16 @@ import site.mwq.cloudsim.VmDc;
 import site.mwq.gene.Individual;
 import site.mwq.gene.Pop;
 import site.mwq.main.DataSet;
+import site.mwq.targets.ComCost;
+import site.mwq.targets.MigCnt;
+import site.mwq.targets.PmCnt;
 
 public class Utils {
+	
+	//求目标值用的
+	private static MigCnt mc = new MigCnt();
+	private static PmCnt pc = new PmCnt();
+	private static ComCost cc = new ComCost();
 	
 	/**随机数生成器，项目所有的随机数均由其生成*/
 	public static Random random = new Random(System.currentTimeMillis());
@@ -120,5 +128,14 @@ public class Utils {
 		}
 		
 		System.out.println("Population size:"+Pop.inds.size());
+	}
+	
+	
+	/**
+	 * 计算一个个体的各个目标值
+	 * @param ind
+	 */
+	public static void disIndVal(Individual ind){
+		System.out.println("migCnt:"+mc.objVal(ind)+"  comcost:"+cc.objVal(ind)+"  pmCnt:"+pc.objVal(ind));
 	}
 }
