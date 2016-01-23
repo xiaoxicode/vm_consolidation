@@ -11,7 +11,7 @@ import site.mwq.targets.Objs;
  * @author E-mail:qiuweimin@126.com
  * @version 创建时间：2015年12月22日 下午8:00:30
  */
-public class Nsga2 {
+public class Nsga {
 
 	/**元素按照dominant和拥挤距离排序
 	 * 每一个ArrayList为一个rank，内部按照拥挤距离排序
@@ -24,18 +24,36 @@ public class Nsga2 {
 	 * 此方法一定先于dominant方法调用
 	 * @param pop
 	 */
-	public void calculateObj(){
-		for(int i=0;i<Population.inds.size();i++){
-			
-			Individual ind = Population.inds.get(i);
+	public static void calculateObj(){
+		for(int i=0;i<Pop.inds.size();i++){
+			Individual ind = Pop.inds.get(i);
 			for(int j=0;j<ind.objVals.length;j++){	//对ind调用每个目标函数
 				ind.objVals[j] = Objs.OBJS[j].objValue(ind);
+			//			System.out.print(ind.objVals[j]+"  ");
+
 			}
+			//	System.out.println();
+
+		}
+		
+		for(int i=0;i<Pop.children.size();i++){
+			Individual ind = Pop.children.get(i);
+			for(int j=0;j<ind.objVals.length;j++){	//对ind调用每个目标函数
+				ind.objVals[j] = Objs.OBJS[j].objValue(ind);
+		//		System.out.print(ind.objVals[j]+"  ");
+//				if(j==0 && ind.objVals[j]==17){
+//					Utils.disVmHostMap(ind.vmHostMap); 
+//					System.out.println("-----mid-----");
+//					Utils.disVmHostMap(DataSet.vmHostMap);
+//					System.out.println("-----****-----");
+//				}
+			}
+		//	System.out.println();
 		}
 	}
 	
 	/**
-	 * Nsga2排序，论文中的算法实现
+	 * Nsga2排序，论文中的算法实现，只计算rank，不计算拥挤距离
 	 * @param pop 种群
 	 * @return HashMap的key为rank，value为rank对应的Individual集合
 	 */
@@ -44,8 +62,8 @@ public class Nsga2 {
 		ArrayList<ArrayList<Individual>> rankedInds = new ArrayList<ArrayList<Individual>>();
 		
 		ArrayList<Individual> sameRankInds = new ArrayList<Individual>();
-		
-		for(int i=0;i<inds.size();i++){
+
+		for(int i=0;i<inds.size();i++){			//对于每个个体，计算被其所支配的个体集合，以及支配它的个体的个数
 			Individual ind_p = inds.get(i);
 			ind_p.nsgaDoms = new ArrayList<Individual>();
 			ind_p.nsgaNp = 0;
@@ -61,12 +79,18 @@ public class Nsga2 {
 				}
 			}
 			
+//			System.out.println("the nsgaNp: "+ind_p.nsgaNp);
+//			System.out.println("nsgaDoms size: "+ind_p.nsgaDoms.size());
+			
 			if(ind_p.nsgaNp==0){
 				ind_p.nsgaRank = 1;
 				sameRankInds.add(ind_p);
 			}
+			
 		}
 		rankedInds.add(sameRankInds);
+		
+	//	System.out.println("sameRankInds size after: "+sameRankInds.size());
 		
 		ArrayList<Individual> sameRanks = sameRankInds;		//TODO 引用类型直接赋值，排错
 		int i=1;
@@ -84,11 +108,17 @@ public class Nsga2 {
 					}
 				}
 			}
+			
 			i += 1;
 			rankedInds.add(i1ranks);
 			sameRanks = i1ranks;
 		}
 		
+		System.out.print("rankedInds size:"+rankedInds.size()+" -  ");
+		for(int j=0;j<rankedInds.size();j++){
+			System.out.print(rankedInds.get(j).size()+" ");
+		}
+		System.out.println();
 		return rankedInds;
 	}
 	
@@ -96,12 +126,13 @@ public class Nsga2 {
 	 * 计算同一个Rank中每个元素的拥挤距离
 	 * @param inds
 	 */
-	public void crowingDistanceAssign(ArrayList<Individual> inds){
+	public static void crowingDistanceAssign(ArrayList<Individual> inds){
 		int len = inds.size();
 		for(int i=0;i<len;i++){
 			inds.get(i).nsgaCrowDis = 0;
 		}
-		
+	//	System.out.println("rankedInds size:"+inds.size());
+
 		for(int i=0;i<Objs.OBJNUM;i++){
 			
 			Collections.sort(inds,new ObjectComparator(i));		//TODO 验证排序，根据特定目标值对总个体升序排序
@@ -125,7 +156,7 @@ public class Nsga2 {
 	 * @param children	子代
 	 * @return	下一代
 	 */
-	public ArrayList<Individual> nsgaMain(ArrayList<Individual> parent,ArrayList<Individual> children){
+	public static ArrayList<Individual> nsgaMain(ArrayList<Individual> parent,ArrayList<Individual> children){
 		
 		ArrayList<Individual> nextGeneration = new ArrayList<Individual>();
 		
@@ -135,7 +166,8 @@ public class Nsga2 {
 		int i=0;
 		
 		//首先合并低Rank的解集合
-		while(nextGeneration.size()+rankedInds.get(i).size()<Population.N){
+		while(nextGeneration.size()+rankedInds.get(i).size()<Pop.N){
+			crowingDistanceAssign(rankedInds.get(i));	//分配拥挤距离，在二进制选举算法时使用
 			nextGeneration.addAll(rankedInds.get(i));
 			i++;
 		}
@@ -144,7 +176,7 @@ public class Nsga2 {
 		Collections.sort(rankedInds.get(i),new CrowdComp());
 		
 		int j=0;
-		while(nextGeneration.size()<Population.N){
+		while(nextGeneration.size()<Pop.N){
 			nextGeneration.add(rankedInds.get(i).get(j));
 			j++;
 		}

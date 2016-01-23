@@ -8,6 +8,7 @@ import site.mwq.cloudsim.HostDc;
 import site.mwq.dependence.Activity;
 import site.mwq.gene.Individual;
 import site.mwq.main.DataSet;
+import site.mwq.utils.Utils;
 
 /**
  * TODO 总的预测迁移时间 【先放弃】
@@ -73,8 +74,8 @@ public class MigTime implements ObjInterface {
 					act.depend(sendHosts.get(act.to).get(0));
 				}catch(NullPointerException e){
 					System.err.println("null pointer Exception");
-					System.out.println(DataSet.firstInd.hostVmMap.get(act.to));
-					System.out.println(ind.hostVmMap.get(act.to));
+//					System.out.println(DataSet.firstInd.hostVmMap.get(act.to));
+//					System.out.println(ind.hostVmMap.get(act.to));
 				}
 			}
 			
@@ -97,12 +98,13 @@ public class MigTime implements ObjInterface {
 		}
 		
 		//打印依赖关系
-		
 		for(int i=0;i<acts.size();i++){
-			System.out.println(acts.get(i));
+			//System.out.println(acts.get(i));
 		}
 		
-		return 1;
+		System.out.println("*********");
+		//TODO 迁移时间，返回一个随机数
+		return ((int)(Utils.random.nextDouble()*10))/10.0;
 	}
 	
 	/**

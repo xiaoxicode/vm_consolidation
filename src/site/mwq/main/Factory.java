@@ -91,6 +91,8 @@ public class Factory {
 		
 		for(int i=0;i<num;i++){
 			List<Pe> pes = createPes(peNumOfHost); 
+			DataSet.hostIds.add(hostId);	//追加hostId到数据集合中
+			
 			hosts.add(new HostDc(
 					hostId++, 
 					new RamProvisionerSimple(ramOfHost),
@@ -142,7 +144,6 @@ public class Factory {
 			
 			VmDc vm = new VmDc(vmId++, brokerId, mipsOfVm, pes[pesId], memUsed, 
 					bwOfVm, sizeOfVm, vmm, new CloudletSchedulerTimeShared());
-
 			vms.add(vm);
 		}
 		

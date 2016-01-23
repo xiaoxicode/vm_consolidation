@@ -26,7 +26,7 @@ public class Balance implements ObjInterface {
 					Math.pow(ind.hostInds.get(i).getMemRate()-avgMem, 2));
 		}
 		
-		return balance;
+		return ((int)(balance*100))/100.0;
 	}
 
 	/**

@@ -14,16 +14,16 @@ import org.cloudbus.cloudsim.Log;
 import org.cloudbus.cloudsim.Storage;
 import org.cloudbus.cloudsim.UtilizationModel;
 import org.cloudbus.cloudsim.UtilizationModelFull;
-import org.cloudbus.cloudsim.VmAllocationPolicySimple;
 import org.cloudbus.cloudsim.core.CloudSim;
 
 import site.mwq.cloudsim.BrokerDc;
 import site.mwq.cloudsim.HostDc;
 import site.mwq.cloudsim.VmDc;
 import site.mwq.gene.Individual;
-import site.mwq.gene.Population;
+import site.mwq.gene.Nsga;
+import site.mwq.gene.Pop;
 import site.mwq.policy.RandomVmAllocationPolicy;
-import site.mwq.utils.Utils;
+import site.mwq.policy.VmAllocationPolicySimpleModify;
 
 /**
  * 程序运行入口，一个数据中心实例
@@ -71,45 +71,30 @@ public class DcCase {
 		Factory.peId = 0;
 		System.out.println("-------####--------");
 		
-		Utils.disHostVmMap(DataSet.hostVmMap);
+		//Utils.disHostVmMap(DataSet.hostVmMap);
+		
+		for(int i=0;i<1000;i++){
+			Pop.inds.add(new Individual(DataSet.hostVmMap));
+		}
+		
 		
 //		for(int i=0;i<1000;i++){
-			Population.inds.add(new Individual(DataSet.hostVmMap));
+//			Pop.crossover(Pop.inds);
+//			Pop.mutation(Pop.inds);
 //		}
 		
-		for(int i=0;i<8;i++){
+		Pop.copyParentToChild();
 		
-		//清空原来的映射
-		for(int j=0;j<DataSet.hostVmMap.size();j++){
-			DataSet.hostVmMap.get(j).clear();
+		for(int i=0;i<1000;i++){
+			Nsga.calculateObj();
+			Pop.inds = Nsga.nsgaMain(Pop.inds, Pop.children);
+			Pop.children.clear();
+			Pop.select();
+			Pop.crossover(Pop.children);
+			Pop.mutation(Pop.children);
 		}
-		DataSet.vmHostMap.clear();
-		
-		DcCase dcCaseTmp = new DcCase();
-		@SuppressWarnings("unused")
-		Datacenter dcTmp = dcCase.createDcRandomVmAlloc("MyDataCenter"+i);	//创建数据中心
-		DatacenterBroker dcbTmp = dcCase.createBroker();				//创建自定义代理
-		List<VmDc> vmsTmp = Factory.copyVmsWithAnotherId(vms, dcbTmp.getId());
-		dcbTmp.submitVmList(vmsTmp);
-		dcCaseTmp.runCloudlets(dcb);							//运行Cloudlets，模拟开始与结束
-		Factory.hostId = 0;
-		Factory.vmId = 0;
-		Factory.peId = 0;
-		
-		Population.inds.add(new Individual(DataSet.hostVmMap));
 	}
 		
-		
-	//	MigTime mt = new MigTime();
-		
-		
-	//	mt.objValue(Population.inds.get(7));
-		
-	}
-		
-	
-	
-	
 	
 	/**
 	 * 随机生成一定数量的解
@@ -185,7 +170,7 @@ public class DcCase {
 		//创建数据中心，指定VM分配策略
 		Datacenter datacenter = null;
 		try {
-			datacenter = new Datacenter(name, characteristics, new VmAllocationPolicySimple(hosts), storageList, 0);
+			datacenter = new Datacenter(name, characteristics, new VmAllocationPolicySimpleModify(hosts), storageList, 0);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

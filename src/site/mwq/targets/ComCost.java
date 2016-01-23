@@ -49,9 +49,21 @@ public class ComCost implements ObjInterface {
 		if(i==j){		//虚拟机编号相等，返回0
 			return 0;
 		}
+		int idi = 0;
+		try{
+			idi = ind.vmHostMap.get(i);
+		}catch(Exception e){
+			System.err.println("error in ComCost");
+			System.exit(1);
+		}
+		int idj = 0;
 		
-		int idi = ind.vmHostMap.get(i);
-		int idj	= ind.vmHostMap.get(j);
+		try{
+			idj	= ind.vmHostMap.get(j);
+		}catch (Exception e){
+			System.err.println("another error in ComCost");
+			System.exit(1);
+		}
 		
 		if(idi==idj){	//物理机编号相等，返回0
 			return 0;

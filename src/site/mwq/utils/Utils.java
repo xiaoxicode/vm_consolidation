@@ -6,15 +6,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import site.mwq.cloudsim.HostDc;
 import site.mwq.cloudsim.VmDc;
-import site.mwq.gene.Population;
+import site.mwq.gene.Individual;
+import site.mwq.gene.Pop;
 import site.mwq.main.DataSet;
 
 public class Utils {
 	
 	/**随机数生成器，项目所有的随机数均由其生成*/
 	public static Random random = new Random(System.currentTimeMillis());
-	
 	
 	public static void disMatrix(int[][] matrix){
 		int row = matrix.length;
@@ -25,6 +26,16 @@ public class Utils {
 				System.out.print(matrix[i][j]+" ");
 			}
 			System.out.println();
+		}
+	}
+	
+	/**
+	 * 打印一个个体的host的资源剩余情况
+	 * @param ind
+	 */
+	public static void disHostAvail(Individual ind){
+		for(HostDc host:ind.hostInds){
+			System.out.println("Id:"+host.getId()+", mem:"+host.getMemAvail()+", pe:"+host.getPeAvail()+", bw:"+host.getNetAvail());
 		}
 	}
 	
@@ -102,12 +113,12 @@ public class Utils {
 	 * 打印整个种群的host vm映射
 	 */
 	public static void disPopu(){ 
-		for(int i=0;i<Population.inds.size();i++){
+		for(int i=0;i<Pop.inds.size();i++){
 			
-			disHostVmMap(Population.inds.get(i).hostVmMap);
+			disHostVmMap(Pop.inds.get(i).hostVmMap);
 			System.out.println("------------");
 		}
 		
-		System.out.println("Population size:"+Population.inds.size());
+		System.out.println("Population size:"+Pop.inds.size());
 	}
 }

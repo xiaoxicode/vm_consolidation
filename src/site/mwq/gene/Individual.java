@@ -30,13 +30,13 @@ public class Individual {
 	/** nsga2算法中的Np，即支配这个解的解的个数*/
 	public int nsgaNp;
 	
-	/** nsga2算法中的Rank*/
+	/** nsga2算法中的Rank，越小越好*/
 	public int nsgaRank;
 	
 	/**nsga2算法中，这个解所支配的解的集合*/
 	public ArrayList<Individual> nsgaDoms; 
 	
-	/**nsga2算法中的拥挤距离*/
+	/**nsga2算法中的拥挤距离，越大越好*/
 	public double nsgaCrowDis;
 	
 	/**此个体对各个优化目标的值，顺序按照Objs中给出的顺序*/
@@ -44,10 +44,10 @@ public class Individual {
 
 	/**
 	 * 通过host到vm的映射初始化一个解
-	 * 通过这个映射得到vm到host的映射
-	 * @param hostVmMap
+	 * 通过这个映射得到vm到host的映射。深拷贝
+	 * @param hostVmMapParam
 	 */
-	public Individual(Map<Integer,HashSet<Integer>> hostVmMap){
+	public Individual(Map<Integer,HashSet<Integer>> hostVmMapParam){
 		
 		hostInds = new ArrayList<HostDc>();	//从DataSet拷贝一份Host的信息
 		//TODO 手动复制host数组
@@ -60,20 +60,24 @@ public class Individual {
 		
 		//TODO 手动复制hostVmMap，必须手动复制
 		this.hostVmMap = new TreeMap<Integer,HashSet<Integer>>();
-		for(int i:hostVmMap.keySet()){
-			this.hostVmMap.put(i, new HashSet<Integer>(hostVmMap.get(i)));
+		for(int i:hostVmMapParam.keySet()){
+			this.hostVmMap.put(i, new HashSet<Integer>(hostVmMapParam.get(i)));
 		}
 		
 		vmHostMap = new TreeMap<Integer,Integer>();
 		for(int i:this.hostVmMap.keySet()){						//i是host的Id
-			for(int j:this.hostVmMap.get(i)){			//vm的Id是hostVmMap.get(i).get(j)
+			for(int j:this.hostVmMap.get(i)){					//vm的Id是hostVmMap.get(i).get(j)
 				vmHostMap.put(j, i);
 			}
 		}
+		
+		//获得资源利用率，资源利用率只跟映射有关系，可以直接在得到映射之后给出资源利用率
+		getUtilityRate();
 	}
 	
 	/**
 	 * 判断一个解是否支配(dominate)另一个解
+	 * 小于也算优于（不然支配的可能比较少）
 	 * @param ind
 	 * @return 1：支配, 0:无法比较，-1：参数支配调用者
 	 */
@@ -81,9 +85,9 @@ public class Individual {
 		
 		int greatNum = 0,lessNum = 0;
 		for(int i=0;i<Objs.OBJNUM;i++){
-			if(this.objVals[i]<ind.objVals[i]){
+			if(this.objVals[i] <= ind.objVals[i]){
 				lessNum++;
-			}else if(this.objVals[i]>objVals[i]){
+			}else if(this.objVals[i]>=objVals[i]){
 				greatNum++;
 			}
 		}
@@ -96,6 +100,22 @@ public class Individual {
 			return -1;
 		}
 		return 0;
+	}
+	
+	public boolean betterThan(Individual o2){
+		if(nsgaRank < o2.nsgaRank){				//rank升序
+			return true;
+		}else if(nsgaRank > o2.nsgaRank){
+			return false;
+		}else{
+			if(nsgaCrowDis > o2.nsgaCrowDis){	//拥挤距离 降序
+				return true;
+			}else if(nsgaCrowDis < o2.nsgaCrowDis){
+				return false;
+			}
+		}
+		
+		return false;
 	}
 	
 	

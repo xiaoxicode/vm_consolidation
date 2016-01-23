@@ -33,16 +33,17 @@ public class DataSet {
 	/**由初始映射关系得到的初始解*/
 	public static Individual firstInd;
 	
+	/**只存储host的编号，用来寻找与一个vm通信量最大的host
+	 * 这里只是一些id的集合，用来排序，只在某一时刻有作用
+	 * */
+	public static ArrayList<Integer> hostIds;
+	
 	//通信矩阵
 	public static final double probOfCom = 0.3;
 	public static int[][] comMatrix;
 	
 	public static void initFirstInd(){
 		firstInd = new Individual(hostVmMap);
-		firstInd.getUtilityRate();
-//		for(int i : firstInd.hostVmMap.keySet()){
-//			System.out.println(firstInd.hostInds.get(i).getMemRate());
-//		}
 	}
 	
 	/**
@@ -57,6 +58,7 @@ public class DataSet {
 			hostVmMap.put(i, new HashSet<Integer>());
 		}
 		vmHostMap = new TreeMap<Integer,Integer>();
+		hostIds = new ArrayList<Integer>();
 		
 		initCommunicationMatrix(vmNum);	//随机产生一个通信矩阵
 	}
@@ -67,6 +69,8 @@ public class DataSet {
 	 * 
 	 * 两个虚拟机相互通信的概率为0.3，通信量从10-200随机
 	 * vm带宽默认为1000
+	 * 
+	 * 产生的一定是对称矩阵
 	 * @param vmNum
 	 * @return
 	 */
@@ -78,11 +82,12 @@ public class DataSet {
 		int comNum = 0;
 		
 		for(int i=0;i<vmNum;i++){
-			for(int j=0;j<vmNum;j++){
+			for(int j=i+1;j<vmNum;j++){
 				comProb = Utils.random.nextDouble();
 				if(comProb<probOfCom){
 					comNum = 10+Utils.random.nextInt(190);
 					comMatrix[i][j] = comNum;
+					comMatrix[j][i] = comNum;
 				}
 			}
 		}

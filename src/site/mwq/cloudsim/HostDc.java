@@ -95,7 +95,7 @@ public class HostDc extends Host{
 		this.peUsed -= vm.getNumberOfPes();
 		
 		//TODO super.getVmList().remove(vmId)，有待确认
-		super.getVmList().remove(vm);
+	//	super.getVmList().remove(vm);
 	}
 	
 	/**
@@ -113,7 +113,7 @@ public class HostDc extends Host{
 		this.peUsed += vm.getNumberOfPes();
 		
 		//TODO super.getVmList().add(vmId)，有待确认
-		super.getVmList().add(vm);
+	//	super.getVmList().add(vm);
 	}
 	
 	

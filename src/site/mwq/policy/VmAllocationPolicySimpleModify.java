@@ -77,6 +77,13 @@ public class VmAllocationPolicySimpleModify extends VmAllocationPolicy {
 
 				// we want the host with less pes in use
 				for (int i = 0; i < freePesTmp.size(); i++) {		//选一个剩余Pe最多的host
+					
+//					double rand = Utils.random.nextDouble();	
+//					if(rand<0.5){
+//						idx = Utils.random.nextInt(getHostList().size());
+//						break;
+//					}
+					
 					if (freePesTmp.get(i) > moreFree) {
 						moreFree = freePesTmp.get(i);
 						idx = i;
@@ -96,7 +103,7 @@ public class VmAllocationPolicySimpleModify extends VmAllocationPolicy {
 					freePesTmp.set(idx, Integer.MIN_VALUE);		//此host不能用，将其剩余Pe设置为最小值，这也是为什么使用Tmp的原因
 				}
 				tries++;
-			} while (!result && tries < getFreePes().size());
+			} while (!result && tries < freePesTmp.size());
 
 		}
 
@@ -208,7 +215,6 @@ public class VmAllocationPolicySimpleModify extends VmAllocationPolicy {
 	 */
 	@Override
 	public List<Map<String, Object>> optimizeAllocation(List<? extends Vm> vmList) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
