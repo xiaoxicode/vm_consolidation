@@ -1,0 +1,39 @@
+-------####--------
+migCnt:0.0  comcost:654284.0  pmCnt:18.0 ban:10.46
+migCnt:0.0  comcost:654284.0  pmCnt:18.0 ban:10.46
+migCnt:1.0  comcost:646596.0  pmCnt:18.0 ban:10.53
+migCnt:1.0  comcost:651462.0  pmCnt:18.0 ban:10.62
+migCnt:1.0  comcost:651908.0  pmCnt:18.0 ban:10.54
+migCnt:2.0  comcost:639798.0  pmCnt:18.0 ban:10.75
+migCnt:2.0  comcost:659522.0  pmCnt:18.0 ban:10.53
+migCnt:3.0  comcost:633210.0  pmCnt:18.0 ban:10.92
+migCnt:3.0  comcost:644196.0  pmCnt:18.0 ban:10.71
+migCnt:3.0  comcost:655058.0  pmCnt:18.0 ban:10.58
+migCnt:4.0  comcost:644920.0  pmCnt:17.0 ban:11.15
+migCnt:4.0  comcost:648636.0  pmCnt:18.0 ban:10.7
+migCnt:5.0  comcost:630542.0  pmCnt:18.0 ban:10.92
+migCnt:5.0  comcost:655420.0  pmCnt:18.0 ban:10.79
+migCnt:6.0  comcost:624634.0  pmCnt:17.0 ban:11.42
+migCnt:6.0  comcost:641374.0  pmCnt:18.0 ban:10.89
+migCnt:6.0  comcost:647588.0  pmCnt:18.0 ban:10.96
+
+migCnt:7.0  comcost:623628.0  pmCnt:16.0 ban:11.89
+
+migCnt:8.0  comcost:618264.0  pmCnt:18.0 ban:11.25
+migCnt:8.0  comcost:640488.0  pmCnt:17.0 ban:11.37
+migCnt:9.0  comcost:650760.0  pmCnt:18.0 ban:10.97
+migCnt:10.0  comcost:615048.0  pmCnt:17.0 ban:11.65
+migCnt:11.0  comcost:613160.0  pmCnt:16.0 ban:12.22
+migCnt:11.0  comcost:637050.0  pmCnt:17.0 ban:11.42
+migCnt:12.0  comcost:611740.0  pmCnt:17.0 ban:11.69
+migCnt:12.0  comcost:653252.0  pmCnt:17.0 ban:11.29
+migCnt:13.0  comcost:608086.0  pmCnt:17.0 ban:11.92
+migCnt:13.0  comcost:617198.0  pmCnt:16.0 ban:11.98
+migCnt:13.0  comcost:642296.0  pmCnt:15.0 ban:12.49
+migCnt:14.0  comcost:652362.0  pmCnt:17.0 ban:11.46
+-------分割线------
+sandpiper,一台vm没有添加成功。
+comCost:654000.0
+pmCnt:18.0
+moveCnt: 12
+balance:12.12
