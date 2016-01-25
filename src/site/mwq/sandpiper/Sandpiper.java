@@ -9,8 +9,7 @@ import java.util.Map;
 import site.mwq.cloudsim.VmDc;
 import site.mwq.gene.Individual;
 import site.mwq.main.DataSet;
-import site.mwq.targets.ComCost;
-import site.mwq.targets.PmCnt;
+import site.mwq.utils.Utils;
 
 /**
  * 对比试验，比较经典的一个，2007年
@@ -87,16 +86,14 @@ public class Sandpiper {
 		
 		for(int hostId:DataSet.hostIds){
 			if(ind.hostInds.get(hostId).isOverLoad()){	
-				moveCnt += 2;
+				moveCnt += 1;
 			}
 		}
 		
-		ComCost cc = new ComCost();
-		System.out.println("comCost:"+cc.objVal(ind));
-		PmCnt pc = new PmCnt();
-		System.out.println("pmCnt:"+pc.objVal(ind));
+		System.out.println("comCost:"+Utils.cc.objVal(ind));
+		System.out.println("pmCnt:"+Utils.pc.objVal(ind));
 		System.out.println("moveCnt: "+moveCnt);
-		
+		System.out.println("balance:"+Utils.ba.objVal(ind));
 	}
 	
 	

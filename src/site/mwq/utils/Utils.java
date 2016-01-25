@@ -11,6 +11,7 @@ import site.mwq.cloudsim.VmDc;
 import site.mwq.gene.Individual;
 import site.mwq.gene.Pop;
 import site.mwq.main.DataSet;
+import site.mwq.targets.Balance;
 import site.mwq.targets.ComCost;
 import site.mwq.targets.MigCnt;
 import site.mwq.targets.PmCnt;
@@ -18,9 +19,11 @@ import site.mwq.targets.PmCnt;
 public class Utils {
 	
 	//求目标值用的
-	private static MigCnt mc = new MigCnt();
-	private static PmCnt pc = new PmCnt();
-	private static ComCost cc = new ComCost();
+	public static MigCnt mc = new MigCnt();
+	public static PmCnt pc = new PmCnt();
+	public static ComCost cc = new ComCost();
+	public static Balance ba = new Balance();
+	
 	
 	/**随机数生成器，项目所有的随机数均由其生成*/
 	public static Random random = new Random(System.currentTimeMillis());
@@ -136,6 +139,6 @@ public class Utils {
 	 * @param ind
 	 */
 	public static void disIndVal(Individual ind){
-		System.out.println("migCnt:"+mc.objVal(ind)+"  comcost:"+cc.objVal(ind)+"  pmCnt:"+pc.objVal(ind));
+		System.out.println("migCnt:"+mc.objVal(ind)+"  comcost:"+cc.objVal(ind)+"  pmCnt:"+pc.objVal(ind)+" ban:"+ba.objVal(ind));
 	}
 }
