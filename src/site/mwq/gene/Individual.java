@@ -19,7 +19,7 @@ import site.mwq.targets.Objs;
 public class Individual {
 	
 	/**这个解对应的host列表，主要封装利用率什么的一些信息 */	//host列表
-	public List<HostDc> hostInds;
+	public List<HostDc> indHosts;
 	
 	/**key为hostId，value为包含的vm，用vmId表示*/
 	public TreeMap<Integer,HashSet<Integer>> hostVmMap;		//host到vm的映射，均用id表示
@@ -49,10 +49,10 @@ public class Individual {
 	 */
 	public Individual(Map<Integer,HashSet<Integer>> hostVmMapParam){
 		
-		hostInds = new ArrayList<HostDc>();	//从DataSet拷贝一份Host的信息
+		indHosts = new ArrayList<HostDc>();	//从DataSet拷贝一份Host的信息
 		//TODO 手动复制host数组
 		for(int i=0;i<DataSet.hosts.size();i++){
-			hostInds.add(new HostDc(DataSet.hosts.get(i)));
+			indHosts.add(new HostDc(DataSet.hosts.get(i)));
 		}
 		
 		
@@ -144,13 +144,13 @@ public class Individual {
 			availPe = DataSet.hosts.get(i).getNumberOfPes()-usedPe;
 			availNet = DataSet.hosts.get(i).getBw()-usedNet;
 			
-			hostInds.get(i).setMemUsed(usedMem);
-			hostInds.get(i).setNetUsed(usedNet);
-			hostInds.get(i).setPeUsed(usedPe);
+			indHosts.get(i).setMemUsed(usedMem);
+			indHosts.get(i).setNetUsed(usedNet);
+			indHosts.get(i).setPeUsed(usedPe);
 			
-			hostInds.get(i).setMemAvail(availMem);
-			hostInds.get(i).setNetAvail(availNet);
-			hostInds.get(i).setPeAvail(availPe);
+			indHosts.get(i).setMemAvail(availMem);
+			indHosts.get(i).setNetAvail(availNet);
+			indHosts.get(i).setPeAvail(availPe);
 			//System.out.println("id:"+i+" mem "+hostInds.get(i).getMemRate()+" pe "+hostInds.get(i).getPeRate());
 		}
 	}

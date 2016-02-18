@@ -21,9 +21,9 @@ public class Balance implements ObjInterface {
 		double avgMem = getAvgMem(ind);
 		double avgCpu = getAvgCpu(ind);
 		
-		for(int i=0;i<ind.hostInds.size();i++){
-			balance += Math.sqrt(Math.pow(ind.hostInds.get(i).getCpuRate()-avgCpu, 2)+
-					Math.pow(ind.hostInds.get(i).getMemRate()-avgMem, 2));
+		for(int i=0;i<ind.indHosts.size();i++){
+			balance += Math.sqrt(Math.pow(ind.indHosts.get(i).getCpuRate()-avgCpu, 2)+
+					Math.pow(ind.indHosts.get(i).getMemRate()-avgMem, 2));
 		}
 		
 		return ((int)(balance*100))/100.0;
@@ -48,10 +48,10 @@ public class Balance implements ObjInterface {
 	 */
 	private double getAvgCpu(Individual ind) {
 		double res = 0;
-		for(int i=0;i<ind.hostInds.size();i++){
-			res += ind.hostInds.get(i).getCpuRate();
+		for(int i=0;i<ind.indHosts.size();i++){
+			res += ind.indHosts.get(i).getCpuRate();
 		}
-		res /= ind.hostInds.size();
+		res /= ind.indHosts.size();
 		return res;
 	}
 

@@ -101,10 +101,68 @@ public class HostDc extends Host{
 	}
 	
 	/**
+	 * 判断一个host能否将一台VM与其他host上的一个VM cluster对换，
+	 * 且不能超过负载
+	 * 
+	 * @param vmId 换出的VM的id
+	 * @param vc	换入的cluster，封装了资源利用信息
+	 * @return
+	 */
+	public boolean canSwapVmWithCluster(int vmId,VmCluster vc){
+	
+		VmDc vm = DataSet.vms.get(vmId);
+		
+		double memUsed = this.memUsed+vc.getMemUsed();
+		double cpuUsed = this.peUsed+vc.getPeUsed();
+		double netUsed = this.netUsed+vc.getNetUsed();
+		
+		memUsed -= vm.getRam();
+		cpuUsed -= vm.getNumberOfPes();
+		netUsed -= vm.getBw();
+		
+		if(memUsed/getRam()<Sandpiper.memThreshold
+				&& cpuUsed/getNumberOfPes()<Sandpiper.cpuThreshold
+				&& netUsed/getBw()<Sandpiper.netThreshold){
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * 换出一个cluster,换入一个vm，看看能否不超载
+	 * 
+	 * @param vc 换出的VmCluster
+	 * @param vmId	换入的Vm
+	 * @return
+	 */
+	public boolean canSwapClusterWithVm(VmCluster vc,int vmId){
+		
+		VmDc vm = DataSet.vms.get(vmId);
+		
+		double memUsed = this.memUsed-vc.getMemUsed();
+		double cpuUsed = this.peUsed-vc.getPeUsed();
+		double netUsed = this.netUsed-vc.getNetUsed();
+		
+		memUsed += vm.getRam();
+		cpuUsed += vm.getNumberOfPes();
+		netUsed += vm.getBw();
+		
+		if(memUsed/getRam()<Sandpiper.memThreshold
+				&& cpuUsed/getNumberOfPes()<Sandpiper.cpuThreshold
+				&& netUsed/getBw()<Sandpiper.netThreshold){
+			return true;
+		}
+		
+		return false;
+	}
+	
+	
+	/**
 	 * 移除一台vm，同时更新内存，pe,带宽数据
 	 * @param vmId
 	 */
-	public void removeVm(int vmId){
+	public void removeVmUpdateResource(int vmId){
 		
 		VmDc vm = DataSet.vms.get(vmId);
 		
@@ -120,10 +178,10 @@ public class HostDc extends Host{
 	}
 	
 	/**
-	 * 将一台vm加入到此host，同时更新数据
+	 * 将一台vm加入到此host，主要更新资源利用率信息
 	 * @param vmId
 	 */
-	public void addVm(int vmId){
+	public void addVmUpdateResource(int vmId){
 		VmDc vm = DataSet.vms.get(vmId);
 		
 		this.memAvail -= vm.getRam();

@@ -45,7 +45,7 @@ public class Utils {
 	 * @param ind
 	 */
 	public static void disHostAvail(Individual ind){
-		for(HostDc host:ind.hostInds){
+		for(HostDc host:ind.indHosts){
 			System.out.println("Id:"+host.getId()+", mem:"+host.getMemAvail()+", pe:"+host.getPeAvail()+", bw:"+host.getNetAvail());
 		}
 	}

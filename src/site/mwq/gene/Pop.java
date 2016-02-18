@@ -103,11 +103,11 @@ public class Pop {
 				//先交叉、再删重复、最后插入缺失的vm
 				hostVmMap1.put(point1, new HashSet<Integer>(vms2));		//交叉，vms2放置到ind1 point1
 				for(int vmId:vms1){										//移除原vm列表
-					indsParam.get(ind1).hostInds.get(point1).removeVm(vmId);
+					indsParam.get(ind1).indHosts.get(point1).removeVmUpdateResource(vmId);
 				}
 				for(int vmId:vms2){										//添加另一个host的vm列表
 					indsParam.get(ind1).vmHostMap.put(vmId, point1);		//更新vm host映射
-					indsParam.get(ind1).hostInds.get(point1).addVm(vmId);
+					indsParam.get(ind1).indHosts.get(point1).addVmUpdateResource(vmId);
 				}
 
 				
@@ -120,11 +120,11 @@ public class Pop {
 				//先交叉、再删重复、最后插入缺失的vm
 				hostVmMap2.put(point1, new HashSet<Integer>(vms1));		//交叉,vms1放置到ind2的point1上
 				for(int vmId:vms2){
-					indsParam.get(ind2).hostInds.get(point1).removeVm(vmId);
+					indsParam.get(ind2).indHosts.get(point1).removeVmUpdateResource(vmId);
 				}
 				for(int vmId:vms1){
 					indsParam.get(ind2).vmHostMap.put(vmId, point1);		//更新vm host映射
-					indsParam.get(ind2).hostInds.get(point1).addVm(vmId);
+					indsParam.get(ind2).indHosts.get(point1).addVmUpdateResource(vmId);
 				}
 
 				
@@ -158,7 +158,7 @@ public class Pop {
 				if(hostVmMap.get(hostId).contains(dupId)){	//删除重复vm，从映射中删除，同时从更新host数据
 					hostVmMap.get(hostId).remove(dupId);
 					dupList.remove(dupList);
-					indsParam.get(indId).hostInds.get(hostId).removeVm(dupId);
+					indsParam.get(indId).indHosts.get(hostId).removeVmUpdateResource(dupId);
 				}
 			}
 		}
@@ -186,9 +186,9 @@ public class Pop {
 				if(hostId==point){	//忽略点
 					continue;
 				}
-				if(indsParam.get(indId).hostInds.get(hostId).canHold(DataSet.vms.get(loseId))){
+				if(indsParam.get(indId).indHosts.get(hostId).canHold(DataSet.vms.get(loseId))){
 					hostVmMap.get(hostId).add(loseId);
-					indsParam.get(indId).hostInds.get(hostId).addVm(loseId);
+					indsParam.get(indId).indHosts.get(hostId).addVmUpdateResource(loseId);
 					indsParam.get(indId).vmHostMap.put(loseId, hostId);
 					inserted = true;
 					break;
@@ -231,7 +231,7 @@ public class Pop {
 				//将point上的vm置空，同时更新host数据
 				indsParam.get(indId).hostVmMap.put(point, new HashSet<Integer>());
 				for(int j:lossList){
-					indsParam.get(indId).hostInds.get(point).removeVm(j);
+					indsParam.get(indId).indHosts.get(point).removeVmUpdateResource(j);
 				}
 				//将lossList插入到其他host上
 

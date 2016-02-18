@@ -63,7 +63,7 @@ public class MigTime implements ObjInterface {
 			}
 		}
 		
-		List<HostDc> hosts = ind.hostInds;
+		List<HostDc> hosts = ind.indHosts;
 		for(int i=0;i<acts.size();i++){
 			Activity act = acts.get(i);
 			

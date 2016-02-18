@@ -104,6 +104,7 @@ public class DcCase {
 		for(int i=0;i<30;i++){
 			Utils.disIndVal(Pop.inds.get(i));
 		}
+		
 		System.out.println("-------分割线------");
 		sand.moveVm();
 	}
