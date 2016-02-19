@@ -9,12 +9,12 @@ import java.io.StringWriter;
 
 /**
  * 采集CPU使用率
+ * @author Email:qiuweimin@126.com
+ * @date 2016年2月19日
  */
-public class CpuUsage extends ResourceUsage {
+public class CpuUsage implements ResourceUsage {
 
 	private static CpuUsage INSTANCE = new CpuUsage();
-	
-	private CpuUsage(){}
 	
 	public static CpuUsage getInstance(){
 		return INSTANCE;
@@ -55,9 +55,9 @@ public class CpuUsage extends ResourceUsage {
 	 * @return float,CPU使用率,小于1
 	 */
 	@Override
-	public float get() {
+	public double getResUsage() {
 		
-		float cpuUsage = 0;
+		double cpuUsage = 0;
 		long idleCpuTime1 = 0, totalCpuTime1 = 0;	//分别为系统启动后空闲的CPU时间和总的CPU时间
 		long idleCpuTime2 = 0, totalCpuTime2 = 0;
 
@@ -85,18 +85,19 @@ public class CpuUsage extends ResourceUsage {
 		////
 
 		if(idleCpuTime1 != 0 && totalCpuTime1 !=0 && idleCpuTime2 != 0 && totalCpuTime2 !=0){
-			cpuUsage = 1 - (float)(idleCpuTime2 - idleCpuTime1)/(float)(totalCpuTime2 - totalCpuTime1);
+			cpuUsage = 1 - (idleCpuTime2 - idleCpuTime1)/(double)(totalCpuTime2 - totalCpuTime1);
 		}				
 		return cpuUsage;
 	}
 
 	/**
+	 * main方法，用于测试
 	 * @param args
 	 * @throws InterruptedException 
 	 */
 	public static void main(String[] args) throws InterruptedException {
 		while(true){
-			System.out.println(CpuUsage.getInstance().get());
+			System.out.println(CpuUsage.getInstance().getResUsage());
 			Thread.sleep(5000);		
 		}
 	}

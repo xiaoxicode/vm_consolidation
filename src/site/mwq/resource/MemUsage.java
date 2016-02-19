@@ -8,12 +8,12 @@ import java.io.StringWriter;
 
 /**
  * 采集内存使用率
+ * @author Email:qiuweimin@126.com
+ * @date 2016年2月19日
  */
-public class MemUsage extends ResourceUsage{
+public class MemUsage implements ResourceUsage{
 
 	private static MemUsage INSTANCE = new MemUsage();
-	
-	private MemUsage(){}
 	
 	public static MemUsage getInstance(){
 		return INSTANCE;
@@ -25,8 +25,8 @@ public class MemUsage extends ResourceUsage{
 	 * @return float,内存使用率,小于1
 	 */
 	@Override
-	public float get() {
-		float memUsage = 0.0f;
+	public double getResUsage() {
+		double memUsage = 0.0;
 		Process pro = null;
 		Runtime r = Runtime.getRuntime();
 		String command = "cat /proc/meminfo";
@@ -60,12 +60,13 @@ public class MemUsage extends ResourceUsage{
 	}
 	
 	/**
+	 * main方法，用于测试
 	 * @param args
 	 * @throws InterruptedException 
 	 */
 	public static void main(String[] args) throws InterruptedException {
 		while(true){
-			System.out.println(MemUsage.getInstance().get());
+			System.out.println(MemUsage.getInstance().getResUsage());
 			Thread.sleep(5000);
 		}
 	}

@@ -8,13 +8,13 @@ import java.io.StringWriter;
 
 /**
  * 采集网络带宽使用率
+ * @author Email:qiuweimin@126.com
+ * @date 2016年2月19日
  */
-public class NetUsage extends ResourceUsage {
+public class NetUsage implements ResourceUsage {
 
 	private static NetUsage INSTANCE = new NetUsage();
 	private final static float TotalBandwidth = 1000;	//网口带宽,Mbps,使用命令ethtool eth0查看
-	
-	private NetUsage(){}
 	
 	public static NetUsage getInstance(){
 		return INSTANCE;
@@ -52,9 +52,9 @@ public class NetUsage extends ResourceUsage {
 	 * @return float,网络带宽使用率,小于1
 	 */
 	@Override
-	public float get() {
+	public double getResUsage() {
 		
-		float netUsage = 0.0f;
+		double netUsage = 0.0;
 		long inSize1 = 0, outSize1 = 0;
 		long inSize2 = 0 ,outSize2 = 0;
 		
@@ -79,8 +79,8 @@ public class NetUsage extends ResourceUsage {
 		outSize2 = Long.parseLong(data2[9]);
 		
 		if(inSize1 != 0 && outSize1 !=0 && inSize2 != 0 && outSize2 !=0){
-			float interval = (float)(endTime - startTime);				//单位为毫秒
-			float curRate = (float)(inSize2 - inSize1 + outSize2 - outSize1)*8/(1000*interval); //网口传输速度, 单位为bps bit每秒
+			double interval = (double)(endTime - startTime);				//单位为毫秒
+			double curRate = (inSize2 - inSize1 + outSize2 - outSize1)*8/(1000*interval); //网口传输速度, 单位为bps bit每秒
 			netUsage = curRate/TotalBandwidth;
 		}
 		
@@ -88,12 +88,13 @@ public class NetUsage extends ResourceUsage {
 	}
 
 	/**
+	 * main方法，用于测试
 	 * @param args
 	 * @throws InterruptedException 
 	 */
 	public static void main(String[] args) throws InterruptedException {
 		while(true){
-			System.out.println(NetUsage.getInstance().get());
+			System.out.println(NetUsage.getInstance().getResUsage());
 			Thread.sleep(5000);
 		}
 	}

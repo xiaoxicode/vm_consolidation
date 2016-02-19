@@ -3,14 +3,10 @@ package site.mwq.rmi;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
-
 /**
- * Description: 实时显示RMI接口实现.
- * 
- * 实现RMI接口及远程方法（继承UnicastRemoteObject）
- * 
- * @author Peter Wei
- * @version 1.0 Feb 25, 2009
+ * 资源监控服务实现
+ * @author Email:qiuweimin@126.com
+ * @date 2016年2月19日
  */
 public class ResMonitorServiceImpl extends UnicastRemoteObject implements
 		ResMonitorService {
@@ -25,7 +21,6 @@ public class ResMonitorServiceImpl extends UnicastRemoteObject implements
  
 	/**
 	 * 必须定义构造方法，因为要抛出RemoteException异常
-	 * 
 	 * @throws RemoteException
 	 */
 	public ResMonitorServiceImpl() throws RemoteException {

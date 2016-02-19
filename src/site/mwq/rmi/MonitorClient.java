@@ -7,7 +7,7 @@ import java.rmi.RemoteException;
 
 
 /**
- * 监控客户端，周期性检查PM负载
+ * 监控客户端，周期性检查各个PM负载
  * 
  * @author Email:qiuweimin@126.com
  * @date 2016年2月19日
@@ -27,7 +27,6 @@ public class MonitorClient {
 	 * @param param
 	 * @return
 	 */
-	
 	public int collectUsages() {
 		double[] result = null;
 		try {
@@ -44,15 +43,12 @@ public class MonitorClient {
 	}
 
 	public ResMonitorService getMonitorService() {
+		
 		try {
-			// 在RMI服务注册表中查找名称为RmiMonitorService的对象，并调用其上的方法
+			// 在RMI服务注册表中查找名称为ResMonitorService的对象，并调用其上的方法
 			resMonitorService = (ResMonitorService) Naming.lookup("rmi://" + ip + ":" + port + "/comm");
 
-		} catch (NotBoundException e) {
-			e.printStackTrace();
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		} catch (RemoteException e) {
+		} catch (NotBoundException | MalformedURLException | RemoteException e) {
 			e.printStackTrace();
 		}
 		return resMonitorService;

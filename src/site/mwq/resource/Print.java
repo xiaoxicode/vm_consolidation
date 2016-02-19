@@ -5,6 +5,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 
+/**
+ * 往文件中写入日志
+ * @author Email:qiuweimin@126.com
+ * @date 2016年2月19日
+ */
 public class Print {
 	
 	public static File file = null;

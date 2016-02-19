@@ -1,9 +1,11 @@
 package site.mwq.resource;
 
-public class ResourceUsage {
+/**
+ * 资源收集接口
+ * @author Email:qiuweimin@126.com
+ * @date 2016年2月19日
+ */
+public interface ResourceUsage {
 	
-	
-	public float get(){
-		return 0;
-	};
+	public double getResUsage();
 }
