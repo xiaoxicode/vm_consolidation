@@ -58,7 +58,9 @@ public class MonitorClient {
 		MonitorClient client = new MonitorClient();
 		
 		while(true){
-			client.collectUsages();
+			//client.collectUsages();
+			
+			System.out.println(client.getMonitorService().getVmNames());
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {

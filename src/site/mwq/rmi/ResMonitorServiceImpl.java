@@ -2,6 +2,7 @@ package site.mwq.rmi;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 
 /**
  * 资源监控服务实现
@@ -35,6 +36,17 @@ public class ResMonitorServiceImpl extends UnicastRemoteObject implements
 		double[] res = null;
 		
 		res = collector.collectUsage();
+		
+		return res;
+	}
+
+	/**
+	 * 返回正在运行的虚拟机名字
+	 */
+	@Override
+	public ArrayList<String> getVmNames() throws RemoteException {
+		
+		ArrayList<String> res = LibvirtSim.virshList();
 		
 		return res;
 	}

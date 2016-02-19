@@ -48,13 +48,12 @@ public class LocalResCollector {
 		});
 		
 		try {
-			cpuThread.start();
-			cpuThread.join();
-			
+			cpuThread.start();		//先执行子线程的start()方法，再执行子线程的join方法
 			memThread.start();
-			memThread.join();
-			
 			netThread.start();
+
+			cpuThread.join();		//主线程等子线程结束
+			memThread.join();
 			netThread.join();
 			
 		} catch (InterruptedException e) {

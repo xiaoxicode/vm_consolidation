@@ -6,8 +6,8 @@ source = sys.argv[1]
 dest = sys.argv[2]
 vm = sys.argv[3]
 
-conn_sour = libvirt.open('qemu+tcp://username@'+source+'/system')
-conn_dest = libvirt.open('qemu+tcp://username@'+dest+'/system')
+conn_sour = libvirt.open('qemu+tcp://qwm@'+source+'/system')
+conn_dest = libvirt.open('qemu+tcp://qwm@'+dest+'/system')
   
 #search vm
 vm_domain = conn_sour.lookupByName(vm)

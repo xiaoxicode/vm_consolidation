@@ -2,6 +2,7 @@ package site.mwq.rmi;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 
 /**
  * 监控接口
@@ -16,4 +17,12 @@ public interface ResMonitorService extends Remote {
 	 * @throws RemoteException
 	 */
 	public double[] getResUsage() throws RemoteException;
+	
+	
+	/**
+	 * 获取这个PM上正在的vm，返回虚拟机名
+	 * @return
+	 * @throws RemoteException
+	 */
+	public ArrayList<String> getVmNames() throws RemoteException;
 }

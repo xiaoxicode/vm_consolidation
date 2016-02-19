@@ -27,7 +27,7 @@ public class CpuUsage implements ResourceUsage {
 		String command = "cat /proc/stat";
 		
 		try {
-			pro = r.exec(command);
+			pro = r.exec(command);		//执行shell命令
 			BufferedReader in1 = new BufferedReader(new InputStreamReader(pro.getInputStream()));
 			String line = null;
 			while((line=in1.readLine()) != null){	
