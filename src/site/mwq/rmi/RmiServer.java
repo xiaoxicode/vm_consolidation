@@ -7,17 +7,11 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 
 
-/**
- * Description: RMI服务端.
- * 
- * @author Peter Wei
- * @version 1.0 Feb 25, 2009
- */
 public class RmiServer {
 
 	public String ip = "localhost";
 
-	public int port = 8889;
+	public int port = 8888;
 
 	/**
 	 * 启动RMI注册服务，并注册远程对象.实际应用中是在Spring初始化并启动
@@ -26,7 +20,7 @@ public class RmiServer {
 		try {
 			LocateRegistry.createRegistry(port);
 			// 创建一个远程对象
-			RmiMonitorService comm = new RmiMonitorServiceImpl();
+			ResMonitorService comm = new ResMonitorServiceImpl();
 			Naming.bind("//" + ip + ":" + port + "/comm", comm);
 		} catch (RemoteException e) {
 			System.out.println("创建远程对象发生异常！" + e.toString());
@@ -57,9 +51,8 @@ public class RmiServer {
 	}
 
 	public static void main(String[] args) {
-		// 实际应用中是在Spring初始化并启动
 		RmiServer rmiServer = new RmiServer();
-		System.out.println("RMI服务初始化:");
+		System.out.println("资源收集服务初始化");
 		rmiServer.init();
 
 	}
