@@ -19,9 +19,12 @@ public class LibvirtSim {
 		Process pro = null;
 		
 		try { 
-			pro = r.exec(cmd);		
+			pro = r.exec(cmd);
+			pro.waitFor();
 			pro.destroy();
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
@@ -61,6 +64,10 @@ public class LibvirtSim {
 	}
 	
 	public static void main(String[] args) {
-		migrate("pm1", "pm2", "vm1");
+		try{
+			migrate("pm1", "pm2", "vm1");
+		}catch(Exception e){
+			e.printStackTrace();
+		}
 	}
 }
