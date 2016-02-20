@@ -17,9 +17,7 @@ public class RmiServer {
 
 	public int port = 8888;
 
-	/**
-	 * 启动RMI注册服务，并注册远程对象
-	 */
+	/*** 启动RMI注册服务，并注册远程对象*/
 	public void init() {
 		
 		try {
@@ -29,22 +27,6 @@ public class RmiServer {
 		} catch (RemoteException | MalformedURLException | AlreadyBoundException e) {
 			e.printStackTrace();
 		}
-	}
-
-	public String getIp() {
-		return ip;
-	}
-
-	public void setIp(String ip) {
-		this.ip = ip;
-	}
-
-	public int getPort() {
-		return port;
-	}
-
-	public void setPort(int port) {
-		this.port = port;
 	}
 
 	public static void main(String[] args) {

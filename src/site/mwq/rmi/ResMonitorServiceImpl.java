@@ -41,13 +41,14 @@ public class ResMonitorServiceImpl extends UnicastRemoteObject implements
 	}
 
 	/**
-	 * 返回正在运行的虚拟机名字
+	 * 返回正在运行的虚拟机名字列表
 	 */
 	@Override
 	public ArrayList<String> getVmNames() throws RemoteException {
 		
 		ArrayList<String> res = LibvirtSim.virshList();
-		
+		//ArrayList<String> res = new ArrayList<String>();
+		//res.add("fsd");
 		return res;
 	}
 

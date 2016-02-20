@@ -6,21 +6,27 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 /**
- * 虚拟机迁移类，执行java程序是需要添加sudo
+ * 模拟Libvirt类，执行java程序是需要添加sudo
  * @author Email:qiuweimin@126.com
  * @date 2016年2月19日
  */
 public class LibvirtSim {
 
+	/**
+	 * 迁移接口，调用mig.py python模块，传入相关参数
+	 * @param sourcePm
+	 * @param destPm
+	 * @param vm
+	 */
 	public static void migrate(String sourcePm,String destPm,String vm){
-		String cmd = "python mig.py "+sourcePm+" "+destPm+" "+vm;
+		String cmd = "python mig.py "+sourcePm+" "+destPm+" "+vm;	
 		
 		Runtime r = Runtime.getRuntime();
 		Process pro = null;
 		
 		try { 
 			pro = r.exec(cmd);
-			pro.waitFor();
+			pro.waitFor();		//java执行python模块需要调用waitFor方法，否则不执行
 			pro.destroy();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -30,7 +36,7 @@ public class LibvirtSim {
 	}
 	
 	/**
-	 * 返回
+	 * 返回正在运行的虚拟机列表
 	 * @return
 	 */
 	public static ArrayList<String> virshList(){
@@ -63,6 +69,7 @@ public class LibvirtSim {
 		return vmNames;
 	}
 	
+	//测试
 	public static void main(String[] args) {
 		try{
 			migrate("pm1", "pm2", "vm1");
