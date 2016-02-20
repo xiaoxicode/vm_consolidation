@@ -33,7 +33,7 @@ public class NetUsage implements ResourceUsage {
 			String line = null;
 			while((line=in1.readLine()) != null){	
 				line = line.trim();
-				if(line.startsWith("eth0")){
+				if(line.startsWith("exbr")){		//实验室物理机网卡为exbr,而不是eth0
 					res = line.split("\\s+"); 
 					break;
 				}				

@@ -41,7 +41,7 @@ public class LibvirtSim {
 	 */
 	public static ArrayList<String> virshList(){
 		ArrayList<String> vmNames = new ArrayList<String>();
-		String cmd = "virsh list";
+		String cmd = "sudo virsh list";
 		
 		Runtime r = Runtime.getRuntime();
 		Process pro = null;
@@ -72,7 +72,8 @@ public class LibvirtSim {
 	//测试
 	public static void main(String[] args) {
 		try{
-			migrate("pm1", "pm2", "vm1");
+			//migrate("server004", "server005", "vm1");
+			virshList();
 		}catch(Exception e){
 			e.printStackTrace();
 		}

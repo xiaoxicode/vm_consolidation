@@ -31,8 +31,8 @@ public class MonitorClient {
 	
 	public MonitorClient(){
 		ipName = new HashMap<String,String>();
-		ipName.put("192.168.137.134", "pm2");
-		ipName.put("192.168.137.135", "pm1");
+		ipName.put("114.212.82.69", "server004");
+		ipName.put("114.212.84,70", "server005");
 	}
 	
 	/**
@@ -93,11 +93,13 @@ public class MonitorClient {
 			for(double load:loads.get(ip)){
 				if(load>resThreshold){
 					overLoadIps.add(ip);
+					System.out.println(ipName.get(ip)+" over load !!");
 					break;
 				}
 				cnt++;
 			}
 			if(cnt==3){
+				System.out.println(ipName.get(ip)+" is not over load");
 				unOverLoadIps.add(ip);
 			}
 		}

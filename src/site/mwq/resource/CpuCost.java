@@ -22,7 +22,7 @@ public class CpuCost {
 			}
 			while (end - start < busy) { // 运行busy毫秒
 
-				mathCal();				//执行数学计算
+				mathCal();				 //执行数学计算
 				
 				count++;
 				if (count % 10000000 == 0) {
@@ -40,6 +40,50 @@ public class CpuCost {
 		}
 	}
 
+	
+	/**
+	 * 设置n个线程，每个线程消耗差不多100
+	 * @param mnu
+	 */
+	public static void set100Core(int num){
+		
+		for(int i=0;i<num;i++){
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					setCpuPercent(900);
+				}
+			}).start();
+		}
+		
+	}
+	
+	/**
+	 * 设置n个线程，每个线程消耗差不多100，共24个核，从5个核增加到12个核，利用率从20%-50%
+	 * @param mnu
+	 */
+	public static void setCoreIncrease(){
+		
+		for(int i=0;i<5;i++){		
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					setCpuPercent(900);
+				}
+			}).start();
+		}
+		
+		for(int i=0;i<7;i++){
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					setCpuPercent(900);
+				}
+			}).start();
+		}
+		
+	}
+	
 	/**
 	 * 让CPU使用固定的百分比
 	 * @param percent
@@ -97,8 +141,8 @@ public class CpuCost {
 	}
 	
 	public static void main(String[] args) {
-		setCpuPercent(900);
+		//set100Core(5);
+		setCoreIncrease();
 	}
-	
 
 }
