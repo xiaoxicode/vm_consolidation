@@ -41,7 +41,7 @@ public class LibvirtSim {
 	 */
 	public static ArrayList<String> virshList(){
 		ArrayList<String> vmNames = new ArrayList<String>();
-		String cmd = "sudo virsh list";
+		String cmd = "./virshList.sh";
 		
 		Runtime r = Runtime.getRuntime();
 		Process pro = null;

@@ -19,20 +19,17 @@ public class MonitorClient {
 
 	public ResMonitorService resMonitorService;
 
-	public String ip = "localhost";
-	//public String ip = "192.168.1.17";
-	
 	/**key为ip，value为对应的主机名*/
 	public HashMap<String,String> ipName = null;
 	
 	public final int port = 8888;
-	public final double resThreshold = 0.7;
+	public final double resThreshold = 0.5;			//阈值，设置为0.5
 	
 	
 	public MonitorClient(){
 		ipName = new HashMap<String,String>();
 		ipName.put("114.212.82.69", "server004");
-		ipName.put("114.212.84,70", "server005");
+		ipName.put("114.212.84.70", "server005");
 	}
 	
 	/**
@@ -53,8 +50,9 @@ public class MonitorClient {
 				result = getMonitorService(ip).getResUsage();
 				res.put(ip, result);
 				
+				System.out.print(ipName.get(ip)+" ");
 				for(int i=0;i<result.length;i++){
-					System.out.print(result[i]+" - ");
+					System.out.print(result[i]+"  ");
 				}
 				System.out.println();
 			}
@@ -70,7 +68,11 @@ public class MonitorClient {
 			// 在RMI服务注册表中查找名称为ResMonitorService的对象，并调用其上的方法
 			resMonitorService = (ResMonitorService) Naming.lookup("rmi://" + ip + ":" + port + "/comm");
 
-		} catch (NotBoundException | MalformedURLException | RemoteException e) {
+		} catch (NotBoundException e) {
+			e.printStackTrace();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
 		return resMonitorService;
@@ -85,14 +87,14 @@ public class MonitorClient {
 		
 		HashMap<String,double[]> loads = collectUsages();		//RPC调用
 		
-		HashSet<String> overLoadIps = new HashSet<String>();	//负载过高的ip
-		HashSet<String> unOverLoadIps = new HashSet<String>();	//负载不过高的ip
+		HashSet<String> overLoads = new HashSet<String>();	//负载过高的ip
+		HashSet<String> unOverLoads = new HashSet<String>();	//负载不过高的ip
 
 		for(String ip:loads.keySet()){
 			int cnt = 0;
 			for(double load:loads.get(ip)){
 				if(load>resThreshold){
-					overLoadIps.add(ip);
+					overLoads.add(ipName.get(ip));
 					System.out.println(ipName.get(ip)+" over load !!");
 					break;
 				}
@@ -100,27 +102,32 @@ public class MonitorClient {
 			}
 			if(cnt==3){
 				System.out.println(ipName.get(ip)+" is not over load");
-				unOverLoadIps.add(ip);
+				unOverLoads.add(ipName.get(ip));
 			}
 		}
 		
 		//迁移吧，目前仅考虑两台，将一台pm上的虚拟机迁移到另一台pm
-		if(overLoadIps.size()!=0 && unOverLoadIps.size()!=0){
-			String sourceIp = "";
-			String destIp = "";
-			for(String ip:overLoadIps){
-				sourceIp = ip; break;
+		if(overLoads.size()!=0 && unOverLoads.size()!=0){
+			String source = "";
+			String dest = "";
+			for(String pmName:overLoads){
+				source = pmName; break;
 			}
-			for(String ip:unOverLoadIps){
-				destIp = ip; break;
+			for(String pmName:unOverLoads){
+				dest = pmName; break;
 			}
 			
-			ArrayList<String> vmNames = getMonitorService(sourceIp).getVmNames(); //RPC调用
+			ArrayList<String> vmNames = getMonitorService(source).getVmNames(); //RPC调用 
 			
-			LibvirtSim.migrate(sourceIp, destIp, vmNames.get(0)); 	//TODO 触发迁移
+			System.out.println(vmNames);
+			
+			System.out.println("migration...");
+			System.out.println("source:"+source+" dest:"+dest+" vm:"+vmNames.get(0));
+			
+			LibvirtSim.migrate(source, dest, vmNames.get(0)); 	//TODO 触发迁移
 			
 			try {
-				Thread.sleep(120000);			//等待两分钟，然后再进行检测
+				Thread.sleep(8000);			//等待8秒，然后再进行检测
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

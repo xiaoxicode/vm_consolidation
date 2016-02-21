@@ -47,6 +47,8 @@ public class ResMonitorServiceImpl extends UnicastRemoteObject implements
 	public ArrayList<String> getVmNames() throws RemoteException {
 		
 		ArrayList<String> res = LibvirtSim.virshList();
+		
+		System.out.println("获得虚拟机列表："+res);
 		//ArrayList<String> res = new ArrayList<String>();
 		//res.add("fsd");
 		return res;

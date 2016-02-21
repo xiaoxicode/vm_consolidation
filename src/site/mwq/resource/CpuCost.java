@@ -16,7 +16,7 @@ public class CpuCost {
 		while (true) {
 			long start = System.currentTimeMillis();
 			long end = System.currentTimeMillis();
-			if (busy <= 800) {
+			if (busy <= 800 && idle >10) {
 				busy += 5;
 				idle -= 5;
 			}
@@ -51,7 +51,7 @@ public class CpuCost {
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
-					setCpuPercent(900);
+					setCpuPercent(0.9);
 				}
 			}).start();
 		}
@@ -59,25 +59,23 @@ public class CpuCost {
 	}
 	
 	/**
-	 * 设置n个线程，每个线程消耗差不多100，共24个核，从5个核增加到12个核，利用率从20%-50%
+	 * 设置n个线程，每个线程消耗差不多100，共24个核，从0个核增加到7个核，利用率从0%-30%
 	 * @param mnu
 	 */
 	public static void setCoreIncrease(){
 		
-		for(int i=0;i<5;i++){		
-			new Thread(new Runnable() {
-				@Override
-				public void run() {
-					setCpuPercent(900);
-				}
-			}).start();
-		}
-		
 		for(int i=0;i<7;i++){
+			
+			try {
+				Thread.sleep(3000);		//每隔三秒增加一个线程，消耗一个cpu核
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
-					setCpuPercent(900);
+					setCpuPercent(0.9);
 				}
 			}).start();
 		}
@@ -90,7 +88,7 @@ public class CpuCost {
 	 */
 	public static void setCpuPercent(double percent) {
 		int busy = (int) (1000 * percent);
-		int idle = 1000 - busy;
+		int idle = 1010 - busy;
 		long count = 0;
 		long print = 0;
 		while (true) {
@@ -141,8 +139,8 @@ public class CpuCost {
 	}
 	
 	public static void main(String[] args) {
-		//set100Core(5);
-		setCoreIncrease();
+		set100Core(2);
+		//setCoreIncrease();
 	}
 
 }
