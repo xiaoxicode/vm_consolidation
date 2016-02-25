@@ -11,25 +11,32 @@ import java.io.StringWriter;
  * @author Email:qiuweimin@126.com
  * @date 2016年2月19日
  */
-public class NetUsage implements ResourceUsage {
+public class NetUsage{
 
 	private static NetUsage INSTANCE = new NetUsage();
-	private final static float TotalBandwidth = 1000;	//网口带宽,Mbps,使用命令ethtool eth0查看
+	
+	//网口带宽,Mbps,使用命令ethtool eth0查看，本实验环境中虚拟机为100Mbps，物理机为1000Mbps
+	private final static float TotalBandwidth = 1000;	
 	
 	public static NetUsage getInstance(){
 		return INSTANCE;
 	}
 	
+	/**
+	 * 获取网络使用情况，下标0为总带宽，下标1为带宽，单位为Mbps
+	 * @param r
+	 * @return
+	 */
 	public String[] getNetData(Runtime r){
 		
-		Process pro1 = null;
+		Process pro = null;
 		String command = "cat /proc/net/dev";
 		String[] res = null;
 		
 		try {
 			
-			pro1 = r.exec(command);
-			BufferedReader in1 = new BufferedReader(new InputStreamReader(pro1.getInputStream()));
+			pro = r.exec(command);
+			BufferedReader in1 = new BufferedReader(new InputStreamReader(pro.getInputStream()));
 			String line = null;
 			while((line=in1.readLine()) != null){	
 				line = line.trim();
@@ -39,7 +46,7 @@ public class NetUsage implements ResourceUsage {
 				}				
 			}	
 			in1.close();
-			pro1.destroy();
+			pro.destroy();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}	
@@ -47,14 +54,13 @@ public class NetUsage implements ResourceUsage {
 	}
 	
 	/**
-	 * @Purpose:采集网络带宽使用率
+	 * 采集网络带宽使用率
 	 * @param args
 	 * @return float,网络带宽使用率,小于1
 	 */
-	@Override
-	public double getResUsage() {
+	public double[] getResUsage() {
 		
-		double netUsage = 0.0;
+		double[] netUsage = new double[2];
 		long inSize1 = 0, outSize1 = 0;
 		long inSize2 = 0 ,outSize2 = 0;
 		
@@ -78,11 +84,10 @@ public class NetUsage implements ResourceUsage {
 		inSize2 = Long.parseLong(data2[1]);
 		outSize2 = Long.parseLong(data2[9]);
 		
-		if(inSize1 != 0 && outSize1 !=0 && inSize2 != 0 && outSize2 !=0){
-			double interval = (double)(endTime - startTime);				//单位为毫秒
-			double curRate = (inSize2 - inSize1 + outSize2 - outSize1)*8/(1000*interval); //网口传输速度, 单位为bps bit每秒
-			netUsage = curRate/TotalBandwidth;
-		}
+		netUsage[0] = TotalBandwidth;
+		
+		double interval = (double)(endTime - startTime)/1000;								//单位为秒
+		netUsage[1] = (inSize2 - inSize1 + outSize2 - outSize1)*8/(1000000*interval);		//网口传输速度, 单位为Mbps
 		
 		return netUsage;
 	}

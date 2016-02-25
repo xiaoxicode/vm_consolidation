@@ -6,7 +6,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 /**
- * 模拟Libvirt类，执行java程序是需要添加sudo
+ * 模拟Libvirt类，执行java程序时需要添加sudo
  * @author Email:qiuweimin@126.com
  * @date 2016年2月19日
  */
@@ -50,7 +50,7 @@ public class LibvirtSim {
 			pro = r.exec(cmd);		//执行shell命令 java执行需要root权限的shell命令，用sudo java Test
 			BufferedReader in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
 			String line = "";
-			in.readLine();	//忽略前两行
+			in.readLine();			//忽略前两行
 			in.readLine();
 			while((line=in.readLine()) != null){
 				if(line.trim().equals("")){

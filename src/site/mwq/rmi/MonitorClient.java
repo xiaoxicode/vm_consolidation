@@ -5,8 +5,9 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.Hashtable;
 
 
 /**
@@ -17,20 +18,26 @@ import java.util.HashSet;
  */
 public class MonitorClient {
 
-	public ResMonitorService resMonitorService;
+	private ResMonitorService resMonitorService;
 
-	/**key为ip，value为对应的主机名*/
-	public HashMap<String,String> ipName = null;
+	private final int port = 8888;
 	
-	public final int port = 8888;
-	public final double resThreshold = 0.5;			//阈值，设置为0.5
-	
-	
-	public MonitorClient(){
-		ipName = new HashMap<String,String>();
-		ipName.put("114.212.82.69", "server004");
-		ipName.put("114.212.84.70", "server005");
+	/**
+	 * 由资源利用率计算负载，计算公式为：
+	 * 1/(1-cpu) * 1/(1-mem) * 1/(1-net)
+	 * @param loads
+	 * @return
+	 */
+	public double volume(double[] loads){
+		double res = 1;
+		
+		for(int i=0;i<loads.length;i++){
+			res *= 1/(1-loads[i]);
+		}
+		
+		return res;
 	}
+	
 	
 	/**
 	 * 调用远程方法，并返回各个资源的利用率，
@@ -39,21 +46,25 @@ public class MonitorClient {
 	 * @param param
 	 * @return
 	 */
-	public HashMap<String,double[]> collectUsages() {
+	public HashMap<String,Hashtable<Integer,double[]>> collectUsages() {
 		
-		HashMap<String,double[]> res = new HashMap<String,double[]>();
+		HashMap<String,Hashtable<Integer,double[]>> res = new HashMap<String,Hashtable<Integer,double[]>>();
 		
-		double[] result = null;
+		//key为资源类型下标，0cpu,1mem,2net
+		Hashtable<Integer,double[]> resUse = null;
+		
 		try {
-			for(String ip:ipName.keySet()){		//检查每个ip的资源利用情况，并放入hashMap
+			for(String ip:AddressMap.pmIpName.keySet()){		//检查每个ip的资源利用情况，并放入hashMap
 				
-				result = getMonitorService(ip).getResUsage();
-				res.put(ip, result);
+				resUse = getMonitorService(ip).getResUsage();
+				res.put(ip, resUse);
 				
-				System.out.print(ipName.get(ip)+" ");
-				for(int i=0;i<result.length;i++){
-					System.out.print(result[i]+"  ");
-				}
+				System.out.print(AddressMap.pmIpName.get(ip)+": ");
+				
+				System.out.print(resUse.get(0)[0]+" "+resUse.get(0)[1]+"; ");
+				System.out.print(resUse.get(1)[0]+" "+resUse.get(1)[1]+"; ");
+				System.out.print(resUse.get(2)[0]+" "+resUse.get(2)[1]+"; ");
+				
 				System.out.println();
 			}
 		} catch (RemoteException e) {
@@ -79,60 +90,70 @@ public class MonitorClient {
 	}
 
 	/**
-	 * 监控各个物理机资源利用，并根据负载做出迁移决策
+	 * 监控物理机资源率，并根据负载做出迁移决策
 	 * @throws RemoteException 
 	 */
-	public void monitor() throws RemoteException{
+	public void monitorRes() throws RemoteException{
 		
+		//key为ip，value为资源利用
+		HashMap<String,Hashtable<Integer,double[]>> ipRes =  collectUsages();
 		
-		HashMap<String,double[]> loads = collectUsages();		//RPC调用
+		ArrayList<PM> pms = new ArrayList<PM>();
+		for(String ip:ipRes.keySet()){
+			pms.add(new PM(ip,ipRes.get(ip)));
+		}
 		
-		HashSet<String> overLoads = new HashSet<String>();	//负载过高的ip
-		HashSet<String> unOverLoads = new HashSet<String>();	//负载不过高的ip
-
-		for(String ip:loads.keySet()){
-			int cnt = 0;
-			for(double load:loads.get(ip)){
-				if(load>resThreshold){
-					overLoads.add(ipName.get(ip));
-					System.out.println(ipName.get(ip)+" over load !!");
-					break;
+		//将PM按照volume降序排列
+		Collections.sort(pms,new PMComparator());
+		
+		for(int i=0;i<pms.size();i++){
+			
+			if(pms.get(i).isOverLoaded()){	//while(pms.get(i).isOverLoaded())   预测负载，并迁移
+				
+				ArrayList<String> vmNames = getMonitorService(pms.get(i).ip).getVmNames();
+				
+				Hashtable<Integer,double[]> vmResUsage = null;
+				
+				ArrayList<VM> vms = new ArrayList<VM>();
+				
+				for(int j=0;j<vmNames.size();j++){
+					
+					String vmIp = AddressMap.vmNameIp.get(vmNames.get(i));
+					vmResUsage = getMonitorService(vmIp).getResUsage();
+					vms.add(new VM(vmIp,vmNames.get(i),vmResUsage));
 				}
-				cnt++;
+				
+				//将vm按照VSR降序排列
+				Collections.sort(vms,new VMComparator());
+				
+				//如果超过负载就迁移
+				while(pms.get(i).isOverLoaded()){
+					
+					//从后面查找VM
+					for(int k=pms.size()-1;k>=0 && k>i;k--){	
+						if(pms.get(k).canHold(vms.get(0))){		//vm从VSR最大开始查找
+							
+							String sourcePm = pms.get(i).name;
+							String destPm = pms.get(k).name;
+							String vm = vms.get(0).name;
+							
+							System.out.println("migration...");
+							System.out.println("source:"+sourcePm+" dest:"+destPm+" vm:"+vm);
+							
+							LibvirtSim.migrate(sourcePm, destPm, vm); 	//TODO 触发迁移
+							pms.get(i).removeVm(vms.get(0));
+							try {
+								Thread.sleep(1000);			//等待8秒，然后再进行检测
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+						}
+					}
+				}
+				
 			}
-			if(cnt==3){
-				System.out.println(ipName.get(ip)+" is not over load");
-				unOverLoads.add(ipName.get(ip));
-			}
+			
 		}
-		
-		//迁移吧，目前仅考虑两台，将一台pm上的虚拟机迁移到另一台pm
-		if(overLoads.size()!=0 && unOverLoads.size()!=0){
-			String source = "";
-			String dest = "";
-			for(String pmName:overLoads){
-				source = pmName; break;
-			}
-			for(String pmName:unOverLoads){
-				dest = pmName; break;
-			}
-			
-			ArrayList<String> vmNames = getMonitorService(source).getVmNames(); //RPC调用 
-			
-			System.out.println(vmNames);
-			
-			System.out.println("migration...");
-			System.out.println("source:"+source+" dest:"+dest+" vm:"+vmNames.get(0));
-			
-			LibvirtSim.migrate(source, dest, vmNames.get(0)); 	//TODO 触发迁移
-			
-			try {
-				Thread.sleep(8000);			//等待8秒，然后再进行检测
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-		
 		
 	}
 	
@@ -144,7 +165,14 @@ public class MonitorClient {
 			
 			try {
 				
-				client.monitor();	//监控
+			//	client.monitor();	//监控
+				Hashtable<Integer,double[]> res = client.getMonitorService("114.212.86.5").getResUsage();
+			
+				for(int i=0;i<3;i++){
+					System.out.print(res.get(i)[0]+" "+res.get(i)[0]+"; ");
+				}
+				System.out.println();
+			
 				Thread.sleep(5000);
 				
 			} catch (InterruptedException e) {

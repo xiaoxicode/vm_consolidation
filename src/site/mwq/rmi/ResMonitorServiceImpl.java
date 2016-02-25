@@ -3,6 +3,7 @@ package site.mwq.rmi;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.Hashtable;
 
 /**
  * 资源监控服务实现
@@ -31,9 +32,9 @@ public class ResMonitorServiceImpl extends UnicastRemoteObject implements
 	/**
 	 * 获取资源利用率，返回double数组
 	 */
-	public double[] getResUsage() throws RemoteException {
+	public Hashtable<Integer,double[]> getResUsage() throws RemoteException {
 
-		double[] res = null;
+		Hashtable<Integer,double[]> res = null;
 		
 		res = collector.collectUsage();
 		

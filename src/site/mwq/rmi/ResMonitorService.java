@@ -3,6 +3,7 @@ package site.mwq.rmi;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Hashtable;
 
 /**
  * 监控接口
@@ -16,7 +17,7 @@ public interface ResMonitorService extends Remote {
 	 * @return
 	 * @throws RemoteException
 	 */
-	public double[] getResUsage() throws RemoteException;
+	public Hashtable<Integer,double[]> getResUsage() throws RemoteException;
 	
 	
 	/**
@@ -25,4 +26,5 @@ public interface ResMonitorService extends Remote {
 	 * @throws RemoteException
 	 */
 	public ArrayList<String> getVmNames() throws RemoteException;
+	
 }

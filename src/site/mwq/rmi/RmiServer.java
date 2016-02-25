@@ -24,7 +24,11 @@ public class RmiServer {
 			LocateRegistry.createRegistry(port);
 			ResMonitorService comm = new ResMonitorServiceImpl();
 			Naming.bind("//" + ip + ":" + port + "/comm", comm);
-		} catch (RemoteException | MalformedURLException | AlreadyBoundException e) {
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (AlreadyBoundException e) {
 			e.printStackTrace();
 		}
 	}

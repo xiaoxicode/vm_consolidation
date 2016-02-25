@@ -18,13 +18,14 @@ public class LocalResCollector {
 	private NetUsage netUsage = NetUsage.getInstance();
 	
 	/**key为资源编号，0cpu,1mem,2net，value为资源利用率*/
-	private Hashtable<Integer,Double> resTable = null;
-
-	public double[] collectUsage() { 
+	private Hashtable<Integer,double[]> resTable = null;
+	
+	
+	public Hashtable<Integer,double[]> collectUsage() { 
 		
 		System.out.println("现在去收集信息...");
 		
-		resTable = new Hashtable<Integer,Double>();
+		resTable = new Hashtable<Integer,double[]>();
 		
 		Thread cpuThread = new Thread(new Runnable(){		//线程1，去获取cpu利用率
 			@Override
@@ -60,18 +61,7 @@ public class LocalResCollector {
 			e.printStackTrace();
 		}
 		
-		if(resTable.size()!=3){
-			System.err.println("多线程发生错误");
-		}
-		
-		
-		double[] res = new double[3];
-		
-		res[0] = resTable.get(0);
-		res[1] = resTable.get(1);
-		res[2] = resTable.get(2);
-		
-		return res;
+		return resTable;
 	}
 
 }

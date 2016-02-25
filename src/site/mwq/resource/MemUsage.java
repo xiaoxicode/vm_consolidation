@@ -11,7 +11,7 @@ import java.io.StringWriter;
  * @author Email:qiuweimin@126.com
  * @date 2016年2月19日
  */
-public class MemUsage implements ResourceUsage{
+public class MemUsage{
 
 	private static MemUsage INSTANCE = new MemUsage();
 	
@@ -20,13 +20,13 @@ public class MemUsage implements ResourceUsage{
 	}
 	
 	/**
-	 * Purpose:采集内存使用率
+	 * 采集内存使用
 	 * @param args
-	 * @return float,内存使用率,小于1
+	 * @return double[0]总内存，double[1]内存使用量
 	 */
-	@Override
-	public double getResUsage() {
-		double memUsage = 0.0;
+	public double[] getResUsage() {
+		double[] memUsage = new double[2];
+		
 		Process pro = null;
 		Runtime r = Runtime.getRuntime();
 		String command = "cat /proc/meminfo";
@@ -45,7 +45,8 @@ public class MemUsage implements ResourceUsage{
 				if(memInfo[0].startsWith("MemFree")){
 					freeMem = Long.parseLong(memInfo[1]);
 				}
-				memUsage = 1- (float)freeMem/(float)totalMem;
+				memUsage[0] = totalMem;
+				memUsage[1] = totalMem-freeMem;
 				if(++count == 2){
 					break;
 				}				

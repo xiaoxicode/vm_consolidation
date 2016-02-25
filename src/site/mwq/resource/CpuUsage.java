@@ -12,7 +12,7 @@ import java.io.StringWriter;
  * @author Email:qiuweimin@126.com
  * @date 2016年2月19日
  */
-public class CpuUsage implements ResourceUsage {
+public class CpuUsage {
 
 	private static CpuUsage INSTANCE = new CpuUsage();
 	
@@ -50,14 +50,13 @@ public class CpuUsage implements ResourceUsage {
 	}
 	
 	/**
-	 * Purpose:采集CPU使用率
+	 * 采集CPU总时间，使用的CPU时间，下标0为CPU总时间，下标1为使用的CPU时间
 	 * @param args
-	 * @return float,CPU使用率,小于1
+	 * @return double数组，长度为2
 	 */
-	@Override
-	public double getResUsage() {
+	public double[] getResUsage() {
 		
-		double cpuUsage = 0;
+		double[] cpuUsage = new double[2];
 		long idleCpuTime1 = 0, totalCpuTime1 = 0;	//分别为系统启动后空闲的CPU时间和总的CPU时间
 		long idleCpuTime2 = 0, totalCpuTime2 = 0;
 
@@ -83,10 +82,10 @@ public class CpuUsage implements ResourceUsage {
 		}
 		idleCpuTime2 = Long.parseLong(data2[4]);
 		////
-
-		if(idleCpuTime1 != 0 && totalCpuTime1 !=0 && idleCpuTime2 != 0 && totalCpuTime2 !=0){
-			cpuUsage = 1 - (idleCpuTime2 - idleCpuTime1)/(double)(totalCpuTime2 - totalCpuTime1);
-		}				
+		
+		cpuUsage[0] = totalCpuTime2 - totalCpuTime1;
+		cpuUsage[1] = (totalCpuTime2 - totalCpuTime1) - (idleCpuTime2 - idleCpuTime1);
+		
 		return cpuUsage;
 	}
 
