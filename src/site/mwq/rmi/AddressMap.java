@@ -2,6 +2,11 @@ package site.mwq.rmi;
 
 import java.util.HashMap;
 
+/**
+ * 映射配置文件
+ * @author Email:qiuweimin@126.com
+ * @date 2016年2月26日
+ */
 public class AddressMap {
 	
 	

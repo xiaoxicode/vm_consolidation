@@ -13,7 +13,8 @@ import java.util.Hashtable;
 public interface ResMonitorService extends Remote {
 
 	/**
-	 * 获取资料利用率
+	 * 获取资源利用，key为资源编号，0cpu,1mem,2net
+	 * value为二维数组，表示资源总量和使用量
 	 * @return
 	 * @throws RemoteException
 	 */
@@ -26,5 +27,13 @@ public interface ResMonitorService extends Remote {
 	 * @throws RemoteException
 	 */
 	public ArrayList<String> getVmNames() throws RemoteException;
+	
+	/**
+	 * 获取一台虚拟机的最大核数和当前核数，下标0为最大核数，下标1为当前核数
+	 * @param vmName
+	 * @return
+	 * @throws RemoteException
+	 */
+	public int[] getVmCurMaxCores(String vmName) throws RemoteException;
 	
 }

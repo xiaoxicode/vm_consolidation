@@ -23,23 +23,6 @@ public class MonitorClient {
 	private final int port = 8888;
 	
 	/**
-	 * 由资源利用率计算负载，计算公式为：
-	 * 1/(1-cpu) * 1/(1-mem) * 1/(1-net)
-	 * @param loads
-	 * @return
-	 */
-	public double volume(double[] loads){
-		double res = 1;
-		
-		for(int i=0;i<loads.length;i++){
-			res *= 1/(1-loads[i]);
-		}
-		
-		return res;
-	}
-	
-	
-	/**
 	 * 调用远程方法，并返回各个资源的利用率，
 	 * 数组中存放的依次为cpu、men、net利用率
 	 * @param funindex
@@ -108,20 +91,23 @@ public class MonitorClient {
 		
 		for(int i=0;i<pms.size();i++){
 			
-			if(pms.get(i).isOverLoaded()){	//while(pms.get(i).isOverLoaded())   预测负载，并迁移
-				
-				ArrayList<String> vmNames = getMonitorService(pms.get(i).ip).getVmNames();
-				
-				Hashtable<Integer,double[]> vmResUsage = null;
-				
-				ArrayList<VM> vms = new ArrayList<VM>();
-				
-				for(int j=0;j<vmNames.size();j++){
-					
-					String vmIp = AddressMap.vmNameIp.get(vmNames.get(i));
-					vmResUsage = getMonitorService(vmIp).getResUsage();
-					vms.add(new VM(vmIp,vmNames.get(i),vmResUsage));
+			//获取该物理机虚拟机资源利用信息
+			ArrayList<String> vmNames = getMonitorService(pms.get(i).ip).getVmNames();
+			
+			System.out.println(pms.get(i).name+" "+vmNames);
+			Hashtable<Integer,double[]> vmResUsage = null;
+			ArrayList<VM> vms = new ArrayList<VM>();
+			
+			for(int j=0;j<vmNames.size();j++){
+				if(vmNames.get(j).equals("vm3") || vmNames.get(j).equals("online_judge")){
+					   continue;       //先不处理这两个虚拟机，链接不上
 				}
+				String vmIp = AddressMap.vmNameIp.get(vmNames.get(j));
+				vmResUsage = getMonitorService(vmIp).getResUsage();
+				vms.add(new VM(vmIp,vmNames.get(j),vmResUsage));
+			}
+			
+			if(pms.get(i).isOverLoaded()){	//while(pms.get(i).isOverLoaded())   预测负载，并迁移
 				
 				//将vm按照VSR降序排列
 				Collections.sort(vms,new VMComparator());
@@ -138,16 +124,42 @@ public class MonitorClient {
 							String vm = vms.get(0).name;
 							
 							System.out.println("migration...");
-							System.out.println("source:"+sourcePm+" dest:"+destPm+" vm:"+vm);
+							System.out.println("source: "+sourcePm+" dest:"+destPm+" vm:"+vm);
 							
 							LibvirtSim.migrate(sourcePm, destPm, vm); 	//TODO 触发迁移
 							pms.get(i).removeVm(vms.get(0));
 							try {
-								Thread.sleep(1000);			//等待8秒，然后再进行检测
+								Thread.sleep(1000);			//等待1秒，然后再进行检测
 							} catch (InterruptedException e) {
 								e.printStackTrace();
 							}
 						}
+					}
+				}
+				
+			}else{		//物理机资源未超过负载，检查虚拟机负载是否过高，是否可以进行resize操作
+				
+				for(int j=0;j<vms.size();j++){
+					
+					if(vms.get(j).name.equals("vm3") || vms.get(j).name.equals("online_judge")){
+						continue;	//先不处理vm3这个虚拟机，链接不上
+					}
+					
+					//虚拟机负载过高（TODO 此处只关心CPU负载，因为只用CpuCost.java产生CPU负载，实际逻辑要复杂）
+					//1、要知道vm j所在的物理机，此处即为pms.get(i)
+					//2、用这个物理机查看vm j的信息
+					if(vms.get(j).isOverLoaded){	
+						
+						int[] cores = getMonitorService(pms.get(i).ip).getVmCurMaxCores(vms.get(j).name);
+						
+						int totalCoreNum = cores[0];
+						int curCoreNum = cores[1];
+						
+						if(totalCoreNum>curCoreNum){	//还有未使用的核，虚拟机可以进行调整大小操作
+							System.out.println("add vcpu for: "+vms.get(j).name+" from "+curCoreNum +" to "+totalCoreNum);
+							LibvirtSim.virshSetvcpus(vms.get(j).name,totalCoreNum);
+						}
+						
 					}
 				}
 				
@@ -169,7 +181,7 @@ public class MonitorClient {
 				Hashtable<Integer,double[]> res = client.getMonitorService("114.212.86.5").getResUsage();
 			
 				for(int i=0;i<3;i++){
-					System.out.print(res.get(i)[0]+" "+res.get(i)[0]+"; ");
+					System.out.print(res.get(i)[0]+" "+res.get(i)[1]+"; ");
 				}
 				System.out.println();
 			

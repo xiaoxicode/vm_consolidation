@@ -26,7 +26,7 @@ public class LibvirtSim {
 		
 		try { 
 			pro = r.exec(cmd);
-			pro.waitFor();		//java执行python模块需要调用waitFor方法，否则不执行
+			pro.waitFor();		//调用waitFor方法
 			pro.destroy();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -68,6 +68,30 @@ public class LibvirtSim {
 		System.out.println(vmNames);
 		return vmNames;
 	}
+	
+	/**
+	 * 动态调整vm的vcpu个数
+	 * @param vmName	vm名字
+	 * @param cpuNum 	cpu个数
+	 */
+	public static void virshSetvcpus(String vmName,int cpuNum){
+		
+		String cmd = "./virshSetvcpus.sh "+vmName+" "+cpuNum;
+		
+		Runtime r = Runtime.getRuntime();
+		Process pro = null;
+		
+		try { 
+			pro = r.exec(cmd);
+			pro.waitFor();		//调用waitFor()方法
+			pro.destroy();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	
 	//测试
 	public static void main(String[] args) {
