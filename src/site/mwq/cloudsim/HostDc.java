@@ -8,8 +8,8 @@ import org.cloudbus.cloudsim.VmScheduler;
 import org.cloudbus.cloudsim.provisioners.BwProvisioner;
 import org.cloudbus.cloudsim.provisioners.RamProvisioner;
 
+import site.mwq.compare.Sandpiper;
 import site.mwq.main.DataSet;
-import site.mwq.sandpiper.Sandpiper;
 
 /**
  * 继承自Cloudsim中的Host，是对Host的扩展，代码中实际使用的 主机类
@@ -292,21 +292,21 @@ public class HostDc extends Host{
 		return (double)netUsed/super.getBw();
 	}
 	
-	/**
-	 * 获取host的vsr, 即 volume/size
-	 * @return
-	 */
-	public double getVsr(){
-		double vsr = 0;
-		
-		vsr = getVol()/getMemUsed();
-		
-		return vsr;
-	}
+//	/**
+//	 * 获取host的vsr, 即 volume/size
+//	 * @return
+//	 */
+//	public double getVsr(){
+//		double vsr = 0;
+//		
+//		vsr = getVol()/getMemUsed();
+//		
+//		return vsr;
+//	}
 	
 	/**
 	 * 判断一个host是否overload，只要有一个资源利用率超过阈值，
-	 * 即认为是overload 
+	 * 即认为是overload，参数设置在Sandpiper类中
 	 * @return
 	 */
 	public boolean isOverLoad(){
@@ -322,7 +322,7 @@ public class HostDc extends Host{
 	 * 打印资源利用率
 	 */
 	public void displayRate(){
-		System.out.println("vsr: "+getVsr()+" mem:"+getMemRate()+
+		System.out.println("mem:"+getMemRate()+
 				" cpu:"+getCpuRate()+" net:"+getNetRate());
 	}
 }

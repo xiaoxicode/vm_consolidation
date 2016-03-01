@@ -17,7 +17,7 @@ public class VmCluster{
 	private int peUsed;
 	private long netUsed;
 	
-	private ArrayList<Integer> vmIds;
+	public ArrayList<Integer> vmIds;
 
 	
 	public VmCluster(){

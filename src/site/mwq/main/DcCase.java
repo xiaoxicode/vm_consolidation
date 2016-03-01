@@ -20,13 +20,13 @@ import org.cloudbus.cloudsim.core.CloudSim;
 import site.mwq.cloudsim.BrokerDc;
 import site.mwq.cloudsim.HostDc;
 import site.mwq.cloudsim.VmDc;
+import site.mwq.compare.Sandpiper;
 import site.mwq.gene.IndComp;
 import site.mwq.gene.Individual;
 import site.mwq.gene.Nsga;
 import site.mwq.gene.Pop;
 import site.mwq.policy.RandomVmAllocationPolicy;
 import site.mwq.policy.VmAllocationPolicySimpleModify;
-import site.mwq.sandpiper.Sandpiper;
 import site.mwq.utils.Utils;
 
 /**
@@ -42,6 +42,7 @@ public class DcCase {
 	
 	/**
 	 * 构造函数
+	 * 
 	 * 运行Cloudsim的第一步，初始化相关参数
 	 */
 	public DcCase(){

@@ -1,4 +1,4 @@
-package site.mwq.sandpiper;
+package site.mwq.compare;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,13 +34,13 @@ public class Sandpiper {
 	public static double littleValue = 0.0001; 
 	
 	/**内存利用率阈值 */
-	public static double memThreshold = 0.75;
+	public static double memThreshold = 0.73;
 	
 	/**CPU利用率阈值 */
-	public static double cpuThreshold = 0.75;
+	public static double cpuThreshold = 0.73;
 	
 	/**网络利用率阈值 */
-	public static double netThreshold = 0.75;
+	public static double netThreshold = 0.73;
 	
 	public static int moveCnt = 0;
 	/**
@@ -57,13 +57,15 @@ public class Sandpiper {
 	
 	public void moveVm(){
 		
-		//首先将host按照vsr降序排列
-		Collections.sort(DataSet.hostIds,new HostVsrComp(ind));
+		//首先将host按照volume降序排列
+		Collections.sort(DataSet.hostIds,new HostVolComp(ind));
 		 
-		//将vm从vsr最高的host移动到最低的host
-		
+		//将vm从volume最高的host移动到最低的host
 		for(int hostId:DataSet.hostIds){
-			if(hosts.get(hostId).isOverLoad()){	//这台host over load了
+			
+			HostDc sourceHost = hosts.get(hostId);
+			
+			if(sourceHost.isOverLoad()){	//这台host over load了
 				
 				//将这个host上的vm按照vsr排序
 				ArrayList<Integer> vmIds = new ArrayList<Integer>(hostVmMap.get(hostId));
@@ -71,7 +73,7 @@ public class Sandpiper {
 				
 				int vmIndex = 0;
 				
-				while(hosts.get(hostId).isOverLoad() && vmIndex<vmIds.size()){
+				while(sourceHost.isOverLoad() && vmIndex<vmIds.size()){
 				
 					//最初选择第0个，即VSR最大的VM
 					VmDc vm2Move = DataSet.vms.get(vmIds.get(vmIndex));
@@ -80,6 +82,8 @@ public class Sandpiper {
 					boolean inserted = false;
 					
 					for(int targetHostId=hosts.size()-1;targetHostId>=0;targetHostId--){
+						
+						
 						if(hosts.get(targetHostId).canHoldAndNotOverLoad(vm2Move)){
 							
 							//添加操作
@@ -94,7 +98,7 @@ public class Sandpiper {
 							hostVmMap.get(hostId).remove(vmId);
 							
 							inserted = true;
-							//将副本中的第一个（VSR最大的）vm移除，只删除，不增加vm
+							//将副本中的第一个（VSR最大的）vm移除，只删除，不增加vmIndex
 							vmIds.remove(vmIndex);
 							
 							moveCnt++;
@@ -109,13 +113,15 @@ public class Sandpiper {
 				}//源host负载高就循环
 			}//判断host是否负载过高的if语句
 			
-			if(hosts.get(hostId).isOverLoad()){	//在进行迁移之后仍然负载过高，进行交换
-				System.err.println("仍然有一台PM负载过高,进行交换操作");
+			if(sourceHost.isOverLoad()){	//在进行迁移之后仍然负载过高，进行交换
+			//	System.err.println("PM "+hostId+" 仍然负载过高,进行交换操作");
 			
 				ArrayList<Integer> vmIds = new ArrayList<Integer>(hostVmMap.get(hostId));
 				Collections.sort(vmIds,new VmVsrComp());
+				
 				VmDc vm2Move = DataSet.vms.get(vmIds.get(0));
 
+				boolean swaped = false;
 				
 				for(int i=hosts.size()-1;i>=0;i--){
 					HostDc targetHost = hosts.get(i); 
@@ -127,9 +133,45 @@ public class Sandpiper {
 						VmDc vm = DataSet.vms.get(vmId);
 						vc.addVm(vm);
 						
+						//执行交换操作
+						if(sourceHost.canSwapVmWithCluster(vm2Move.getId(), vc)
+								&& targetHost.canSwapClusterWithVm(vc, vm2Move.getId())){
+							
+							//sourceHost添加VmCluster, 目的host删除VmCluster中的每个vm
+							for(int k=0;k<vc.vmIds.size();k++){
+								
+								int vmIdTmp = vc.vmIds.get(k);
+								
+								sourceHost.addVmUpdateResource(vmIdTmp); 
+								hostVmMap.get(sourceHost.getId()).add(vmIdTmp);
+								
+								vmHostMap.put(vmIdTmp, sourceHost.getId());
+								
+								targetHost.removeVmUpdateResource(vmIdTmp);
+								hostVmMap.get(targetHost.getId()).remove(vmIdTmp);
+								
+								moveCnt++;	//迁移次数加1
+							}
+							
+							targetHost.addVmUpdateResource(vm2Move.getId()); 
+							hostVmMap.get(targetHost.getId()).add(vm2Move.getId());
+							
+							vmHostMap.put(vm2Move.getId(), targetHost.getId());
+							
+							sourceHost.removeVmUpdateResource(vm2Move.getId());
+							hostVmMap.get(sourceHost.getId()).remove(vm2Move.getId());
+							
+							moveCnt++;	//迁移次数加1
+							swaped = true;
+							//跳出组VmCluster循环
+							break;
+						}
+						
 					}
 					
-					
+					if(swaped){	//已经进行交换操作，跳出循环
+						break;
+					}
 				}
 				
 			}
@@ -146,21 +188,9 @@ public class Sandpiper {
 		System.out.println("pmCnt:"+Utils.pc.objVal(ind));
 		System.out.println("moveCnt: "+moveCnt);
 		System.out.println("balance:"+Utils.ba.objVal(ind));
-	}
-	
-	
-	/**
-	 * vmId原来在hostId上，看看能否通过交换的方式，将vmId放到hostId2上
-	 * 使得hostId和2都不超过负载
-	 * ps:可能需要交换多个，这里只考虑交换一个的情况
-	 * @param hostId	源vmId所在的hostId
-	 * @param vmId		要交换的vmId
-	 * @param hostId2	目的hostId
-	 * @return
-	 */
-	public boolean swap(int hostId,int vmId,int hostId2){
 		
-		return true;
+//		Utils.disHostVmMap(hostVmMap);	测试正常
+//		Utils.disVmHostMap(vmHostMap);
 	}
 	
 	
@@ -169,23 +199,23 @@ public class Sandpiper {
 
 
 /**
- * 用于将host按照VSR从大到小排序，只排序id
+ * 用于将host按照Volume从大到小排序，只排序id
  * @author Email:qiuweimin@126.com
  * @date 2016年1月23日
  */
-class HostVsrComp implements Comparator<Integer>{
+class HostVolComp implements Comparator<Integer>{
 
 	private Individual ind;
 	
-	public HostVsrComp(Individual ind){
+	public HostVolComp(Individual ind){
 		this.ind = ind;
 	}
 	
 	@Override
 	public int compare(Integer o1, Integer o2) {
 		
-		double vsr1 = ind.indHosts.get(o1).getVsr();
-		double vsr2 = ind.indHosts.get(o2).getVsr();
+		double vsr1 = ind.indHosts.get(o1).getVol();
+		double vsr2 = ind.indHosts.get(o2).getVol();
 		
 		if(vsr1<vsr2){
 			return 1;
