@@ -28,6 +28,45 @@ public class Utils {
 	/**随机数生成器，项目所有的随机数均由其生成*/
 	public static Random random = new Random(System.currentTimeMillis());
 	
+	
+	/**
+	 * 获得两台物理机之间的距离（相隔的交换机的个数）
+	 * 该系统物理机架构参考 ComCost类
+	 * 使用三层树形交换机架构，分为核心层、聚集层、接入层、机架、物理机
+	 * 从上到下，交换机和物理机数目为 2 3 6 18
+	 * 
+	 * 同一个物理机距离为			0
+	 * 同一个机架交换机距离为		1
+	 * 同一个聚集交换机距离为		3
+	 * 否则距离为				5
+	 * @param pmi
+	 * @param pmj
+	 * @return
+	 */
+	public static int getPmDis(int pmIdi,int pmIdj){ 
+		
+		if(pmIdi==pmIdj){	//物理机编号相等，返回0
+			return 0;
+		}
+		
+		pmIdi	/= 3;
+		pmIdj	/= 3;
+		
+		if(pmIdi==pmIdj){	//机架编号相等，返回1
+			return 1;
+		}
+		
+		pmIdi /= 2;
+		pmIdj /= 2;
+		
+		if(pmIdi==pmIdj){	//聚集层交换机编号相等，返回3，否则返回5
+			return 3;
+		}
+		
+		return 5;
+	}
+	
+	
 	public static void disMatrix(int[][] matrix){
 		int row = matrix.length;
 		int col = matrix[0].length;

@@ -19,12 +19,12 @@ import site.mwq.main.DataSet;
 public class HostDc extends Host{
 
 	//各种资源数据，包括已经使用的，以及剩余的
-	private int memUsed;
-	private int memAvail;
-	private int peUsed;
-	private int peAvail;
-	private long netUsed;
-	private long netAvail;
+	private double memUsed;
+	private double memAvail;
+	private double peUsed;
+	private double peAvail;
+	private double netUsed;
+	private double netAvail;
 	
 	/**
 	 * 普通构造方法
@@ -219,77 +219,77 @@ public class HostDc extends Host{
 		return vol;
 	}
 	
-	public int getMemUsed() {
+	public double getMemUsed() {
 		return memUsed;
 	}
 
 
-	public void setMemUsed(int memUsed) {
+	public void setMemUsed(double memUsed) {
 		this.memUsed = memUsed;
 	}
 
 
-	public int getMemAvail() {
+	public double getMemAvail() {
 		return memAvail;
 	}
 
 
-	public void setMemAvail(int memAvail) {
+	public void setMemAvail(double memAvail) {
 		this.memAvail = memAvail;
 	}
 
 
-	public int getPeUsed() {
+	public double getPeUsed() {
 		return peUsed;
 	}
 
 
-	public void setPeUsed(int peUsed) {
+	public void setPeUsed(double peUsed) {
 		this.peUsed = peUsed;
 	}
 
 
-	public int getPeAvail() {
+	public double getPeAvail() {
 		return peAvail;
 	}
 
 
-	public void setPeAvail(int peAvail) {
+	public void setPeAvail(double peAvail) {
 		this.peAvail = peAvail;
 	}
 
 
-	public long getNetUsed() {
+	public double getNetUsed() {
 		return netUsed;
 	}
 
 
-	public void setNetUsed(long netUsed) {
+	public void setNetUsed(double netUsed) {
 		this.netUsed = netUsed;
 	}
 
 
-	public long getNetAvail() {
+	public double getNetAvail() {
 		return netAvail;
 	}
 
 
-	public void setNetAvail(long netAvail) {
+	public void setNetAvail(double netAvail) {
 		this.netAvail = netAvail;
 	}
 
 
 	public double getMemRate() {
-		return (double)memUsed/super.getRam();
+		return memUsed/super.getRam();
 	}
 
 
 	public double getCpuRate() {
-		return (double)peUsed/super.getNumberOfPes();
+		return peUsed/super.getNumberOfPes();
 	}
 
 	public double getNetRate() {
-		return (double)netUsed/super.getBw();
+		return netUsed/super.getBw();
 	}
 	
 //	/**

@@ -2,9 +2,16 @@ package site.mwq.targets;
 
 import site.mwq.gene.Individual;
 import site.mwq.main.DataSet;
+import site.mwq.utils.Utils;
 
 /**
  * 给出一个解的通信代价，通信量*通信距离
+ * 本系统假设的集群为：
+ * 有2个核心层交换机
+ * 有3个聚集层交换机
+ * 有6个机架交换机（每个聚集层交换机有2个机架交换机）
+ * 有18台物理机（每个机架交换机有3台物理机）
+ * 
  * @author Email:qiuweimin@126.com
  * @version 创建时间：2015年12月23日 上午11:53:16
  */
@@ -49,14 +56,14 @@ public class ComCost implements ObjInterface {
 		if(i==j){		//虚拟机编号相等，返回0
 			return 0;
 		}
-		int idi = 0;
+		int idi = 0;	//虚拟机i所在的物理机编号
 		try{
 			idi = ind.vmHostMap.get(i);
 		}catch(Exception e){
 			System.err.println("error in ComCost");
 			System.exit(1);
 		}
-		int idj = 0;
+		int idj = 0;	//虚拟机j所在的物理机编号
 		
 		try{
 			idj	= ind.vmHostMap.get(j);
@@ -65,25 +72,7 @@ public class ComCost implements ObjInterface {
 			System.exit(1);
 		}
 		
-		if(idi==idj){	//物理机编号相等，返回0
-			return 0;
-		}
-		
-		idi	/= 3;
-		idj	/= 3;
-		
-		if(idi==idj){	//机架编号相等，返回1
-			return 1;
-		}
-		
-		idi /= 2;
-		idj /= 2;
-		
-		if(idi==idj){	//聚集层交换机编号相等，返回3，否则返回5
-			return 3;
-		}
-		
-		return 5;
+		return Utils.getPmDis(idi, idj);
 	}
 
 }

@@ -20,6 +20,7 @@ import org.cloudbus.cloudsim.core.CloudSim;
 import site.mwq.cloudsim.BrokerDc;
 import site.mwq.cloudsim.HostDc;
 import site.mwq.cloudsim.VmDc;
+import site.mwq.compare.RIAL;
 import site.mwq.compare.Sandpiper;
 import site.mwq.gene.IndComp;
 import site.mwq.gene.Individual;
@@ -84,30 +85,33 @@ public class DcCase {
 		
 		Sandpiper sand = new Sandpiper(DataSet.hostVmMap);
 		
+		RIAL rial = new RIAL(DataSet.hostVmMap);
+		
 //		for(int i=0;i<1000;i++){
 //			Pop.crossover(Pop.inds);
 //			Pop.mutation(Pop.inds);
 //		}
 		
-		Pop.copyParentToChild();
-		
-		for(int i=0;i<100;i++){
-			Nsga.calculateObj();
-			Pop.inds = Nsga.nsgaMain(Pop.inds, Pop.children);
-			Pop.children.clear();
-			Pop.select();
-			Pop.crossover(Pop.children);
-			Pop.mutation(Pop.children);
-		}
-		
-		Collections.sort(Pop.inds,new IndComp());
-		
-		for(int i=0;i<30;i++){
-			Utils.disIndVal(Pop.inds.get(i));
-		}
-		
-		System.out.println("-------分割线------");
-		sand.moveVm();
+			//		Pop.copyParentToChild();
+			//		
+			//		for(int i=0;i<100;i++){
+			//			Nsga.calculateObj();
+			//			Pop.inds = Nsga.nsgaMain(Pop.inds, Pop.children);
+			//			Pop.children.clear();
+			//			Pop.select();
+			//			Pop.crossover(Pop.children);
+			//			Pop.mutation(Pop.children);
+			//		}
+			//		
+			//		Collections.sort(Pop.inds,new IndComp());
+			//		
+			//		for(int i=0;i<30;i++){
+			//			Utils.disIndVal(Pop.inds.get(i));
+			//		}
+			//		
+			//		System.out.println("-------分割线------");
+			//		sand.moveVm();
+		rial.move();
 	}
 		
 	

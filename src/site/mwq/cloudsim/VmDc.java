@@ -16,9 +16,9 @@ public class VmDc extends Vm{
 	private int dirtyRate;
 	
 	/**使用的内存量，仅用在sandpiper中*/
-	private int memUsed;
-	private int netUsed;
-	private int cpuUsed;
+	private double memUsed;
+	private double netUsed;
+	private double cpuUsed;
 	
 	public VmDc(int id, int userId, double mips, int numberOfPes, int ram,
 			long bw, long size, String vmm, CloudletScheduler cloudletScheduler) {
@@ -53,7 +53,6 @@ public class VmDc extends Vm{
 	 * @return
 	 */
 	public double getMemRate() {
-		
 		return memUsed/getRam();
 	}
 
@@ -70,6 +69,7 @@ public class VmDc extends Vm{
 	 * @return
 	 */
 	public double getNetRate() {
+		
 		return netUsed/super.getBw();
 	}
 	
