@@ -34,7 +34,7 @@ public class Sandpiper {
 	public static double littleValue = 0.0001; 
 	
 	/**内存利用率阈值 */
-	public static double memThreshold = 0.73;
+	public static double memThreshold = 0.73;//73->83
 	
 	/**CPU利用率阈值 */
 	public static double cpuThreshold = 0.73;

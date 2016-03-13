@@ -190,6 +190,11 @@ public class RIAL {
 			//TODO 为每一台要迁移的虚拟机选择目的物理机
 			
 			for(int vmId:vmSourceDest.keySet()){
+				
+				//表示此虚拟机已经迁移过了，即已经包含源物理机和目的物理机
+				if(vmSourceDest.get(vmId).size()>1){
+					continue;
+				}
 			
 				//7、将所有物理机的资源利用率做一个矩阵
 				//行表示一种资源，列表示一台物理机关于资源的利用率
@@ -261,17 +266,35 @@ public class RIAL {
 				
 				
 				//12、选择距离最小的一个作为目的物理机
-				int targetHost = pmIdInColumn[pmColumns.get(0)];
-				
-				
+				for(int col:pmColumns){
+					int pmId = pmIdInColumn[pmColumns.get(col)];
+					
+
+	//TODO　暂时不考虑由于热迁移导致目的物理机的负载过高，只选择一个最佳的物理机				
+	//				if(hosts.get(pmId).canHoldAndNotOverLoad(DataSet.vms.get(vmId))){
+						vmSourceDest.get(vmId).add(pmId);
+						
+						if(vmSourceDest.get(vmId).size()>2){
+							System.out.println();
+						}
+						
+						//更新资源利用及映射信息
+						hosts.get(pmId).addVmUpdateResource(vmId);
+						hostVmMap.get(pmId).add(vmId);
+						vmHostMap.put(vmId,pmId);
+						break;
+	//				}
+				}
 			
 			}//为特定虚拟机选择目的物理机结束
-			
-			
 			
 		}//处理一台负载过高的物理机结束
 		
 		
+		for(int vmId:vmSourceDest.keySet()){
+			System.out.print(vmId);
+			System.out.println(":"+vmSourceDest.get(vmId));
+		}
 		
 	}//迁移算法结束
 	

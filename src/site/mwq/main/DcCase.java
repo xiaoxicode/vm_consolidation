@@ -110,7 +110,8 @@ public class DcCase {
 			//		}
 			//		
 			//		System.out.println("-------分割线------");
-			//		sand.moveVm();
+		sand.moveVm();
+		System.out.println("-------分割线------");
 		rial.move();
 	}
 		
