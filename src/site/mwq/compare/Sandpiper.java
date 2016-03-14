@@ -13,6 +13,7 @@ import site.mwq.cloudsim.VmCluster;
 import site.mwq.cloudsim.VmDc;
 import site.mwq.gene.Individual;
 import site.mwq.main.DataSet;
+import site.mwq.targets.MigTime;
 import site.mwq.utils.Utils;
 
 /**
@@ -43,6 +44,8 @@ public class Sandpiper {
 	public static double netThreshold = 0.73;
 	
 	public static int moveCnt = 0;
+	public static double migTime = 0;
+	
 	/**
 	 * Sandpiper的构造函数
 	 * @param hostVmMap
@@ -85,6 +88,9 @@ public class Sandpiper {
 						
 						
 						if(hosts.get(targetHostId).canHoldAndNotOverLoad(vm2Move)){
+							
+							//增加迁移时间
+							migTime += MigTime.getMigTime(vmId, hostId, targetHostId, hosts);
 							
 							//添加操作
 							hosts.get(targetHostId).addVmUpdateResource(vmId);
@@ -142,6 +148,8 @@ public class Sandpiper {
 								
 								int vmIdTmp = vc.vmIds.get(k);
 								
+								migTime += MigTime.getMigTime(vmIdTmp, sourceHost.getId(), targetHost.getId(), hosts);
+								
 								sourceHost.addVmUpdateResource(vmIdTmp); 
 								hostVmMap.get(sourceHost.getId()).add(vmIdTmp);
 								
@@ -183,9 +191,10 @@ public class Sandpiper {
 				moveCnt += 1;
 			}
 		}
-		
+		System.out.println("Sandpiper:");
 		System.out.println("comCost:"+Utils.cc.objVal(ind));
 		System.out.println("pmCnt:"+Utils.pc.objVal(ind));
+		System.out.println("migTime:"+(double)((int)(migTime*100))/100);
 		System.out.println("moveCnt: "+moveCnt);
 		System.out.println("balance:"+Utils.ba.objVal(ind));
 		

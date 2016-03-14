@@ -34,20 +34,19 @@ public class IndComp implements Comparator<Individual>{
 			return 1;
 		}else{
 			
-			double cc1 = cc.objVal(i1);
-			double cc2 = cc.objVal(i2);
-			
-			if(cc1<cc2){
+			double pc1 = pc.objVal(i1);
+			double pc2 = pc.objVal(i2);
+			if(pc1<pc2){
 				return -1;
-			}else if(cc1>cc2){
+			}else if(pc1>pc2){
 				return 1;
 			}else{
-				
-				double pc1 = pc.objVal(i1);
-				double pc2 = pc.objVal(i2);
-				if(pc1<pc2){
+				double cc1 = cc.objVal(i1);
+				double cc2 = cc.objVal(i2);
+
+				if(cc1<cc2){
 					return -1;
-				}else if(pc1>pc2){
+				}else if(cc1>cc2){
 					return 1;
 				}
 			}

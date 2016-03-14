@@ -72,80 +72,45 @@ public class DcCase {
 		dcCase.runCloudlets(dcb);							//运行Cloudlets，模拟开始与结束
 		DataSet.initFirstInd();
 		
-		Factory.hostId = 0;
-		Factory.vmId = 0;
-		Factory.peId = 0;
 		System.out.println("-------####--------");
 		
-		//Utils.disHostVmMap(DataSet.hostVmMap);
-		
+		//1、复制100个个体作为初始的种群
 		for(int i=0;i<100;i++){
 			Pop.inds.add(new Individual(DataSet.hostVmMap));
 		}
 		
-		Sandpiper sand = new Sandpiper(DataSet.hostVmMap);
+		Pop.copyParentToChild();
 		
-		RIAL rial = new RIAL(DataSet.hostVmMap);
+		//2、迭代计算
+		for(int i=0;i<100;i++){
+			Nsga.calculateObj();
+			Pop.inds = Nsga.nsgaMain(Pop.inds, Pop.children);
+			Pop.children.clear();
+			Pop.select();
+			Pop.crossover(Pop.children);
+			Pop.mutation(Pop.children);
+		}
 		
-//		for(int i=0;i<1000;i++){
-//			Pop.crossover(Pop.inds);
-//			Pop.mutation(Pop.inds);
-//		}
+		Collections.sort(Pop.inds,new IndComp());
 		
-			//		Pop.copyParentToChild();
-			//		
-			//		for(int i=0;i<100;i++){
-			//			Nsga.calculateObj();
-			//			Pop.inds = Nsga.nsgaMain(Pop.inds, Pop.children);
-			//			Pop.children.clear();
-			//			Pop.select();
-			//			Pop.crossover(Pop.children);
-			//			Pop.mutation(Pop.children);
-			//		}
-			//		
-			//		Collections.sort(Pop.inds,new IndComp());
-			//		
-			//		for(int i=0;i<30;i++){
-			//			Utils.disIndVal(Pop.inds.get(i));
-			//		}
-			//		
-			//		System.out.println("-------分割线------");
-		sand.moveVm();
+		//3、打印前30个结果
+		for(int i=0;i<30;i++){
+			Utils.disIndVal(Pop.inds.get(i));
+		}
+		
+		////////////比较实验
 		System.out.println("-------分割线------");
+		Sandpiper sand = new Sandpiper(DataSet.hostVmMap);
+		sand.moveVm();
+
+		System.out.println("-------分割线------");
+		RIAL rial = new RIAL(DataSet.hostVmMap);
 		rial.move();
+
 	}
 		
-	
 	/**
-	 * 随机生成一定数量的解
-	 */
-	public void createIndRandomly(){
-		//下面以随机方式生成800个解
-//		for(int i=0;i<800;i++){
-//			
-//			//清空原来的映射
-//			for(int j=0;j<DataSet.hostVmMap.size();j++){
-//				DataSet.hostVmMap.get(j).clear();
-//			}
-//			DataSet.vmHostMap.clear();
-//			
-//			DcCase dcCaseTmp = new DcCase();
-//			@SuppressWarnings("unused")
-//			Datacenter dcTmp = dcCase.createDcRandomVmAlloc("MyDataCenter"+i);	//创建数据中心
-//			DatacenterBroker dcbTmp = dcCase.createBroker();				//创建自定义代理
-//			List<VmDc> vmsTmp = Factory.copyVmsWithAnotherId(vms, dcbTmp.getId());
-//			dcbTmp.submitVmList(vmsTmp);
-//			dcCaseTmp.runCloudlets(dcb);							//运行Cloudlets，模拟开始与结束
-//			Factory.hostId = 0;
-//			Factory.vmId = 0;
-//			Factory.peId = 0;
-//			
-//			Population.inds.add(new Individual(DataSet.hostVmMap));
-//		}
-	}
-	
-	/**
-	 * 创建一个数据中心
+	 * 创建一个数据中心，以及物理机，虚拟机随机分配
 	 * @param name 数据中心的名字
 	 * @return Datacenter 数据中心的实例
 	 */
@@ -172,7 +137,7 @@ public class DcCase {
 	}
 	
 	/**
-	 * 创建一个数据中心
+	 * 创建一个数据中心，以及物理机，虚拟机均匀分配
 	 * @param name 数据中心的名字
 	 * @return Datacenter 数据中心的实例
 	 */

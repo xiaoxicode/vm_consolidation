@@ -47,12 +47,16 @@ public class MigTime implements ObjInterface {
 		HashMap<Integer,ArrayList<Activity>> sendHosts = new HashMap<Integer,ArrayList<Activity>>();
 		
 		for(int vmId:DataSet.vmHostMap.keySet()){
-			if(DataSet.vmHostMap.get(vmId) != ind.vmHostMap.get(vmId)){			//如果所在物理节点不一致则创建一个活动
+			
+			//如果所在物理节点不一致则创建一个活动
+			if(DataSet.vmHostMap.get(vmId) != ind.vmHostMap.get(vmId)){	
+				
 				int from = DataSet.vmHostMap.get(vmId);
 				int to = ind.vmHostMap.get(vmId);
 				
 				Activity activity = new Activity(vmId,from,to);
 				acts.add(activity);
+				
 				if(sendHosts.containsKey(from)){
 					sendHosts.get(from).add(activity);
 				}else{
@@ -64,6 +68,7 @@ public class MigTime implements ObjInterface {
 		}
 		
 		List<HostDc> hosts = ind.indHosts;
+		
 		for(int i=0;i<acts.size();i++){
 			Activity act = acts.get(i);
 			
@@ -99,13 +104,41 @@ public class MigTime implements ObjInterface {
 		
 		//打印依赖关系
 		for(int i=0;i<acts.size();i++){
-			//System.out.println(acts.get(i));
+			System.out.println(acts.get(i));
 		}
 		
 		System.out.println("*********");
 		//TODO 迁移时间，返回一个随机数
 		return ((int)(Utils.random.nextDouble()*10))/10.0;
 	}
+	
+	
+	/**
+	 * 计算一次迁移持续的时间
+	 * @param vmId	迁移的虚拟机
+	 * @param from	源物理机id
+	 * @param to	目的物理机id
+	 * @return
+	 */
+	public static double getMigTime(int vmId, int from,int to,List<HostDc> hosts){
+		
+		// performaceModel(double Vmem,double D,double R)
+		
+		double vmMem = DataSet.vms.get(vmId).getRam();
+		double dirtyRate = DataSet.vms.get(vmId).getDirtyRate();
+		double pmBandFrom = hosts.get(from).getNetAvail();
+		double pmBandTo = hosts.get(to).getNetAvail();
+		
+		double bandWidth = Math.min(pmBandFrom, pmBandTo);
+		
+		//System.out.println("vm Mem:"+vmMem+" bandwidth:"+bandWidth);
+		
+		double[] datas = performaceModel(vmMem, dirtyRate, bandWidth);
+		
+		//返回的数据中第一项表示迁移时间
+		return datas[0];
+	}
+	
 	
 	/**
 	 * 
@@ -114,7 +147,7 @@ public class MigTime implements ObjInterface {
 	 * @param R		可用带宽 TODO 物理机剩余带宽是动态的，随vm迁移而变化
 	 * @return double[] 迁移时间、停机时间、迁移的数据量
 	 */
-	public double[] performaceModel(double Vmem,double D,double R){
+	public static double[] performaceModel(double Vmem,double D,double R){
 		
 		double[] res = new double[3];
 		double Tmig=0,Tdown=0,Vmig=0;
@@ -136,8 +169,6 @@ public class MigTime implements ObjInterface {
 			Tmig += Ti;	//累加
 			
 			Vmig += Vi;
-			
-			System.out.print((int)Ti+" ");
 			
 			if(Vi1<= Vthd || Vi1 > Vi || i==(max_round-1)){	//最后一轮
 				Vi1 = Ti * D;

@@ -23,7 +23,7 @@ public class Factory {
 //	public static final int ramOfHost = 4096;				//host内存（MB）
 	public static final int ramOfHost = 8192;				//host内存（MB）
 	public static final long storageOfHost = 1000000; 		//host storage	(MB)
-	public static final int bwOfHost = 10000;				//host 带宽
+	public static final int bwOfHost = 1000;				//host 带宽
 	
 	//DatacenterCharacteristics
 	public static final String arch = "x86"; 				// system architecture
@@ -39,7 +39,7 @@ public class Factory {
 	public static final int mipsOfVm = 1000;
 	public static final long sizeOfVm = 10000; 				// image size (MB)，硬盘大小
 //	public static final int ramOfVm = 512; 					// vm memory (MB), 最好（512，1024，1536,2048）选一个
-	public static final long bwOfVm = 1000;					// 带宽
+//	public static final long bwOfVm = 1000;					// 带宽			随机产生
 //	public static final int pesNumberOfVm = 1; 				// number of cpus，最好（1-3随机）
 	
 	
@@ -142,8 +142,11 @@ public class Factory {
 			int pesId = Utils.random.nextInt(4);
 			memUsed = 512+Utils.random.nextInt(1536);	//随机产生内存，范围512-2048
 			
+			//TODO 将虚拟机的带宽消耗量限制在50-200
+			int vmBandWidth = 50+Utils.random.nextInt(150);
+			
 			VmDc vm = new VmDc(vmId++, brokerId, mipsOfVm, pes[pesId], memUsed, 
-					bwOfVm, sizeOfVm, vmm, new CloudletSchedulerTimeShared());
+					vmBandWidth, sizeOfVm, vmm, new CloudletSchedulerTimeShared());
 			vms.add(vm);
 		}
 		
@@ -151,18 +154,18 @@ public class Factory {
 	}
 	
 	
-	public static List<VmDc> copyVmsWithAnotherId(List<VmDc> oldVms,int brokerId){
-		List<VmDc> vms = new ArrayList<VmDc>();
-
-		for(int i=0;i<oldVms.size();i++){
-			VmDc oldVm = oldVms.get(i);
-			VmDc newVm = new VmDc(oldVm.getId(),brokerId,mipsOfVm,oldVm.getNumberOfPes(),oldVm.getRam(),
-					bwOfVm,sizeOfVm,vmm,new CloudletSchedulerTimeShared());
-			vms.add(newVm);
-		}
-		
-		return vms;
-	}
+//	public static List<VmDc> copyVmsWithAnotherId(List<VmDc> oldVms,int brokerId){
+//		List<VmDc> vms = new ArrayList<VmDc>();
+//
+//		for(int i=0;i<oldVms.size();i++){
+//			VmDc oldVm = oldVms.get(i);
+//			VmDc newVm = new VmDc(oldVm.getId(),brokerId,mipsOfVm,oldVm.getNumberOfPes(),oldVm.getRam(),
+//					bwOfVm,sizeOfVm,vmm,new CloudletSchedulerTimeShared());
+//			vms.add(newVm);
+//		}
+//		
+//		return vms;
+//	}
 	
 	
 }

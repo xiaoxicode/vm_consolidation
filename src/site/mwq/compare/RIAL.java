@@ -3,8 +3,8 @@ package site.mwq.compare;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -13,6 +13,7 @@ import site.mwq.cloudsim.HostDc;
 import site.mwq.cloudsim.VmDc;
 import site.mwq.gene.Individual;
 import site.mwq.main.DataSet;
+import site.mwq.targets.MigTime;
 import site.mwq.utils.Utils;
 
 /**
@@ -29,10 +30,11 @@ public class RIAL {
 	public TreeMap<Integer,HashSet<Integer>> hostVmMap;		//host到vm的映射，均用id表示
 	public Map<Integer,Integer> vmHostMap;					//vm到host的映射，均用id表示
 	
-	public static int moveCnt = 0;
+	public static int moveCnt = 0;				//迁移次数
+	public static double migTime = 0;			//总迁移时间
 	
 	/**分别表示cpu,mem,net资源的权重，对于每个负载过高的物理机，这三个值是不一样的*/
-	public double[] wik = new double[3]; //w0k,w1k,w2k;
+	public double[] wik = new double[3]; 		//w0k,w1k,w2k;
 	
 	/**wt是虚拟机通信量Tij相对于资源利用的权重，如何确定wt的值？*/
 	public double wt = 0.2;
@@ -46,8 +48,11 @@ public class RIAL {
 	/**负载不高的物理机集合*/
 	public ArrayList<Integer> lightPms;
 	
-	/**key为vmId，value的第一项为源物理机，第二项为目的物理机*/
-	public HashMap<Integer,ArrayList<Integer>> vmSourceDest;
+	/**key为vmId，
+	 * value的第一项为源物理机，第二项为目的物理机
+	 * LinkedHashMap能够按插入顺序访问元素
+	 * */
+	public LinkedHashMap<Integer,ArrayList<Integer>> vmSourceDest;
 	
 	/**
 	 * RIAL的构造函数
@@ -61,7 +66,7 @@ public class RIAL {
 		
 		this.heavyPms = new ArrayList<Integer>();
 		this.lightPms = new ArrayList<Integer>();
-		this.vmSourceDest = new HashMap<Integer,ArrayList<Integer>>();
+		this.vmSourceDest = new LinkedHashMap<Integer,ArrayList<Integer>>();
 	}
 	
 	/**
@@ -270,20 +275,18 @@ public class RIAL {
 					int pmId = pmIdInColumn[pmColumns.get(col)];
 					
 
-	//TODO　暂时不考虑由于热迁移导致目的物理机的负载过高，只选择一个最佳的物理机				
-	//				if(hosts.get(pmId).canHoldAndNotOverLoad(DataSet.vms.get(vmId))){
+					//TODO　暂时不考虑由于热迁移导致目的物理机的负载过高，只选择一个最佳的物理机				
+					//if(hosts.get(pmId).canHoldAndNotOverLoad(DataSet.vms.get(vmId))){
 						vmSourceDest.get(vmId).add(pmId);
 						
-						if(vmSourceDest.get(vmId).size()>2){
-							System.out.println();
-						}
+						 migTime += MigTime.getMigTime(vmId, vmSourceDest.get(vmId).get(0),pmId,hosts);
 						
 						//更新资源利用及映射信息
 						hosts.get(pmId).addVmUpdateResource(vmId);
 						hostVmMap.get(pmId).add(vmId);
 						vmHostMap.put(vmId,pmId);
 						break;
-	//				}
+					//}
 				}
 			
 			}//为特定虚拟机选择目的物理机结束
@@ -291,10 +294,18 @@ public class RIAL {
 		}//处理一台负载过高的物理机结束
 		
 		
-		for(int vmId:vmSourceDest.keySet()){
-			System.out.print(vmId);
-			System.out.println(":"+vmSourceDest.get(vmId));
-		}
+//		for(int vmId:vmSourceDest.keySet()){
+//			System.out.print(vmId);
+//			System.out.println(":"+vmSourceDest.get(vmId));
+//		}
+		
+		System.out.println("RIAL:");
+		System.out.println("comCost:"+Utils.cc.objVal(ind));
+		System.out.println("pmCnt:"+Utils.pc.objVal(ind));
+		System.out.println("migTime:"+(double)((int)(migTime*100))/100);
+		System.out.println("moveCnt: "+vmSourceDest.size());
+		System.out.println("balance:"+Utils.ba.objVal(ind));
+		
 		
 	}//迁移算法结束
 	

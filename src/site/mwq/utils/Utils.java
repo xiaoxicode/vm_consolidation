@@ -67,6 +67,10 @@ public class Utils {
 	}
 	
 	
+	/**
+	 * 打印矩阵
+	 * @param matrix
+	 */
 	public static void disMatrix(int[][] matrix){
 		int row = matrix.length;
 		int col = matrix[0].length;
