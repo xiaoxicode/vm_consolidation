@@ -16,12 +16,7 @@ import site.mwq.utils.Utils;
 
 
 /**
- * VmAllocationPolicySimple is an VmAllocationPolicy that chooses, as the host for a VM, the host
- * with less PEs in use.
- * 
- * @author Rodrigo N. Calheiros
- * @author Anton Beloglazov
- * @since CloudSim Toolkit 1.0
+ * 随机分配Vm
  */
 public class RandomVmAllocationPolicy extends VmAllocationPolicy {
 
@@ -79,9 +74,10 @@ public class RandomVmAllocationPolicy extends VmAllocationPolicy {
 		while(!result && tryCnt<hosts.size()){
 			
 			hostId = Utils.random.nextInt(hosts.size());
+			System.out.println(hostId);
 			host = hosts.get(hostId);
 			result = host.vmCreate(vm);
-			if (result) { // if vm were succesfully created in the host
+			if (result) { 					// if vm were succesfully created in the host
 				getVmTable().put(vm.getUid(), host);
 				getUsedPes().put(vm.getUid(), requiredPes);
 				getFreePes().set(hostId, getFreePes().get(hostId) - requiredPes);

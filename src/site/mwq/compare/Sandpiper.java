@@ -58,7 +58,7 @@ public class Sandpiper {
 	}
 	
 	
-	public void moveVm(){
+	public double[] moveVm(){
 		
 		//首先将host按照volume降序排列
 		Collections.sort(DataSet.hostIds,new HostVolComp(ind));
@@ -191,15 +191,24 @@ public class Sandpiper {
 				moveCnt += 1;
 			}
 		}
-		System.out.println("Sandpiper:");
-		System.out.println("comCost:"+Utils.cc.objVal(ind));
-		System.out.println("pmCnt:"+Utils.pc.objVal(ind));
-		System.out.println("migTime:"+(double)((int)(migTime*100))/100);
-		System.out.println("moveCnt: "+moveCnt);
-		System.out.println("balance:"+Utils.ba.objVal(ind));
 		
-//		Utils.disHostVmMap(hostVmMap);	测试正常
-//		Utils.disVmHostMap(vmHostMap);
+		double[] res = new double[5];
+		System.out.println("Sandpiper:");
+		System.out.print("migCnt: "+moveCnt);
+		System.out.print("  pmCnt:"+Utils.pc.objVal(ind));
+		System.out.print("  comCost:"+Utils.cc.objVal(ind));
+		System.out.print("  ban:"+Utils.ba.objVal(ind));
+		System.out.println("  migTime:"+(double)((long)(migTime*10))/10);
+		
+		res[0] = moveCnt;
+		res[1] = Utils.pc.objVal(ind);
+		res[2] = Utils.cc.objVal(ind);
+		res[3] = Utils.ba.objVal(ind);
+		res[4] = (double)((long)(migTime*10))/10;
+		
+		moveCnt = 0;	//恢复，否则迭代的时候一直会增加
+		migTime = 0;
+		return res;
 	}
 	
 	

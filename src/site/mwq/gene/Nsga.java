@@ -18,9 +18,8 @@ public class Nsga {
 	 * */
 	public ArrayList<ArrayList<Individual>> indRanks = null;
 	
-	
 	/**
-	 * 计算种群中，每个个体对于每个目标的值，存储在个体的objVals数组中
+	 * 计算种群中，每个个体（包括子代和父代）对于每个目标的值，存储在个体的objVals数组中
 	 * 此方法一定先于dominant方法调用
 	 * @param pop
 	 */
@@ -29,26 +28,15 @@ public class Nsga {
 			Individual ind = Pop.inds.get(i);
 			for(int j=0;j<ind.objVals.length;j++){	//对ind调用每个目标函数
 				ind.objVals[j] = Objs.OBJS[j].objVal(ind);
-			//			System.out.print(ind.objVals[j]+"  ");
 
 			}
-			//	System.out.println();
-
 		}
 		
 		for(int i=0;i<Pop.children.size();i++){
 			Individual ind = Pop.children.get(i);
 			for(int j=0;j<ind.objVals.length;j++){	//对ind调用每个目标函数
 				ind.objVals[j] = Objs.OBJS[j].objVal(ind);
-		//		System.out.print(ind.objVals[j]+"  ");
-//				if(j==0 && ind.objVals[j]==17){
-//					Utils.disVmHostMap(ind.vmHostMap); 
-//					System.out.println("-----mid-----");
-//					Utils.disVmHostMap(DataSet.vmHostMap);
-//					System.out.println("-----****-----");
-//				}
 			}
-		//	System.out.println();
 		}
 	}
 	
@@ -68,19 +56,21 @@ public class Nsga {
 			ind_p.nsgaDoms = new ArrayList<Individual>();
 			ind_p.nsgaNp = 0;
 			
-			for(int j=0;j<inds.size();j++){
+			for(int j=0;j<inds.size();j++){		//在这个循环中，只更新p的数据
 				Individual ind_q = inds.get(j);
 				
+				if(i==j){	//同一个不比较
+					continue;
+				}
+				
 				int dominate = ind_p.dominate(ind_q);
+				
 				if(dominate==1){			//p dominate q，将q加入p的主导集合
 					ind_p.nsgaDoms.add(ind_q);
-				}else if(dominate==-1){		// q dominate p,暂时不将p加入q的主导集合集合，只是增加p的rank
+				}else if(dominate==-1){		// q dominate p,暂时不将p加入q的主导集合集合，只是增加p的Np
 					ind_p.nsgaNp += 1;
 				}
 			}
-			
-//			System.out.println("the nsgaNp: "+ind_p.nsgaNp);
-//			System.out.println("nsgaDoms size: "+ind_p.nsgaDoms.size());
 			
 			if(ind_p.nsgaNp==0){
 				ind_p.nsgaRank = 1;
@@ -88,11 +78,11 @@ public class Nsga {
 			}
 			
 		}
+		
 		rankedInds.add(sameRankInds);
 		
-	//	System.out.println("sameRankInds size after: "+sameRankInds.size());
 		
-		ArrayList<Individual> sameRanks = sameRankInds;		//TODO 引用类型直接赋值，排错
+		ArrayList<Individual> sameRanks = sameRankInds;		
 		int i=1;
 		while(!sameRanks.isEmpty()){						//while循环条件，第i层集合不为空
 			ArrayList<Individual> i1ranks = new ArrayList<Individual>();
@@ -131,11 +121,10 @@ public class Nsga {
 		for(int i=0;i<len;i++){
 			inds.get(i).nsgaCrowDis = 0;
 		}
-	//	System.out.println("rankedInds size:"+inds.size());
 
 		for(int i=0;i<Objs.OBJNUM;i++){
 			
-			Collections.sort(inds,new ObjectComp(i));		//TODO 验证排序，根据特定目标值对总个体升序排序
+			Collections.sort(inds,new ObjectComp(i));		
 			
 			double objImin =inds.get(0).objVals[i];		 	//目标的最小值
 			double objImax = inds.get(len-1).objVals[i];  	//目标的最大值

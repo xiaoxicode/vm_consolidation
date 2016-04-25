@@ -30,7 +30,7 @@ public class RIAL {
 	public TreeMap<Integer,HashSet<Integer>> hostVmMap;		//host到vm的映射，均用id表示
 	public Map<Integer,Integer> vmHostMap;					//vm到host的映射，均用id表示
 	
-	public static int moveCnt = 0;				//迁移次数
+//	public static int moveCnt = 0;				//迁移次数
 	public static double migTime = 0;			//总迁移时间
 	
 	/**分别表示cpu,mem,net资源的权重，对于每个负载过高的物理机，这三个值是不一样的*/
@@ -84,7 +84,7 @@ public class RIAL {
 	}
 	
 	/**对负载过高的PM进行迁移操作*/
-	public void move(){
+	public double[] move(){
 		
 		divideHosts();		//划分物理机集合
 		
@@ -275,7 +275,7 @@ public class RIAL {
 					int pmId = pmIdInColumn[pmColumns.get(col)];
 					
 
-					//TODO　暂时不考虑由于热迁移导致目的物理机的负载过高，只选择一个最佳的物理机				
+					//暂时不考虑由于热迁移导致目的物理机的负载过高，只选择一个最佳的物理机				
 					//if(hosts.get(pmId).canHoldAndNotOverLoad(DataSet.vms.get(vmId))){
 						vmSourceDest.get(vmId).add(pmId);
 						
@@ -300,13 +300,21 @@ public class RIAL {
 //		}
 		
 		System.out.println("RIAL:");
-		System.out.println("comCost:"+Utils.cc.objVal(ind));
-		System.out.println("pmCnt:"+Utils.pc.objVal(ind));
-		System.out.println("migTime:"+(double)((int)(migTime*100))/100);
-		System.out.println("moveCnt: "+vmSourceDest.size());
-		System.out.println("balance:"+Utils.ba.objVal(ind));
+		System.out.print("migCnt: "+vmSourceDest.size());
+		System.out.print("  pmCnt:"+Utils.pc.objVal(ind));
+		System.out.print("  comCost:"+Utils.cc.objVal(ind));
+		System.out.print("  ban:"+Utils.ba.objVal(ind));
+		System.out.println("  migTime:"+(double)((long)(migTime*10))/10);
 		
+		double[] res = new double[5];
+		res[0] = vmSourceDest.size();
+		res[1] = Utils.pc.objVal(ind);
+		res[2] = Utils.cc.objVal(ind);
+		res[3] = Utils.ba.objVal(ind);
+		res[4] = (double)((long)(migTime*10))/10;
 		
+		migTime = 0;	//置零，否则一直增加
+		return res;
 	}//迁移算法结束
 	
 	/**
@@ -354,7 +362,7 @@ public class RIAL {
 		double sourceAvail = hosts.get(sourceId).getNetAvail();
 		double destAvail = hosts.get(destId).getNetAvail();
 		
-		// TODO 如何判断两个物理机之间的可用带宽，直接使用两个物理机带宽的最小值
+		//如何判断两个物理机之间的可用带宽，直接使用两个物理机带宽的最小值
 		double Bip = Math.min(sourceAvail, destAvail);
 		
 		double Dijp = dip*(Mij/Bip)*uijt;

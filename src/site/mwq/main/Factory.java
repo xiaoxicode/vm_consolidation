@@ -48,6 +48,12 @@ public class Factory {
 	public static int hostId = 0;
 	public static int vmId = 0;
 	
+	public static void init(){
+		peId = 0;
+		hostId = 0;
+		vmId = 0;
+	}
+	
 	/**
 	 * 创建Pe（CPU核）list
 	 * @param num	要创建的个数
@@ -152,20 +158,5 @@ public class Factory {
 		
 		return vms;
 	}
-	
-	
-//	public static List<VmDc> copyVmsWithAnotherId(List<VmDc> oldVms,int brokerId){
-//		List<VmDc> vms = new ArrayList<VmDc>();
-//
-//		for(int i=0;i<oldVms.size();i++){
-//			VmDc oldVm = oldVms.get(i);
-//			VmDc newVm = new VmDc(oldVm.getId(),brokerId,mipsOfVm,oldVm.getNumberOfPes(),oldVm.getRam(),
-//					bwOfVm,sizeOfVm,vmm,new CloudletSchedulerTimeShared());
-//			vms.add(newVm);
-//		}
-//		
-//		return vms;
-//	}
-	
 	
 }

@@ -2,8 +2,8 @@ package site.mwq.targets;
 
 public class Objs {
 	
-	//TODO 将目标个数改为3
-	public static int OBJNUM = 4;
+	/**优化目标，5个*/
+	public static int OBJNUM = 5;
 	public static ObjInterface[] OBJS = new ObjInterface[OBJNUM];
 	
 	static {
@@ -11,7 +11,7 @@ public class Objs {
 		OBJS[1] = new ComCost();
 		OBJS[2] = new MigCnt();
 		OBJS[3] = new Balance();
-	//	OBJS[4] = new MigTime();
+		OBJS[4] = new MigTime();
 
 	}
 }

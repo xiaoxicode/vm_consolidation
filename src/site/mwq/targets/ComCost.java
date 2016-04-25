@@ -22,13 +22,13 @@ public class ComCost implements ObjInterface {
 		
 		int row = DataSet.comMatrix.length;
 		int col = DataSet.comMatrix[0].length;
-		int dist = 0;
+		long dist = 0;
 		double cost = 0;
 		
 		for(int i=0;i<row;i++){
 			for(int j=0;j<col;j++){
 				if(DataSet.comMatrix[i][j]!=0){
-					dist = vmDistance(ind, i, j);
+					dist = Utils.vmDistance(ind, i, j);
 					cost += dist*DataSet.comMatrix[i][j];
 				}
 			}
@@ -37,42 +37,4 @@ public class ComCost implements ObjInterface {
 		return cost;
 	}
 	
-	/**
-	 * 计算两个虚拟机的通信距离，用经过的交换机个数来衡量
-	 * 使用三层树形交换机架构，分为核心层、聚集层、接入层、机架、物理机
-	 * 从上到下，交换机和物理机数目为 2 3 6 18
-	 * 
-	 * 同一个物理机距离为			0
-	 * 同一个机架交换机距离为		1
-	 * 同一个聚集交换机距离为		3
-	 * 否则距离为				5
-	 * 
-	 * @param i
-	 * @param j
-	 * @return
-	 */
-	private int vmDistance(Individual ind, int i,int j){
-		
-		if(i==j){		//虚拟机编号相等，返回0
-			return 0;
-		}
-		int idi = 0;	//虚拟机i所在的物理机编号
-		try{
-			idi = ind.vmHostMap.get(i);
-		}catch(Exception e){
-			System.err.println("error in ComCost");
-			System.exit(1);
-		}
-		int idj = 0;	//虚拟机j所在的物理机编号
-		
-		try{
-			idj	= ind.vmHostMap.get(j);
-		}catch (Exception e){
-			System.err.println("another error in ComCost");
-			System.exit(1);
-		}
-		
-		return Utils.getPmDis(idi, idj);
-	}
-
 }

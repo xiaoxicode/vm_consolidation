@@ -12,6 +12,7 @@ public class Activity {
 	public double migTime;					//活动持续时间
 	public HashSet<Activity> depends;		//依赖关系
 	
+	/**这个活动所涉及的两台物理机，源主机和目的主机*/
 	public HashSet<Integer> relatedHosts;
 	
 	//虚拟机id, 起始host与目的host
@@ -82,7 +83,7 @@ public class Activity {
 				+ from + ", to=" + to + "]";
 		
 		for(Activity act: depends){
-			str += "("+act.vmId+" "+act.from+" "+act.to+") ";
+			str += "(vmId="+act.vmId+", "+act.from+" "+act.to+") ";
 		}
 		
 		return str;

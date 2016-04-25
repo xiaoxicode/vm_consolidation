@@ -40,6 +40,11 @@ public class HostDc extends Host{
 			List<? extends Pe> peList, VmScheduler vmScheduler) {
 		
 		super(id, ramProvisioner, bwProvisioner, storage, peList, vmScheduler);
+		
+		//初始化可利用资源
+		this.setMemAvail(ramProvisioner.getRam());
+		this.setPeAvail(peList.size());
+		this.setNetAvail(bwProvisioner.getBw());
 	}
 
 	/**
@@ -173,8 +178,6 @@ public class HostDc extends Host{
 		this.peAvail += vm.getNumberOfPes();
 		this.peUsed -= vm.getNumberOfPes();
 		
-		//TODO super.getVmList().remove(vmId)，有待确认
-	//	super.getVmList().remove(vm);
 	}
 	
 	/**
@@ -191,8 +194,6 @@ public class HostDc extends Host{
 		this.peAvail -= vm.getNumberOfPes();
 		this.peUsed += vm.getNumberOfPes();
 		
-		//TODO super.getVmList().add(vmId)，有待确认
-	//	super.getVmList().add(vm);
 	}
 	
 	/**

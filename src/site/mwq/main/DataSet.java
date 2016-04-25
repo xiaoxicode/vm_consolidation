@@ -38,8 +38,13 @@ public class DataSet {
 	 * */
 	public static ArrayList<Integer> hostIds;
 	
-	//通信矩阵
-	public static final double probOfCom = 0.3;
+	/**位于不是同一个10区间的两台虚拟机的通信概率*/
+	public static final double probOfComSmall = 0.2;
+	
+	/**位于同一个10区间的两台虚拟机的通信概率*/
+	public static final double probOfComBig = 0.2;
+	
+	/**通信矩阵*/
 	public static int[][] comMatrix;
 	
 	public static void initFirstInd(){
@@ -84,12 +89,36 @@ public class DataSet {
 		for(int i=0;i<vmNum;i++){
 			for(int j=i+1;j<vmNum;j++){
 				comProb = Utils.random.nextDouble();
-				if(comProb<probOfCom){
-					comNum = 10+Utils.random.nextInt(190);
-					comMatrix[i][j] = comNum;
-					comMatrix[j][i] = comNum;
+				
+				if(i/10==j/10){		//在同一个10区间，相互通信的概率较大
+					if(comProb<probOfComBig){
+						comNum = 10+Utils.random.nextInt(190);
+						comMatrix[i][j] = comNum;
+						comMatrix[j][i] = comNum;
+					}
+				}else{
+					if(comProb<probOfComSmall){
+						comNum = 10+Utils.random.nextInt(190);
+						comMatrix[i][j] = comNum;
+						comMatrix[j][i] = comNum;
+					}
 				}
+
 			}
 		}
+	}
+	
+	/**
+	 * 获得一个hosts的深拷贝，不影响原来的值
+	 * @return
+	 */
+	public static ArrayList<HostDc> getCopyOfHosts(){
+		ArrayList<HostDc> res = new ArrayList<HostDc>();
+		
+		for(HostDc host:hosts){
+			res.add(new HostDc(host));
+		}
+		
+		return res;
 	}
 }

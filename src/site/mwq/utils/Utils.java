@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.TreeMap;
 
 import site.mwq.cloudsim.HostDc;
 import site.mwq.cloudsim.VmDc;
@@ -14,6 +15,7 @@ import site.mwq.main.DataSet;
 import site.mwq.targets.Balance;
 import site.mwq.targets.ComCost;
 import site.mwq.targets.MigCnt;
+import site.mwq.targets.MigTime;
 import site.mwq.targets.PmCnt;
 
 public class Utils {
@@ -23,7 +25,7 @@ public class Utils {
 	public static PmCnt pc = new PmCnt();
 	public static ComCost cc = new ComCost();
 	public static Balance ba = new Balance();
-	
+	public static MigTime mt = new MigTime();
 	
 	/**随机数生成器，项目所有的随机数均由其生成*/
 	public static Random random = new Random(System.currentTimeMillis());
@@ -33,7 +35,7 @@ public class Utils {
 	 * 获得两台物理机之间的距离（相隔的交换机的个数）
 	 * 该系统物理机架构参考 ComCost类
 	 * 使用三层树形交换机架构，分为核心层、聚集层、接入层、机架、物理机
-	 * 从上到下，交换机和物理机数目为 2 3 6 18
+	 * 从上到下，交换机和物理机数目为 2 3 6 36
 	 * 
 	 * 同一个物理机距离为			0
 	 * 同一个机架交换机距离为		1
@@ -49,14 +51,14 @@ public class Utils {
 			return 0;
 		}
 		
-		pmIdi	/= 3;
-		pmIdj	/= 3;
+		pmIdi	/= 6;		//TODO 设置一台机架上有10台物理机，一个机架交换机与10台物理机相连
+		pmIdj	/= 6;
 		
 		if(pmIdi==pmIdj){	//机架编号相等，返回1
 			return 1;
 		}
 		
-		pmIdi /= 2;
+		pmIdi /= 2;			//一个聚集层交换机与两个机架相连
 		pmIdj /= 2;
 		
 		if(pmIdi==pmIdj){	//聚集层交换机编号相等，返回3，否则返回5
@@ -66,6 +68,44 @@ public class Utils {
 		return 5;
 	}
 	
+	
+	/**
+	 * 计算两个虚拟机的通信距离，用经过的交换机个数来衡量
+	 * 使用三层树形交换机架构，分为核心层、聚集层、接入层、机架、物理机
+	 * 从上到下，交换机和物理机数目为 2 3 6 18
+	 * 
+	 * 同一个物理机距离为			0
+	 * 同一个机架交换机距离为		1
+	 * 同一个聚集交换机距离为		3
+	 * 否则距离为				5
+	 * 
+	 * @param i 虚拟机i
+	 * @param j 虚拟机j
+	 * @return
+	 */
+	public static long vmDistance(Individual ind, int i,int j){
+		
+		if(i==j){		//虚拟机编号相等，返回0
+			return 0;
+		}
+		int idi = 0;	//虚拟机i所在的物理机编号
+		try{
+			idi = ind.vmHostMap.get(i);
+		}catch(Exception e){
+			System.err.println("error in ComCost");
+			System.exit(1);
+		}
+		int idj = 0;	//虚拟机j所在的物理机编号
+		
+		try{
+			idj	= ind.vmHostMap.get(j);
+		}catch (Exception e){
+			System.err.println("another error in ComCost");
+			System.exit(1);
+		}
+		
+		return Utils.getPmDis(idi, idj);
+	}
 	
 	/**
 	 * 打印矩阵
@@ -182,6 +222,124 @@ public class Utils {
 	 * @param ind
 	 */
 	public static void disIndVal(Individual ind){
-		System.out.println("migCnt:"+mc.objVal(ind)+"  comcost:"+cc.objVal(ind)+"  pmCnt:"+pc.objVal(ind)+" ban:"+ba.objVal(ind));
+		System.out.println("migCnt:"+mc.objVal(ind)
+				+"  pmCnt:"+pc.objVal(ind)
+				+"  comcost:"+cc.objVal(ind)
+				+" ban:"+ba.objVal(ind)
+				+"  migTime:"+mt.objVal(ind));
 	}
+	
+	/**
+	 * 返回一个个体的各个目标值，顺序为：迁移次数 物理机数目 通信代价 平衡度 迁移时间
+	 * @param ind
+	 * @return
+	 */
+	public static double[] getIndVal(Individual ind){
+		double[] res = new double[5];
+		res[0] = mc.objVal(ind);
+		res[1] = pc.objVal(ind);
+		res[2] = cc.objVal(ind);
+		res[3] = ba.objVal(ind);
+		res[4] = mt.objVal(ind);
+		return res;
+	}
+	
+	/**
+	 * 打印一个个体各个物理机的剩余的资源
+	 * @param ind
+	 */
+	public static void disIndResUsage(Individual ind){
+		List<HostDc> indHosts = ind.indHosts;
+		
+		for(HostDc host:indHosts){
+			System.out.println("id:"+host.getId()+" cpu:"+host.getPeAvail()+" mem:"+host.getMemAvail()+" net:"+host.getNetAvail());
+		}
+		
+	}
+	
+	/**
+	 * 打印一台物理机的资源剩余情况
+	 * @param host
+	 */
+	public static void disHostResAvail(HostDc host){
+		System.out.println("PM id:"+host.getId()+" cpu:"+host.getPeAvail()+" mem:"+host.getMemAvail()+" net:"+host.getNetAvail());
+	}
+	
+	/**
+	 * 打印一台虚拟机的资源利用情况
+	 * @param vm
+	 */
+	public static void disVmResUsage(VmDc vm){
+		System.out.println("VM id:"+vm.getId()+" cpu:"+vm.getNumberOfPes()+" mem:"+vm.getRam()+" net:"+vm.getBw());
+
+	}
+	
+	/**
+	 * 移除一台VM，更新hostVM映射，更新主机资源利用信息
+	 * @param host			迁出主机
+	 * @param hostVmMap		host vm映射，如果为null，则值更新资源信息
+	 * @param vmId			虚拟机id
+	 */
+	public static void removeVm(HostDc host,TreeMap<Integer,HashSet<Integer>> hostVmMap,int vmId){
+		
+		if(hostVmMap != null){	//为null，只更新资源信息
+			hostVmMap.get(host.getId()).remove(vmId);
+		}
+		host.removeVmUpdateResource(vmId);
+	}
+	
+	/**
+	 * 添加一台映射，更新host vm映射，更新主机资源利用信息，更新vmHost映射
+	 * @param host			接收虚拟机的主机
+	 * @param hostVmMap		host vm映射  如果为null，则值更新资源信息
+	 * @param vmId			虚拟机id
+	 * @param vmHostMap		vm host映射  如果为null，则值更新资源信息
+	 */
+	public static void addVm(HostDc host,TreeMap<Integer,HashSet<Integer>> hostVmMap,int vmId,Map<Integer,Integer> vmHostMap){
+		
+		if(hostVmMap!=null){
+			hostVmMap.get(host.getId()).add(vmId);
+		}
+		if(vmHostMap!=null){
+			vmHostMap.put(vmId, host.getId());
+		}
+		host.addVmUpdateResource(vmId);
+	}
+	
+	/**
+	 * 平均内存利用率
+	 * @return
+	 */
+	public static double getAvgMem(Individual ind) {
+		double res = 0;
+		int count = 0;
+		for(int i=0;i<ind.indHosts.size();i++){
+			if(ind.hostVmMap.get(i).size()==0){
+				continue;
+			}
+			res += ind.indHosts.get(i).getMemRate();
+			count++;
+		}
+		res /= count;
+		return res;
+	}
+
+	/**
+	 * 获得平均CPU利用率
+	 * @return
+	 */
+	public static double getAvgCpu(Individual ind) {
+		double res = 0;
+		int count = 0;
+		for(int i=0;i<ind.indHosts.size();i++){
+			if(ind.hostVmMap.get(i).size()==0){
+				continue;
+			}
+			res += ind.indHosts.get(i).getCpuRate();
+			count++;
+		}
+		res /= count;
+		return res;
+	}
+	
 }

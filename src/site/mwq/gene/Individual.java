@@ -83,20 +83,34 @@ public class Individual {
 	 */
 	public int dominate(Individual ind){
 		
-		int greatNum = 0,lessNum = 0;
+		int grateEqualNum = 0,lessEqualNum = 0;
+		int grateNum = 0,lessNum = 0;
+		
+		
 		for(int i=0;i<Objs.OBJNUM;i++){
 			if(this.objVals[i] <= ind.objVals[i]){
-				lessNum++;
-			}else if(this.objVals[i]>=objVals[i]){
-				greatNum++;
+				lessEqualNum++;
 			}
+			
+			if(this.objVals[i] >= ind.objVals[i]){
+				grateEqualNum++; 
+			}
+			
+			if(this.objVals[i] < ind.objVals[i]){
+				lessNum++;
+			}
+			
+			if(this.objVals[i] > ind.objVals[i]){
+				grateNum++;
+			}
+			
 		}
-		//5个目标都比ind小
-		if(lessNum==Objs.OBJNUM){
+		//5个目标都小于等于，且至少一个小于
+		if(lessEqualNum==Objs.OBJNUM && lessNum>=1){
 			return 1;
 		}
-		//5个目标都比ind大
-		if(greatNum==Objs.OBJNUM){
+		//5个目标都大于等于，且至少一个大于
+		if(grateEqualNum==Objs.OBJNUM && grateNum>=1){
 			return -1;
 		}
 		return 0;

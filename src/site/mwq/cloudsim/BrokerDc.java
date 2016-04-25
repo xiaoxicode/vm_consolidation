@@ -19,7 +19,6 @@ public class BrokerDc extends DatacenterBroker{
 	public BrokerDc(String name) throws Exception {
 		super(name);
 	}
-
 	
 	/**
 	 * 重写 处理vm创建
@@ -46,12 +45,13 @@ public class BrokerDc extends DatacenterBroker{
 					+ " has been created in Datacenter #" + datacenterId + ", Host #"
 					+ hostId);
 			
-			/**将vm记录在host中**/
+		
 			
+			/**将vm记录在host中**/
 			DataSet.hostVmMap.get(hostId).add(vmId);
 			DataSet.vmHostMap.put(vmId, hostId);
-			
 			/****/
+			
 		} else {
 			Log.printLine(CloudSim.clock() + ": " + getName() + ": Creation of VM #" + vmId
 					+ " failed in Datacenter #" + datacenterId);

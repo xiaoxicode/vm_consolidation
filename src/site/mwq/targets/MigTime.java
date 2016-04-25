@@ -1,8 +1,11 @@
 package site.mwq.targets;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.TreeMap;
 
 import site.mwq.cloudsim.HostDc;
 import site.mwq.dependence.Activity;
@@ -11,7 +14,8 @@ import site.mwq.main.DataSet;
 import site.mwq.utils.Utils;
 
 /**
- * TODO 总的预测迁移时间 【先放弃】
+ * 预测累加迁移时间，（区别整合时间，并行迁移可以使整合时间小于总的迁移时间）
+ * 
  * @author E-mail:qiuweimin@126.com
  * @version 创建时间：2015年12月23日 上午11:53:29
  */
@@ -41,11 +45,18 @@ public class MigTime implements ObjInterface {
 	@Override
 	public double objVal(Individual ind) {
 		
+		
 		List<Activity> acts = new ArrayList<Activity>();						//活动集合
 		
-		//key为hostId，value为要从这个host移出的vm的 活动
-		HashMap<Integer,ArrayList<Activity>> sendHosts = new HashMap<Integer,ArrayList<Activity>>();
+		/**key为hostId，value包含从这个host上移除VM的活动 
+		 * 一台物理机的迁出列表*/
+		HashMap<Integer,HashSet<Activity>> sendHosts = new HashMap<Integer,HashSet<Activity>>();
 		
+		/**key为hostId，value包含迁入这个host的活动
+		 *一台物理机的接收列表*/
+		HashMap<Integer,HashSet<Activity>> recvHosts = new HashMap<Integer,HashSet<Activity>>();
+
+		//1、找出所有的Activity
 		for(int vmId:DataSet.vmHostMap.keySet()){
 			
 			//如果所在物理节点不一致则创建一个活动
@@ -60,56 +71,104 @@ public class MigTime implements ObjInterface {
 				if(sendHosts.containsKey(from)){
 					sendHosts.get(from).add(activity);
 				}else{
-					ArrayList<Activity> activitys = new ArrayList<Activity>();
+					HashSet<Activity> activitys = new HashSet<Activity>();
 					activitys.add(activity);
 					sendHosts.put(from, activitys);
 				}
+				
+				if(recvHosts.containsKey(to)){
+					recvHosts.get(to).add(activity);
+				}else{
+					HashSet<Activity> activitys = new HashSet<Activity>();
+					activitys.add(activity);
+					recvHosts.put(to, activitys);
+				}
+				
 			}
 		}
 		
-		List<HostDc> hosts = ind.indHosts;
+		int migLevel = 0;
 		
-		for(int i=0;i<acts.size();i++){
-			Activity act = acts.get(i);
+		//TODO key为迁移层次，value为处于这个层次的活动，TreeMap为有序的哈希表，这里自定义了比较器
+		//所以调用keySet()的时候默认是按升序排列的
+		TreeMap<Integer,ArrayList<Activity>> levelOfMig = null;
+		levelOfMig = new TreeMap<Integer,ArrayList<Activity>>(new Comparator<Integer>(){
+			@Override 
+			public int compare(Integer arg0, Integer arg1) {
+				return arg0-arg1;
+			}
+		});
+		
+		while(true){
 			
-			//TODO 目的host不能容纳待迁移的vm，选择一个待迁出的vm作为依赖，目前是选择了第一个，可能不满足条件
-			//资源依赖，同一个host同一时间只能有一个Activity，这两种依赖，第一种依赖从当前向前找
-			if(!hosts.get(act.to).canHold(DataSet.vms.get(act.vmId))){	
-				try{
-					act.depend(sendHosts.get(act.to).get(0));
-				}catch(NullPointerException e){
-					System.err.println("null pointer Exception");
-//					System.out.println(DataSet.firstInd.hostVmMap.get(act.to));
-//					System.out.println(ind.hostVmMap.get(act.to));
+			ArrayList<Activity> levelActs = new ArrayList<Activity>();
+			for(int hostId:recvHosts.keySet()){
+				
+				//1、至少包含一个，并且这台物理机并没有迁出活动，一定是可以容纳迁入的（一台）虚拟机的，可以立即执行一个活动
+				if(recvHosts.get(hostId).size()>=1 && 
+						(!sendHosts.containsKey(hostId)					//不含有活动
+								|| sendHosts.get(hostId).size()==0)){	//含有活动，但是已经迁移完毕
+					
+					Activity act = null;
+					for(Activity a:recvHosts.get(hostId)){		//找任意一个活动
+						act = a;
+						break;
+					}
+					levelActs.add(act);
+					recvHosts.get(act.to).remove(act);					//将这个活动从host的接收列表中删除
+					sendHosts.get(act.from).remove(act);	//将这个活动从其发送端删除
 				}
+
+			}//查找一层活动结束
+		
+			
+			//添加一层活动
+			if(levelActs.size()>0){
+				levelOfMig.put(migLevel++, levelActs);
 			}
 			
-			//检查初始host
-			for(int j=i-1;j>=0;j--){
-				if(acts.get(j).relatedHosts.contains(act.from)){
-					act.depend(acts.get(j));
+			//检查所有的活动是否已经处理
+			boolean over = true;
+ 			for(int hostId:recvHosts.keySet()){
+				if(recvHosts.get(hostId).size()!=0){
+					over =false;	//至少还有一个活动没有安排migLevel
 					break;
 				}
 			}
-			
-			//检查目的host
-			for(int j=i-1;j>=0;j--){
-				if(acts.get(j).relatedHosts.contains(act.to)){
-					act.depend(acts.get(j));
-					break;
-				}
+			if(over){	//物理机接收列表已经没有活动，已经全部迁移完毕
+				break;
 			}
 			
+			//没有处理完毕，且没有处理一个Activity
+			//只要至少发生了一次迁移
+			//TODO　先这样简单考虑，后期一定要改
+			//TODO 后期要改
+			if(levelActs.size()==0){
+				for(int hostId:recvHosts.keySet()){
+					for(Activity act:recvHosts.get(hostId)){  //如果还有虚拟机没有迁移，则迁移
+						levelActs.add(act);
+					}
+				}
+				
+				levelOfMig.put(migLevel, levelActs);
+				break;
+			}
+		
+		}//统计迁移层次结束
+		
+		List<HostDc> hosts = DataSet.getCopyOfHosts();
+		double migTime = 0;
+		
+		for(int level:levelOfMig.keySet()){
+			for(Activity act:levelOfMig.get(level)){
+				migTime += getMigTime(act.vmId,act.from,act.to,hosts);
+				
+				Utils.removeVm(hosts.get(act.from), null, act.vmId);
+				Utils.addVm(hosts.get(act.to), null, act.vmId, null);
+			}
 		}
 		
-		//打印依赖关系
-		for(int i=0;i<acts.size();i++){
-			System.out.println(acts.get(i));
-		}
-		
-		System.out.println("*********");
-		//TODO 迁移时间，返回一个随机数
-		return ((int)(Utils.random.nextDouble()*10))/10.0;
+		return (double)((int)(migTime*10))/10;
 	}
 	
 	
