@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.TreeMap;
 
 import site.mwq.cloudsim.HostDc;
+import site.mwq.cloudsim.VmCluster;
 import site.mwq.dependence.Activity;
 import site.mwq.gene.Individual;
 import site.mwq.main.DataSet;
@@ -40,7 +41,7 @@ public class MigTime implements ObjInterface {
 
 	
 	/**
-	 * TODO 计算总的迁移时间（累加时间），这个不容易
+	 * 计算总的迁移时间（累加时间）
 	 */
 	@Override
 	public double objVal(Individual ind) {
@@ -56,6 +57,174 @@ public class MigTime implements ObjInterface {
 		 *一台物理机的接收列表*/
 		HashMap<Integer,HashSet<Activity>> recvHosts = new HashMap<Integer,HashSet<Activity>>();
 
+		//1、找出所有的迁移活动，为所有PM确定迁入和迁出列表
+		findActSentRevList(ind, acts, sendHosts, recvHosts);
+		
+		
+		//key为迁移层次，value为处于这个层次的活动，TreeMap为有序的哈希表，这里自定义了比较器
+		//所以调用keySet()的时候默认是按升序排列的
+		TreeMap<Integer,ArrayList<Activity>> levelOfMig = null;
+		levelOfMig = new TreeMap<Integer,ArrayList<Activity>>(new Comparator<Integer>(){
+			@Override 
+			public int compare(Integer arg0, Integer arg1) {return arg0-arg1;}
+		});
+		
+		ArrayList<Activity> swapList = new ArrayList<Activity>();
+		//2、寻找可以并行迁移的活动
+		findMigLevels(ind,levelOfMig, acts, sendHosts, recvHosts,swapList);
+		
+		//3、计算累加迁移时间和 整合时间
+		List<HostDc> hosts = DataSet.getCopyOfHosts();
+		double migTime = 0;
+		double consolidTime = 0;
+		
+		for(int level:levelOfMig.keySet()){
+			
+			double maxTime = Integer.MIN_VALUE;
+			
+			for(Activity act:levelOfMig.get(level)){
+				double time = getMigTime(act.vmId,act.from,act.to,hosts);
+				migTime += time;
+				Utils.removeVm(hosts.get(act.from), null, act.vmId);
+				Utils.addVm(hosts.get(act.to), null, act.vmId, null);
+				if(time>maxTime){
+					maxTime = time;
+				}
+			}
+			consolidTime += maxTime;
+		}
+		
+		for(Activity act:swapList){			//时间再调整一下
+			double time = getMigTimeSwap(act.vmId,act.from,hosts);
+			migTime += 2*time;
+			consolidTime += 2*time;
+		}
+		
+		ind.consolidationTime = (double)((int)(10*consolidTime))/10;
+		
+		return (double)((int)(migTime*10))/10;
+	}
+	
+	/**
+	 * 寻找可以并行迁移的活动，组织成不同的迁移层次
+	 * @param levelOfMig
+	 * @param acts
+	 * @param sendHosts
+	 * @param recvHosts
+	 * @param swapList，被迁移到交换host的activity列表
+	 * @return mvNum 在这个函数中处理过的vm数，正常的话等于acts的size()
+	 */
+	private int findMigLevels(Individual ind,
+			TreeMap<Integer,ArrayList<Activity>> levelOfMig,
+			List<Activity> acts,
+			HashMap<Integer,HashSet<Activity>> sendHosts,
+			HashMap<Integer,HashSet<Activity>> recvHosts,
+			ArrayList<Activity> swapList){
+
+		int mvNum = 0;
+		int migLevel = 0;
+		
+		//执行并行迁移操作
+		//while循环结束的条件为所有PM的迁入列表都为空
+		//每一次while循环表示一层可以同时迁移的活动
+		while(true){
+			
+			ArrayList<Activity> levelActs = new ArrayList<Activity>();
+			HashSet<Integer> sendHostSet = new HashSet<Integer>();
+			HashSet<Integer> recvHostSet = new HashSet<Integer>();
+			
+			//1、遍历recvHosts列表，寻找可以迁移的虚拟机
+			for(int hostId:recvHosts.keySet()){
+				
+				//迁出列表至少有一个活动
+				if(recvHosts.get(hostId).size()>=1){	
+					
+					//迁入列表至少包含一个迁入活动，并且这台物理机并没有迁出活动，
+					//一定是可以容纳迁入的（一台）虚拟机的，可以立即执行一个活动
+					if(!sendHosts.containsKey(hostId)					//检查这个host的发送列表，不包含任何发送活动
+								|| sendHosts.get(hostId).size()==0){
+						Activity act = null;
+						for(Activity a:recvHosts.get(hostId)){
+							if(!sendHostSet.contains(a.from) && !recvHostSet.contains(a.to)){
+								act = a;
+								sendHostSet.add(a.from);
+								recvHostSet.add(a.to);
+								break;
+							}
+						}
+						if(act!=null){ levelActs.add(act); mvNum++; }
+					}else{					//这个host的发送列表有一个或多个活动
+
+						VmCluster cluster = new VmCluster();						//将这些vm聚成一个集合
+						for(Activity act:sendHosts.get(hostId)){	
+							cluster.addVm(act.vmId);
+						}
+						
+						if(ind.indHosts.get(hostId).canHoldCluster(cluster)){		//查看此host能否容纳这些vm
+							Activity act = null;
+							for(Activity a:recvHosts.get(hostId)){					
+								if(!sendHostSet.contains(a.from) && !recvHostSet.contains(a.to)){
+									act = a;
+									sendHostSet.add(a.from);
+									recvHostSet.add(a.to);
+									break;
+								}
+							}
+							if(act!=null){ levelActs.add(act);mvNum++; }
+						}
+					}
+				}
+
+			}//查找一层活动结束
+
+			//从列表中删除已经移动的vm
+			for(Activity act:levelActs){
+				recvHosts.get(act.to).remove(act);						//将这个活动从host的接收列表中删除
+				sendHosts.get(act.from).remove(act);					//将这个活动从其发送端删除
+			}
+			
+			//1、size大于0表示至少改动了一个活动，添加一层活动，并结束此次查找
+			if(levelActs.size()>0){										
+				levelOfMig.put(migLevel++, levelActs);
+				continue;		//结束一次查找
+			}
+			
+			//2、一次活动都没有更改
+			//检查所有的活动是否已经处理
+			boolean over = true;
+ 			for(int hostId:recvHosts.keySet()){
+				if(recvHosts.get(hostId).size()!=0){
+					over =false;break;									//至少还有一个活动没有安排migLevel
+				}
+			}
+			if(over){break;}											//物理机接收列表已经没有活动，已经全部迁移完毕
+			
+			//没有处理完毕，且没有处理一个Activity，即存在环和相互依赖的情况
+			for(int hostId:recvHosts.keySet()){
+				for(Activity act:recvHosts.get(hostId)){  				//如果还有虚拟机没有迁移，则迁移
+					swapList.add(act);
+					mvNum++;
+					recvHosts.get(act.to).remove(act);						
+					sendHosts.get(act.from).remove(act);
+					break;
+				}
+			}
+		
+		}//统计迁移层次结束
+		
+		return mvNum;
+	}
+	
+	
+	/**
+	 * 找出所有的活动，为所有PM确定迁入和迁出列表
+	 * @param ind
+	 * @param acts
+	 * @param sendHosts
+	 * @param recvHosts
+	 */
+	private void findActSentRevList(Individual ind,List<Activity> acts,HashMap<Integer,HashSet<Activity>> sendHosts,
+			HashMap<Integer,HashSet<Activity>> recvHosts){
 		//1、找出所有的Activity
 		for(int vmId:DataSet.vmHostMap.keySet()){
 			
@@ -86,91 +255,7 @@ public class MigTime implements ObjInterface {
 				
 			}
 		}
-		
-		int migLevel = 0;
-		
-		//TODO key为迁移层次，value为处于这个层次的活动，TreeMap为有序的哈希表，这里自定义了比较器
-		//所以调用keySet()的时候默认是按升序排列的
-		TreeMap<Integer,ArrayList<Activity>> levelOfMig = null;
-		levelOfMig = new TreeMap<Integer,ArrayList<Activity>>(new Comparator<Integer>(){
-			@Override 
-			public int compare(Integer arg0, Integer arg1) {
-				return arg0-arg1;
-			}
-		});
-		
-		while(true){
-			
-			ArrayList<Activity> levelActs = new ArrayList<Activity>();
-			for(int hostId:recvHosts.keySet()){
-				
-				//1、至少包含一个，并且这台物理机并没有迁出活动，一定是可以容纳迁入的（一台）虚拟机的，可以立即执行一个活动
-				if(recvHosts.get(hostId).size()>=1 && 
-						(!sendHosts.containsKey(hostId)					//不含有活动
-								|| sendHosts.get(hostId).size()==0)){	//含有活动，但是已经迁移完毕
-					
-					Activity act = null;
-					for(Activity a:recvHosts.get(hostId)){		//找任意一个活动
-						act = a;
-						break;
-					}
-					levelActs.add(act);
-					recvHosts.get(act.to).remove(act);					//将这个活动从host的接收列表中删除
-					sendHosts.get(act.from).remove(act);	//将这个活动从其发送端删除
-				}
-
-			}//查找一层活动结束
-		
-			
-			//添加一层活动
-			if(levelActs.size()>0){
-				levelOfMig.put(migLevel++, levelActs);
-			}
-			
-			//检查所有的活动是否已经处理
-			boolean over = true;
- 			for(int hostId:recvHosts.keySet()){
-				if(recvHosts.get(hostId).size()!=0){
-					over =false;	//至少还有一个活动没有安排migLevel
-					break;
-				}
-			}
-			if(over){	//物理机接收列表已经没有活动，已经全部迁移完毕
-				break;
-			}
-			
-			//没有处理完毕，且没有处理一个Activity
-			//只要至少发生了一次迁移
-			//TODO　先这样简单考虑，后期一定要改
-			//TODO 后期要改
-			if(levelActs.size()==0){
-				for(int hostId:recvHosts.keySet()){
-					for(Activity act:recvHosts.get(hostId)){  //如果还有虚拟机没有迁移，则迁移
-						levelActs.add(act);
-					}
-				}
-				
-				levelOfMig.put(migLevel, levelActs);
-				break;
-			}
-		
-		}//统计迁移层次结束
-		
-		List<HostDc> hosts = DataSet.getCopyOfHosts();
-		double migTime = 0;
-		
-		for(int level:levelOfMig.keySet()){
-			for(Activity act:levelOfMig.get(level)){
-				migTime += getMigTime(act.vmId,act.from,act.to,hosts);
-				
-				Utils.removeVm(hosts.get(act.from), null, act.vmId);
-				Utils.addVm(hosts.get(act.to), null, act.vmId, null);
-			}
-		}
-		
-		return (double)((int)(migTime*10))/10;
 	}
-	
 	
 	/**
 	 * 计算一次迁移持续的时间
@@ -181,8 +266,6 @@ public class MigTime implements ObjInterface {
 	 */
 	public static double getMigTime(int vmId, int from,int to,List<HostDc> hosts){
 		
-		// performaceModel(double Vmem,double D,double R)
-		
 		double vmMem = DataSet.vms.get(vmId).getRam();
 		double dirtyRate = DataSet.vms.get(vmId).getDirtyRate();
 		double pmBandFrom = hosts.get(from).getNetAvail();
@@ -190,9 +273,25 @@ public class MigTime implements ObjInterface {
 		
 		double bandWidth = Math.min(pmBandFrom, pmBandTo);
 		
-		//System.out.println("vm Mem:"+vmMem+" bandwidth:"+bandWidth);
-		
 		double[] datas = performaceModel(vmMem, dirtyRate, bandWidth);
+		
+		//返回的数据中第一项表示迁移时间
+		return datas[0];
+	}
+	
+	/**
+	 * 迁往Swap物理机时的迁移时间
+	 * @param vmId
+	 * @param from
+	 * @param hosts
+	 * @return
+	 */
+	public static double getMigTimeSwap(int vmId,int from,List<HostDc> hosts){
+		double vmMem = DataSet.vms.get(vmId).getRam();
+		double dirtyRate = DataSet.vms.get(vmId).getDirtyRate();
+		double pmBandFrom = hosts.get(from).getNetAvail();
+		
+		double[] datas = performaceModel(vmMem, dirtyRate, pmBandFrom);
 		
 		//返回的数据中第一项表示迁移时间
 		return datas[0];

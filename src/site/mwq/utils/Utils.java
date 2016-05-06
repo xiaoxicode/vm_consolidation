@@ -83,7 +83,7 @@ public class Utils {
 	 * @param j 虚拟机j
 	 * @return
 	 */
-	public static long vmDistance(Individual ind, int i,int j){
+	public static int vmDistance(Individual ind, int i,int j){
 		
 		if(i==j){		//虚拟机编号相等，返回0
 			return 0;
@@ -230,17 +230,18 @@ public class Utils {
 	}
 	
 	/**
-	 * 返回一个个体的各个目标值，顺序为：迁移次数 物理机数目 通信代价 平衡度 迁移时间
+	 * 返回一个个体的各个目标值，顺序为：迁移次数 迁移时间 物理机数目 平衡度 通信代价 
 	 * @param ind
 	 * @return
 	 */
 	public static double[] getIndVal(Individual ind){
 		double[] res = new double[5];
 		res[0] = mc.objVal(ind);
-		res[1] = pc.objVal(ind);
-		res[2] = cc.objVal(ind);
+		res[1] = mt.objVal(ind);
+		res[2] = pc.objVal(ind);
 		res[3] = ba.objVal(ind);
-		res[4] = mt.objVal(ind);
+		res[4] = cc.objVal(ind);
+
 		return res;
 	}
 	
@@ -277,7 +278,7 @@ public class Utils {
 	/**
 	 * 移除一台VM，更新hostVM映射，更新主机资源利用信息
 	 * @param host			迁出主机
-	 * @param hostVmMap		host vm映射，如果为null，则值更新资源信息
+	 * @param hostVmMap		host vm映射，如果为null，则只更新资源信息
 	 * @param vmId			虚拟机id
 	 */
 	public static void removeVm(HostDc host,TreeMap<Integer,HashSet<Integer>> hostVmMap,int vmId){
@@ -342,4 +343,39 @@ public class Utils {
 		return res;
 	}
 	
+	
+	/**
+	 * 按照偏好，生成一个权重序列，w1+w2+w3+w4+w5=1
+	 * 且，w1<w2<w3<w4<w5
+	 * @return
+	 */
+	public static double[] genWeights(){
+		
+		double[] weights = new double[5];
+		
+		double sum = 0;
+//		for(int i=0;i<weights.length;i++){
+//			weights[i] = offset+Math.random();
+//			offset +=5;
+//			sum += weights[i];
+//		}
+		
+		weights[1] = 0.05;
+		weights[2] = 0.05;
+		weights[3] = 1;
+		weights[4] = 3;
+		
+		for(int i=0;i<weights.length;i++){
+			sum += weights[i];
+		}
+		
+		for(int i=0;i<weights.length;i++){
+			weights[i] /= sum;
+			
+			System.out.print(weights[i]+" ");
+		}
+		System.out.println();
+		
+		return weights;
+	}
 }

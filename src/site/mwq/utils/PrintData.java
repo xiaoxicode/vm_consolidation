@@ -75,11 +75,17 @@ public class PrintData {
 		
 		System.out.println("#########"+algo);
 		
-		System.out.print("migCnt:"+avg(migCnts)+" "+stdDev(migCnts,avg(migCnts))+"  -  ");
-		System.out.print("pmCnts:"+avg(pmCnts)+" "+stdDev(pmCnts,avg(pmCnts))+"  -  ");
-		System.out.print("comCosts:"+avg(comCosts)+" "+stdDev(comCosts,avg(comCosts))+"  -  ");
-		System.out.print("bans:"+avg(bans)+" "+stdDev(bans,avg(bans))+"  -  ");
-		System.out.print("migTimes:"+avg(migTimes)+" "+stdDev(migTimes,avg(migTimes))+"  -  ");
+//		System.out.print("migCnt:"+avg(migCnts)+" "+stdDev(migCnts,avg(migCnts))+"  -  ");
+//		System.out.print("pmCnts:"+avg(pmCnts)+" "+stdDev(pmCnts,avg(pmCnts))+"  -  ");
+//		System.out.print("comCosts:"+avg(comCosts)+" "+stdDev(comCosts,avg(comCosts))+"  -  ");
+//		System.out.print("bans:"+avg(bans)+" "+stdDev(bans,avg(bans))+"  -  ");
+//		System.out.print("migTimes:"+avg(migTimes)+" "+stdDev(migTimes,avg(migTimes))+"  -  ");
+		
+		System.out.print("migCnt:"+avg(migCnts)+"  -  ");
+		System.out.print("pmCnts:"+avg(pmCnts)+"  -  ");
+		System.out.print("comCosts:"+avg(comCosts)+"  -  ");
+		System.out.print("bans:"+avg(bans)+"  -  ");
+		System.out.print("migTimes:"+avg(migTimes)+"  -  ");
 
 //		printPercent(migCnts,"migCnt");
 //		printPercent(pmCnts,"pmCnts");

@@ -22,14 +22,22 @@ public class ComCost implements ObjInterface {
 		
 		int row = DataSet.comMatrix.length;
 		int col = DataSet.comMatrix[0].length;
-		long dist = 0;
-		double cost = 0;
+		int cost = 0;
+		int tempDist,tempCost;
 		
 		for(int i=0;i<row;i++){
 			for(int j=0;j<col;j++){
-				if(DataSet.comMatrix[i][j]!=0){
-					dist = Utils.vmDistance(ind, i, j);
-					cost += dist*DataSet.comMatrix[i][j];
+				
+				tempCost = DataSet.comMatrix[i][j];
+				if(tempCost==0){continue;}
+				tempDist = Utils.vmDistance(ind, i, j);
+
+				switch(tempDist){       //用加法代替乘法。
+				case 0:break;
+				case 1:cost += tempCost;break;
+				case 3:cost += (tempCost<<1)+tempCost;break;
+				case 5:
+					cost += (tempCost<<2)+tempCost;
 				}
 			}
 		}

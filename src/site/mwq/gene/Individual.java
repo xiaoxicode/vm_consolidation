@@ -42,6 +42,9 @@ public class Individual {
 	/**此个体对各个优化目标的值，顺序按照Objs中给出的顺序*/
 	public double[] objVals = new double[Objs.OBJNUM];
 
+	/**这个解对应的整合时间*/
+	public double consolidationTime = 0;
+	
 	/**
 	 * 通过host到vm的映射初始化一个解
 	 * 通过这个映射得到vm到host的映射。深拷贝

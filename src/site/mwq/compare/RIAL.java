@@ -308,10 +308,10 @@ public class RIAL {
 		
 		double[] res = new double[5];
 		res[0] = vmSourceDest.size();
-		res[1] = Utils.pc.objVal(ind);
-		res[2] = Utils.cc.objVal(ind);
+		res[1] = (double)((long)(migTime*10))/10;
+		res[2] = Utils.pc.objVal(ind);
 		res[3] = Utils.ba.objVal(ind);
-		res[4] = (double)((long)(migTime*10))/10;
+		res[4] = Utils.cc.objVal(ind);
 		
 		migTime = 0;	//置零，否则一直增加
 		return res;

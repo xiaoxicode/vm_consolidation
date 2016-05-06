@@ -76,7 +76,6 @@ public class Nsga {
 				ind_p.nsgaRank = 1;
 				sameRankInds.add(ind_p);
 			}
-			
 		}
 		
 		rankedInds.add(sameRankInds);
@@ -104,11 +103,6 @@ public class Nsga {
 			sameRanks = i1ranks;
 		}
 		
-	//	System.out.print("rankedInds size:"+rankedInds.size()+" -  ");
-//		for(int j=0;j<rankedInds.size();j++){
-//			System.out.print(rankedInds.get(j).size()+" ");
-//		}
-//		System.out.println();
 		return rankedInds;
 	}
 	

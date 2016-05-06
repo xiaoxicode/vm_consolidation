@@ -12,7 +12,7 @@ public class Balance implements ObjInterface {
 
 	
 	/**
-	 * 在实现的时候说明是Balance目标，用于验证程序正确性
+	 * 在实现的时候说明是Balance目标
 	 */
 	@Override
 	public double objVal(Individual ind) {
@@ -21,14 +21,19 @@ public class Balance implements ObjInterface {
 		double avgMem = Utils.getAvgMem(ind);
 		double avgCpu = Utils.getAvgCpu(ind);
 		
+		double cpuDiff = 0;
+		double memDiff = 0;
+		
 		for(int i=0;i<ind.indHosts.size();i++){
 			
 			if(ind.hostVmMap.get(i).size()==0){
 				continue;
 			}
 			
-			balance += Math.sqrt(Math.pow(ind.indHosts.get(i).getCpuRate()-avgCpu, 2)+
-					Math.pow(ind.indHosts.get(i).getMemRate()-avgMem, 2));
+			cpuDiff = ind.indHosts.get(i).getCpuRate()-avgCpu;
+			memDiff = ind.indHosts.get(i).getMemRate()-avgMem;
+			
+			balance += Math.sqrt(cpuDiff*cpuDiff+memDiff*memDiff);
 		}
 		
 		return ((int)(balance*10))/10.0;

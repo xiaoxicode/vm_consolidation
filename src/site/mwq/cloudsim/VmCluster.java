@@ -2,6 +2,8 @@ package site.mwq.cloudsim;
 
 import java.util.ArrayList;
 
+import site.mwq.main.DataSet;
+
 /**
  * 
  * 为了在sandpiper算法中进行虚拟机Swap 
@@ -33,6 +35,15 @@ public class VmCluster{
 		this.memUsed += vm.getRam();
 		this.peUsed += vm.getNumberOfPes();
 		this.netUsed += vm.getBw();
+	}
+	
+	/**
+	 * 上面函数的重载，参数为vmId
+	 * @param vmId
+	 */
+	public void addVm(int vmId){
+		VmDc vm = DataSet.vms.get(vmId);
+		addVm(vm);
 	}
 	
 	public int getMemUsed() {

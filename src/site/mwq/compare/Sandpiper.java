@@ -201,11 +201,11 @@ public class Sandpiper {
 		System.out.println("  migTime:"+(double)((long)(migTime*10))/10);
 		
 		res[0] = moveCnt;
-		res[1] = Utils.pc.objVal(ind);
-		res[2] = Utils.cc.objVal(ind);
+		res[1] = (double)((long)(migTime*10))/10;
+		res[2] = Utils.pc.objVal(ind);
 		res[3] = Utils.ba.objVal(ind);
-		res[4] = (double)((long)(migTime*10))/10;
-		
+		res[4] = Utils.cc.objVal(ind);
+
 		moveCnt = 0;	//恢复，否则迭代的时候一直会增加
 		migTime = 0;
 		return res;

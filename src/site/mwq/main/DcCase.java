@@ -3,7 +3,6 @@ package site.mwq.main;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -20,15 +19,10 @@ import org.cloudbus.cloudsim.core.CloudSim;
 import site.mwq.cloudsim.BrokerDc;
 import site.mwq.cloudsim.HostDc;
 import site.mwq.cloudsim.VmDc;
-import site.mwq.compare.RIAL;
-import site.mwq.compare.Sandpiper;
-import site.mwq.gene.IndComp;
 import site.mwq.gene.Individual;
 import site.mwq.gene.Nsga;
 import site.mwq.gene.Pop;
 import site.mwq.policy.RandomVmAllocationPolicy;
-import site.mwq.utils.FileUtils;
-import site.mwq.utils.Utils;
 
 /**
  * 程序运行入口，一个数据中心实例
@@ -38,8 +32,8 @@ import site.mwq.utils.Utils;
 public class DcCase {
 
 	/**默认创建的host数和虚拟机数**/
-	public static final int hostNum = 50;
-	public static final int vmNum = 150;
+	public static final int hostNum = 30;
+	public static final int vmNum = 240;
 	
 	/**
 	 * 构造函数
@@ -53,7 +47,7 @@ public class DcCase {
 		CloudSim.init(num_user, calendar, trace_flag);	// Initialize the CloudSim library
 	}
 	
-	public static void runProgram() {
+	public static void runGeneProgram() {
 		
 		//首先使用VmAllocationPolicySimple策略生成一个数据中心
 		//并生成初始解，后续解都与这个解对比
@@ -81,7 +75,7 @@ public class DcCase {
 		//Pop.copyParentToChild();
 		
 		//2、迭代计算
-		for(int i=0;i<100;i++){
+		for(int i=0;i<200;i++){
 			
 			Pop.select();
 
@@ -94,96 +88,7 @@ public class DcCase {
 			
 		}
 		
-		Collections.sort(Pop.inds,new IndComp());
-		
-		//3、打印前30个结果
-		for(int i=0;i<20;i++){
-			Utils.disIndVal(Pop.inds.get(i));
-		}
-		
-		////////////比较实验
-		System.out.println("-------分割线------");
-		Sandpiper sand = new Sandpiper(DataSet.hostVmMap);
-		double[] sandRes = sand.moveVm();
-		FileUtils.printSand(sandRes);
-		
-		System.out.println("-------分割线------");
-		RIAL rial = new RIAL(DataSet.hostVmMap);
-		double[] rialRes = rial.move();
-		FileUtils.printRial(rialRes);
-		
-		double minMigInSandRial = Math.min(sandRes[0], rialRes[0]);
-		
-		//打印结果矩阵
-		int index = 0;
-		double migCnt = Utils.mc.objVal(Pop.inds.get(index));
-		ArrayList<double[]> matrix = new ArrayList<double[]>();
-
-		while(migCnt==0){
-			matrix.add(null);	//为保证matrix下标和Pop.inds的下标对应，在matrix中加入null值
-			index++;
-			migCnt = Utils.mc.objVal(Pop.inds.get(index));
-		}
-		
-		double[] sum = new double[5];
-		
-		while(migCnt<=minMigInSandRial){
-			double[] resIndex = Utils.getIndVal(Pop.inds.get(index));
-			for(int j=0;j<resIndex.length;j++){
-				sum[j] += resIndex[j];
-			}
-			matrix.add(resIndex);
-			migCnt = Utils.mc.objVal(Pop.inds.get(++index));
-		}
-		
-		//归一化，同时选择累加值的最小值
-		double minVal = Double.MAX_VALUE;
-		int minIndex = 0;
-
-		for(int i=0;i<matrix.size();i++){
-			if(matrix.get(i)==null){
-				continue;
-			}
-			double[] row = matrix.get(i);
-			
-			double curVal = 0;
-			for(int j=1;j<row.length-1;j++){	//忽略第一项和最后一项
-				if(j==2){
-					row[j] /= sum[j];
-					row[j] *= 0.4;     //通信代价的权重是0.4
-					curVal += row[j];
-				}else{
-					row[j] /= sum[j];
-					row[j] *= 0.2;		//其他指标代价为0.2
-					curVal += row[j];
-				}
-			}
-			
-			if(curVal<minVal){
-				minVal = curVal;
-				minIndex = i;
-			}
-		}
-		
-		System.out.println("-----ours-----");
-		Utils.disIndVal(Pop.inds.get(0));
-		FileUtils.printOri(Utils.getIndVal(Pop.inds.get(0)));
-		Utils.disIndVal(Pop.inds.get(minIndex));
-		FileUtils.printGene(Utils.getIndVal(Pop.inds.get(minIndex)));
-		
 	}//runProgram方法结束
-	
-	//TODO main方法
-	public static void main(String[] args) {
-		
-		long cur = System.currentTimeMillis();
-		for(int i=0;i<1;i++){
-			runProgram();
-			long end = System.currentTimeMillis();
-			System.out.println("++++++++++++"+i+"+++++++"+(end-cur)/1000);
-			cur = System.currentTimeMillis();
-		}
-	}
 	
 	
 	/**

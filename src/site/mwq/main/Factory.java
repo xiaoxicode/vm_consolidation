@@ -17,13 +17,13 @@ import site.mwq.utils.Utils;
 
 public class Factory {
  
+	//物理机大小差不多是虚拟机大小的8倍
 	//Host description
 	public static final int peDefaultMips = 1000;			//一个cpu的计算能力
-	public static final int peNumOfHost = 16;				//每个host的核数
-//	public static final int ramOfHost = 4096;				//host内存（MB）
-	public static final int ramOfHost = 8192;				//host内存（MB）
+	public static final int peNumOfHost = 32;				//每个host的核数
+	public static final int ramOfHost = 16384;				//host内存（MB）  16G
 	public static final long storageOfHost = 1000000; 		//host storage	(MB)
-	public static final int bwOfHost = 1000;				//host 带宽
+	public static final int bwOfHost = 2000;				//host 带宽
 	
 	//DatacenterCharacteristics
 	public static final String arch = "x86"; 				// system architecture
@@ -137,19 +137,16 @@ public class Factory {
 	public static List<VmDc> createVmsRandomly(int num,int brokerId){
 		List<VmDc> vms = new ArrayList<VmDc>();
 		
-//		int[] mems = {512,1024,1536,2048};
-
 		//vm使用的内存，改为从512到2018随机产生
 		int memUsed = 0;
 		int[] pes = {1,2,3,4};
 		
 		for(int i=0;i<num;i++){
 			
-			int pesId = Utils.random.nextInt(4);
-			memUsed = 512+Utils.random.nextInt(1536);	//随机产生内存，范围512-2048
+			int pesId = Utils.random.nextInt(4);			//最多4核
+			memUsed = 512+Utils.random.nextInt(1536);		//随机产生内存，范围512-2048，最多2GB
 			
-			//TODO 将虚拟机的带宽消耗量限制在50-200
-			int vmBandWidth = 50+Utils.random.nextInt(150);
+			int vmBandWidth = 50+Utils.random.nextInt(150); //带宽最大为200
 			
 			VmDc vm = new VmDc(vmId++, brokerId, mipsOfVm, pes[pesId], memUsed, 
 					vmBandWidth, sizeOfVm, vmm, new CloudletSchedulerTimeShared());

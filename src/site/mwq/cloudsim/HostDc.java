@@ -86,6 +86,21 @@ public class HostDc extends Host{
 	}
 	
 	/**
+	 * 检查一个host能否能容纳一个虚拟机集合
+	 * @param vmCluster
+	 * @return
+	 */
+	public boolean canHoldCluster(VmCluster vmCluster){
+		
+		if(getMemAvail() >= vmCluster.getMemUsed()
+				&& getPeAvail() >= vmCluster.getPeUsed()){
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/**
 	 * 判断一个host能否容纳一个vm，并且各个资源都不超过阈值
 	 * @param vm
 	 * @return

@@ -176,10 +176,11 @@ public class Pop {
 	public static void mutationVersion2(ArrayList<Individual> indsParam){
 		
 		for(int i=0;i<N;i++){
+
 			if(Utils.random.nextDouble()<muProb){
 				
 				int indId = Utils.random.nextInt(indsParam.size());	//随机选择个体
-				
+
 				//1、计算这个个体中每个host的负载
 				Collections.sort(DataSet.hostIds, new HostLoadCom(indsParam.get(indId)));
 				
@@ -191,9 +192,10 @@ public class Pop {
 				}else if (prob < 0.5){
 					loadBalance(indsParam.get(indId), DataSet.hostIds);
 				}
-				
+
 				reduceComm(indsParam.get(indId), DataSet.hostIds);
 			}
+
 		}
 	}
 	
@@ -299,6 +301,8 @@ public class Pop {
 			
 			double maxCost = 0;
 			int targetHostId = 0;
+			
+
 			//第二层，所有的物理机Id
 			for(int hostId:ind.hostVmMap.keySet()){
 				if(hostId==vmInHost
@@ -308,9 +312,21 @@ public class Pop {
 				
 				//当前物理机与这个虚拟机的通信代价
 				double curCost = 0;
+				int cost,dis;
 				HashSet<Integer> vmsInThisHost = ind.hostVmMap.get(hostId);
 				for(int vmInThisHost:vmsInThisHost){
-					curCost += Utils.vmDistance(ind, vmId, vmInThisHost)*DataSet.comMatrix[vmId][vmInThisHost];
+					
+					if(DataSet.comMatrix[vmId][vmInThisHost]==0){continue;}
+					
+					dis = Utils.vmDistance(ind, vmId, vmInThisHost);
+					cost = DataSet.comMatrix[vmId][vmInThisHost];
+					
+					switch(dis){
+					case 0: break;
+					case 1: curCost += cost; break;
+					case 3: curCost += (cost<<1)+cost; break;
+					case 5: curCost += (cost<<2)+cost;
+					}
 				}
 				
 				if(curCost>maxCost){
@@ -352,9 +368,6 @@ public class Pop {
 		
 		Utils.removeVm(ind.indHosts.get(secHostSource), ind.hostVmMap, secVmTarget);
 		Utils.addVm(ind.indHosts.get(secHostTarget), ind.hostVmMap, secVmTarget, ind.vmHostMap);
-	//	Arrays.sort(maxComCost);
-		
-	//	System.out.println();
 		
 	}
 
@@ -383,10 +396,23 @@ class HostCommComp implements Comparator<Integer>{
 	//统一计算虚拟机与各个物理机的通信量
 	private void computeCom(){
 		TreeMap<Integer,HashSet<Integer>> hostVmMap = ind.hostVmMap;
+		
+		int dis,cost;
 		for(int i=0;i<comCosts.length;i++){
 			double comm = 0;
 			for(int destId:hostVmMap.get(i)){
-				comm += Utils.vmDistance(ind,vmId, destId)*DataSet.comMatrix[vmId][destId];
+				
+				if(DataSet.comMatrix[vmId][destId]==0){continue;}
+				
+				dis = Utils.vmDistance(ind, vmId, destId);
+				cost = DataSet.comMatrix[vmId][destId];
+				
+				switch(dis){
+					case 0: break;
+					case 1: comm += cost; break;
+					case 3: comm += (cost<<1)+cost; break;
+					case 5: comm += (cost<<2)+cost;
+				}
 			}
 			comCosts[i] = comm;
 		}
@@ -438,13 +464,14 @@ class HostLoadCom implements Comparator<Integer>{
 		
 	}
 	
-	//TODO 需要更改一下负载的计算方式
 	private void computeLoad(){
+		double mul = 0;
 		for(int i=0;i<hosts.size();i++){
 			HostDc host = hosts.get(i);
 			if(ind.hostVmMap.get(host.getId()).size()!=0){	//至少包含一台虚拟机
-				loads[i] = (1/(1-host.getCpuRate()))*(1/(1-host.getMemRate()));
-			}else{			//一台虚拟机都不包含，设置其为最大值，以此忽略此台主机
+				mul = (1-host.getCpuRate())*(1-host.getMemRate());
+				loads[i] = 1/mul;
+			}else{											//一台虚拟机都不包含，设置其为最大值，以此忽略此台主机
 				loads[i] = Double.MAX_VALUE;
 			}
 		}
