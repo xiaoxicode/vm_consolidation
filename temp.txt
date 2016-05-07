@@ -1,30 +1,47 @@
-migCnt:0.0  pmCnt:46.0  comcost:2159108.0 ban:14.1  migTime:0.0
-migCnt:3.0  pmCnt:46.0  comcost:2155990.0 ban:13.4  migTime:5.2
-migCnt:5.0  pmCnt:45.0  comcost:2145384.0 ban:13.9  migTime:7.0
-migCnt:7.0  pmCnt:44.0  comcost:2148896.0 ban:14.7  migTime:9.2
-migCnt:8.0  pmCnt:44.0  comcost:2137842.0 ban:14.2  migTime:10.4
-migCnt:9.0  pmCnt:43.0  comcost:2131666.0 ban:12.8  migTime:12.8
-migCnt:9.0  pmCnt:43.0  comcost:2140256.0 ban:14.4  migTime:13.3
-migCnt:9.0  pmCnt:45.0  comcost:2148734.0 ban:13.3  migTime:12.8
-migCnt:12.0  pmCnt:42.0  comcost:2142064.0 ban:12.5  migTime:17.7
-migCnt:14.0  pmCnt:41.0  comcost:2129472.0 ban:12.9  migTime:21.6
-migCnt:19.0  pmCnt:40.0  comcost:2138420.0 ban:12.7  migTime:29.3
-migCnt:21.0  pmCnt:41.0  comcost:2171780.0 ban:11.9  migTime:31.1
-migCnt:21.0  pmCnt:41.0  comcost:2171780.0 ban:11.9  migTime:31.1
-migCnt:23.0  pmCnt:40.0  comcost:2096298.0 ban:13.0  migTime:34.5
-migCnt:25.0  pmCnt:40.0  comcost:2092506.0 ban:12.0  migTime:38.3
-migCnt:26.0  pmCnt:40.0  comcost:2115594.0 ban:13.5  migTime:43.8
-migCnt:31.0  pmCnt:41.0  comcost:2126616.0 ban:11.9  migTime:42.8
-migCnt:32.0  pmCnt:40.0  comcost:2072030.0 ban:12.7  migTime:50.2
-migCnt:34.0  pmCnt:39.0  comcost:2058234.0 ban:11.9  migTime:52.2
-migCnt:35.0  pmCnt:39.0  comcost:2051396.0 ban:12.2  migTime:53.0
-migCnt:38.0  pmCnt:39.0  comcost:2039966.0 ban:12.7  migTime:62.9
-migCnt:44.0  pmCnt:39.0  comcost:2089550.0 ban:11.0  migTime:70.5
-migCnt:51.0  pmCnt:37.0  comcost:2052540.0 ban:12.5  migTime:80.1
-migCnt:52.0  pmCnt:38.0  comcost:2062448.0 ban:11.0  migTime:82.6
-migCnt:57.0  pmCnt:36.0  comcost:2031238.0 ban:10.5  migTime:83.6
-migCnt:57.0  pmCnt:38.0  comcost:1968078.0 ban:16.4  migTime:97.5
-migCnt:57.0  pmCnt:38.0  comcost:1968078.0 ban:16.4  migTime:97.5
-migCnt:59.0  pmCnt:36.0  comcost:2036524.0 ban:10.0  migTime:85.9
-migCnt:59.0  pmCnt:36.0  comcost:2036524.0 ban:10.0  migTime:85.9
-migCnt:59.0  pmCnt:38.0  comcost:1965614.0 ban:16.1  migTime:98.8
+
+Group 1: PM 10, VM 80
+consolidation time:[3.0, 3.5, 2.1, 3.0, 1.7, 6.9, 5.3, 5.0, 2.6, 3.7]
+#########ori
+migCnt:0.0  pmCnts:10.0  comCosts:250677.0  bans:2.0  migTimes:0.0  
+#########gene
+migCnt:8.0  pmCnts:9.0  comCosts:14632.0  bans:1.0  migTimes:6.0  
+#########sand
+migCnt:14.0  pmCnts:10.0  comCosts:-2028.0  bans:1.0  migTimes:36.0  
+#########rial
+migCnt:11.0  pmCnts:10.0  comCosts:4324.0  bans:1.0  migTimes:21.0  
+
+
+Group 2: PM 30, VM 240
+consolidation time:[5.3, 11.7, 13.3, 11.3, 11.4, 12.6, 10.6, 6.7, 11.5, 10.2]
+#########ori
+migCnt:0.0  pmCnts:30.0  comCosts:4595214.0  bans:7.0  migTimes:0.0  
+#########gene
+migCnt:25.0  pmCnts:27.0  comCosts:72183.0  bans:6.0  migTimes:20.0  
+#########sand
+migCnt:37.0  pmCnts:30.0  comCosts:-20208.0  bans:3.0  migTimes:68.0  
+#########rial
+migCnt:30.0  pmCnts:30.0  comCosts:49869.0  bans:5.0  migTimes:97.0  
+
+
+Group 3: PM 50, VM 400
+consolidation time:[9.6, 14.1, 11.5, 9.0, 13.2, 11.4, 11.7, 14.4, 11.4, 14.5]
+#########ori
+migCnt:0.0  pmCnts:50.0  comCosts:1.4238754E7  bans:12.0  migTimes:0.0  
+#########gene
+migCnt:42.0  pmCnts:45.0  comCosts:108749.0  bans:10.0  migTimes:31.0  
+#########sand
+migCnt:55.0  pmCnts:50.0  comCosts:-3047.0  bans:6.0  migTimes:111.0  
+#########rial
+migCnt:47.0  pmCnts:50.0  comCosts:42599.0  bans:8.0  migTimes:84.0 
+
+Group 4: PM 100, VM 800 
+consolidation time:[2.8, 21.0, 12.7, 18.1, 18.0, 1.6, 7.7, 14.9, 13.6, 14.0]
+#########ori
+migCnt:0.0  pmCnts:99.0  comCosts:6.1876499E7  bans:25.0  migTimes:0.0  
+#########gene
+migCnt:48.0  pmCnts:95.0  comCosts:121560.0  bans:22.0  migTimes:37.0  
+#########sand
+migCnt:113.0  pmCnts:100.0  comCosts:-7379.0  bans:13.0  migTimes:208.0  
+#########rial
+migCnt:94.0  pmCnts:100.0  comCosts:94807.0  bans:17.0  migTimes:174.0  
+
