@@ -32,8 +32,8 @@ import site.mwq.policy.RandomVmAllocationPolicy;
 public class DcCase {
 
 	/**默认创建的host数和虚拟机数**/
-	public static final int hostNum = 30;
-	public static final int vmNum = 240;
+	public static final int hostNum = 100;
+	public static final int vmNum = 800;
 	
 	/**
 	 * 构造函数

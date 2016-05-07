@@ -360,8 +360,8 @@ public class Utils {
 //			sum += weights[i];
 //		}
 		
-		weights[1] = 0.05;
-		weights[2] = 0.05;
+		weights[1] = 0.08;
+		weights[2] = 0.08;
 		weights[3] = 1;
 		weights[4] = 3;
 		

@@ -11,6 +11,8 @@ import site.mwq.utils.FileUtils;
 import site.mwq.utils.Utils;
 
 public class RunSimulation {
+	
+	public ArrayList<Double> consTimes = new ArrayList<Double>();
 
 	/**运行sand对比程序*/
 	public void runSand(){
@@ -87,7 +89,8 @@ public class RunSimulation {
 		FileUtils.printOri(Utils.getIndVal(Pop.inds.get(0)));
 		Utils.disIndVal(Pop.inds.get(minIndex));
 		FileUtils.printGene(Utils.getIndVal(Pop.inds.get(minIndex)));
-		System.out.println("consolidation time: "+Pop.inds.get(minIndex).consolidationTime);
+		//System.out.println("consolidation time: "+Pop.inds.get(minIndex).consolidationTime);
+		consTimes.add(Pop.inds.get(minIndex).consolidationTime);
 	
 		runRial();
 		runSand();
@@ -97,8 +100,15 @@ public class RunSimulation {
 	public static void main(String[] args) {
 		RunSimulation runSimulation = new RunSimulation();
 		
-		runSimulation.runProgram();
-	
+		for(int i=0;i<10;i++){
+			long s1 = System.currentTimeMillis();
+			runSimulation.runProgram();
+			long s2 = System.currentTimeMillis();
+			
+			System.out.println(i+": "+(s2-s1)/1000);
+		}
+		
+		System.out.println("consolidation time:"+runSimulation.consTimes);
 	}
 
 }
