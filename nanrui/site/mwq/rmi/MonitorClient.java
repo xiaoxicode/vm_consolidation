@@ -8,6 +8,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 
 /**
@@ -35,6 +40,29 @@ public class MonitorClient {
 		
 		//key为资源类型下标，0cpu,1mem,2net
 		Hashtable<Integer,double[]> resUse = null;
+		
+		
+//下面的注释是使用线程池的方法
+//		ExecutorService pool = Executors.newFixedThreadPool(3);
+//		
+//		ArrayList<Future<Hashtable<Integer,double[]>>> resultFutures = new ArrayList<Future<Hashtable<Integer,double[]>>>();
+//		
+//		
+//		for(String ip:AddressMap.pmIpName.keySet()){	
+//			resultFutures.add(pool.submit(new CollectTask(ip)));
+//		}
+//		
+//		ArrayList<Hashtable<Integer,double[]>> results = new ArrayList<Hashtable<Integer,double[]>>();
+//		
+//		for(Future<Hashtable<Integer,double[]>> future:resultFutures){
+//			try {
+//				results.add(future.get());
+//			} catch (InterruptedException e) {
+//				e.printStackTrace();
+//			} catch (ExecutionException e) {
+//				e.printStackTrace();
+//			}
+//		}
 		
 		try {
 			for(String ip:AddressMap.pmIpName.keySet()){		//检查每个ip的资源利用情况，并放入hashMap
@@ -192,6 +220,26 @@ public class MonitorClient {
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			}
+		}
+	}
+	
+	/**
+	 * 获取资源利用率的任务
+	 * @author Email:qiuweimin@126.com
+	 * @date 2016年5月16日
+	 */
+	class CollectTask implements Callable<Hashtable<Integer,double[]>>{
+
+		public String ip;
+		
+		public CollectTask(String ip){
+			this.ip = ip;
+		}
+		
+		@Override
+		public Hashtable<Integer, double[]> call() throws Exception {
+			Hashtable<Integer, double[]> resUse = getMonitorService(ip).getResUsage();
+			return resUse;
 		}
 	}
 
