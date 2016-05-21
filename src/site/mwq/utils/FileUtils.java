@@ -103,13 +103,31 @@ public class FileUtils {
 		rialPrint.flush();
 	}
 	
-	public static void main(String[] args) {
-		double[] a = {12,23,34,34,2,12,9};
-		try{
-			printRial(a);
-		}catch(Exception e){
+	public static void write2file(String fileName,double[] data){
+		String path2file = path+"/"+fileName;
+		PrintWriter pw = null;
+		try {
+			pw = new PrintWriter(new FileWriter(path2file,true));
+			String line = "";
+			for(int i=0;i<data.length;i++){
+				line += data[i]+" ";
+			}
+			pw.println(line);
+			
+		} catch (IOException e) {
 			e.printStackTrace();
+		}finally{
+			pw.close();
 		}
 	}
+	
+//	public static void main(String[] args) {
+//		double[] a = {12,23,34,34,2,12,9};
+//		try{
+//			printRial(a);
+//		}catch(Exception e){
+//			e.printStackTrace();
+//		}
+//	}
 
 }

@@ -104,7 +104,7 @@ public class PrintData {
 		}
 		double avg = sum/datas.size();
 		
-		return ((double)(long)(avg)*10)/10;
+		return Utils.to2(avg);
 	}
 	
 	/**

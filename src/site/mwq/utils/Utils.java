@@ -16,6 +16,7 @@ import site.mwq.targets.Balance;
 import site.mwq.targets.ComCost;
 import site.mwq.targets.MigCnt;
 import site.mwq.targets.MigTime;
+import site.mwq.targets.Objs;
 import site.mwq.targets.PmCnt;
 
 public class Utils {
@@ -343,27 +344,37 @@ public class Utils {
 		return res;
 	}
 	
+	/**为浮点数保留两位小数*/
+	public static double to2(double ori){
+		return (double)((int)(ori*10))/10;
+	}
 	
 	/**
 	 * 按照偏好，生成一个权重序列，w1+w2+w3+w4+w5=1
 	 * 且，w1<w2<w3<w4<w5
+	 *                    迁移次数 迁移时间 物理机数目 平衡度 通信代价 
 	 * @return
 	 */
 	public static double[] genWeights(){
 		
 		double[] weights = new double[5];
 		
+		int offset = 0;
 		double sum = 0;
-//		for(int i=0;i<weights.length;i++){
-//			weights[i] = offset+Math.random();
-//			offset +=5;
-//			sum += weights[i];
-//		}
+		for(int i=2;i<weights.length;i++){
+			weights[i] = offset+Math.random();
+			offset += 1;
+			sum += weights[i];
+		}
 		
-		weights[1] = 0.08;
-		weights[2] = 0.08;
-		weights[3] = 1;
-		weights[4] = 3;
+//		weights[1] = 0.08;
+//		weights[2] = 0.08;
+//		weights[3] = 1;
+//		weights[4] = 3;
+		
+//		weights[2] = 0.5;
+//		weights[3] = 1.5;
+//		weights[4] = 2.5;
 		
 		for(int i=0;i<weights.length;i++){
 			sum += weights[i];
@@ -377,5 +388,19 @@ public class Utils {
 		System.out.println();
 		
 		return weights;
+	}
+	
+	/**
+	 * 更新一个ind的各个目标值
+	 * @param ind
+	 */
+	public static void updateObjVals(Individual ind){
+		for(int j=0;j<ind.objVals.length;j++){	//对ind调用每个目标函数
+			ind.objVals[j] = Objs.OBJS[j].objVal(ind);
+		}
+	}
+	
+	public static void main(String[] args) {
+		genWeights();
 	}
 }

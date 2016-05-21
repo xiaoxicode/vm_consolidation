@@ -79,6 +79,46 @@ public class Individual {
 	}
 	
 	/**
+	 * 拷贝构造函数，跟上一个相比，主要是添加了目标函数的值
+	 * @param ind
+	 */
+	public Individual(Individual ind){
+		
+		Map<Integer,HashSet<Integer>> hostVmMapParam = ind.hostVmMap;
+		
+		indHosts = new ArrayList<HostDc>();	//从DataSet拷贝一份Host的信息
+		//TODO 手动复制host数组
+		for(int i=0;i<DataSet.hosts.size();i++){
+			indHosts.add(new HostDc(DataSet.hosts.get(i)));
+		}
+		
+		
+		//this.hostVmMap = new TreeMap<Integer,ArrayList<Integer>>(hostVmMap);
+		
+		//TODO 手动复制hostVmMap，必须手动复制
+		this.hostVmMap = new TreeMap<Integer,HashSet<Integer>>();
+		for(int i:hostVmMapParam.keySet()){
+			this.hostVmMap.put(i, new HashSet<Integer>(hostVmMapParam.get(i)));
+		}
+		
+		vmHostMap = new TreeMap<Integer,Integer>();
+		for(int i:this.hostVmMap.keySet()){						//i是host的Id
+			for(int j:this.hostVmMap.get(i)){					//vm的Id是hostVmMap.get(i).get(j)
+				vmHostMap.put(j, i);
+			}
+		}
+		
+		//复制目标值
+		for(int i=0;i<this.objVals.length;i++){
+			this.objVals[i] = ind.objVals[i];
+		}
+		
+		//获得资源利用率，资源利用率只跟映射有关系，可以直接在得到映射之后给出资源利用率
+		getUtilityRate();
+	}
+	
+	
+	/**
 	 * 判断一个解是否支配(dominate)另一个解
 	 * 小于也算优于（不然支配的可能比较少）
 	 * @param ind

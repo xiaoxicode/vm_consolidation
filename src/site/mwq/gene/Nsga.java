@@ -28,7 +28,6 @@ public class Nsga {
 			Individual ind = Pop.inds.get(i);
 			for(int j=0;j<ind.objVals.length;j++){	//对ind调用每个目标函数
 				ind.objVals[j] = Objs.OBJS[j].objVal(ind);
-
 			}
 		}
 		

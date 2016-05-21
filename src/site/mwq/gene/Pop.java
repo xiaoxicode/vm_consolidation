@@ -21,7 +21,7 @@ import site.mwq.utils.Utils;
 public class Pop {
 
 	/**交叉概率*/
-	public static double coProb = 0.85;
+	public static double coProb = 0.4;
 	/**TODO 变异概率,暂时调大一点 由0.08改为0.65*/
 	public static double muProb = 0.65;
 	
@@ -58,9 +58,11 @@ public class Pop {
 			indId2 = Utils.random.nextInt(inds.size());
 			
 			if(inds.get(indId1).betterThan(inds.get(indId2))){
-				children.add(new Individual(inds.get(indId1).hostVmMap));
+				//children.add(new Individual(inds.get(indId1).hostVmMap));
+				children.add(new Individual(inds.get(indId1)));
 			}else{
-				children.add(new Individual(inds.get(indId2).hostVmMap));
+				//children.add(new Individual(inds.get(indId2).hostVmMap));
+				children.add(new Individual(inds.get(indId2)));
 			}
 			
 		}
@@ -112,7 +114,7 @@ public class Pop {
 				//在host1中（以一定概率）重新放置map1Diff中的虚拟机
 				//在host2中（以一定概率）重新放置map2Diff中的虚拟机
 				double rand = Utils.random.nextDouble();
-				if(rand < 0.5){
+//				if(rand < 0.5){
 					if(map1Diff.size()!=0){
 						remapDiff(ind1,map1Diff,point1);
 					}
@@ -120,8 +122,21 @@ public class Pop {
 					if(map2Diff.size()!=0){
 						remapDiff(ind2,map2Diff,point1);
 					}
-				}
+					
+					
+//					for(int k=0;k<ind1.objVals.length;k++){
+//						System.out.print(ind1.objVals[k]+" ");
+//					}
+//					System.out.println();
+					Utils.updateObjVals(ind1);
+//					Utils.disIndVal(ind1);
+//					
+//					System.out.println("^^^^^^^^^");
+//				}
 			
+				
+				
+				
 			}//具体交叉操作结束
 			
 		}//交叉操作结束，一共进行了N次
@@ -189,11 +204,13 @@ public class Pop {
 				//执行relievePm的概率为0.1，执行loadBalance的概率为0.2
 				if(prob < 0.15){
 					ReleasePm(indsParam.get(indId), DataSet.hostIds);
-				}else if (prob < 0.5){
+				}else if (prob < 0.35){
 					loadBalance(indsParam.get(indId), DataSet.hostIds);
+				}else{
+					reduceComm(indsParam.get(indId), DataSet.hostIds);
 				}
-
-				reduceComm(indsParam.get(indId), DataSet.hostIds);
+				//更新各个目标的值
+				Utils.updateObjVals(indsParam.get(indId));
 			}
 
 		}

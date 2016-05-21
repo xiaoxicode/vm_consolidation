@@ -100,9 +100,9 @@ public class MigTime implements ObjInterface {
 			consolidTime += 2*time;
 		}
 		
-		ind.consolidationTime = (double)((int)(10*consolidTime))/10;
+		ind.consolidationTime = Utils.to2(consolidTime);
 		
-		return (double)((int)(migTime*10))/10;
+		return Utils.to2(migTime);
 	}
 	
 	/**
@@ -130,8 +130,9 @@ public class MigTime implements ObjInterface {
 		while(true){
 			
 			ArrayList<Activity> levelActs = new ArrayList<Activity>();
-			HashSet<Integer> sendHostSet = new HashSet<Integer>();
-			HashSet<Integer> recvHostSet = new HashSet<Integer>();
+//TODO			HashSet<Integer> sendHostSet = new HashSet<Integer>();
+//			HashSet<Integer> recvHostSet = new HashSet<Integer>();
+			HashSet<Integer> busyHostSet = new HashSet<Integer>();
 			
 			//1、遍历recvHosts列表，寻找可以迁移的虚拟机
 			for(int hostId:recvHosts.keySet()){
@@ -145,10 +146,10 @@ public class MigTime implements ObjInterface {
 								|| sendHosts.get(hostId).size()==0){
 						Activity act = null;
 						for(Activity a:recvHosts.get(hostId)){
-							if(!sendHostSet.contains(a.from) && !recvHostSet.contains(a.to)){
+							if(!busyHostSet.contains(a.from) && !busyHostSet.contains(a.to)){
 								act = a;
-								sendHostSet.add(a.from);
-								recvHostSet.add(a.to);
+								busyHostSet.add(a.from);
+								busyHostSet.add(a.to);
 								break;
 							}
 						}
@@ -163,10 +164,10 @@ public class MigTime implements ObjInterface {
 						if(ind.indHosts.get(hostId).canHoldCluster(cluster)){		//查看此host能否容纳这些vm
 							Activity act = null;
 							for(Activity a:recvHosts.get(hostId)){					
-								if(!sendHostSet.contains(a.from) && !recvHostSet.contains(a.to)){
+								if(!busyHostSet.contains(a.from) && !busyHostSet.contains(a.to)){
 									act = a;
-									sendHostSet.add(a.from);
-									recvHostSet.add(a.to);
+									busyHostSet.add(a.from);
+									busyHostSet.add(a.to);
 									break;
 								}
 							}

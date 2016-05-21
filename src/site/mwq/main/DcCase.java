@@ -32,8 +32,8 @@ import site.mwq.policy.RandomVmAllocationPolicy;
 public class DcCase {
 
 	/**默认创建的host数和虚拟机数**/
-	public static final int hostNum = 100;
-	public static final int vmNum = 800;
+	public static final int hostNum = 30;
+	public static final int vmNum = 240;
 	
 	/**
 	 * 构造函数
@@ -47,7 +47,11 @@ public class DcCase {
 		CloudSim.init(num_user, calendar, trace_flag);	// Initialize the CloudSim library
 	}
 	
-	public static void runGeneProgram() {
+	/**
+	 * 初始化虚拟化数据中心的数据
+	 * 以及一个初始映射数据
+	 */
+	public static void initCloudData() {
 		
 		//首先使用VmAllocationPolicySimple策略生成一个数据中心
 		//并生成初始解，后续解都与这个解对比
@@ -67,29 +71,31 @@ public class DcCase {
 		dcCase.runCloudlets(dcb);							//运行Cloudlets，模拟开始与结束
 		DataSet.initFirstInd();
 		
+	}//initCloudData方法结束
+	
+	/**
+	 * 运行基因算法迭代程序
+	 */
+	public static void runGeneProgram(){
+		
+		
 		//1、复制100个个体作为初始的种群  100->200
 		for(int i=0;i<100;i++){
 			Pop.inds.add(new Individual(DataSet.hostVmMap));
 		}
 		
-		//Pop.copyParentToChild();
-		
+		Nsga.calculateObj();
 		//2、迭代计算
-		for(int i=0;i<200;i++){
-			
+		for(int i=0;i<250;i++){
 			Pop.select();
-
 			Pop.crossoverVersion2(Pop.children);
-			Pop.mutationVersion2(Pop.children);
 			
-			Nsga.calculateObj();
+			Pop.mutationVersion2(Pop.children);
+
 			Pop.inds = Nsga.nsgaMain(Pop.inds, Pop.children);
 			Pop.children.clear();
-			
 		}
-		
-	}//runProgram方法结束
-	
+	}
 	
 	/**
 	 * 创建一个数据中心，以及物理机，虚拟机随机分配
