@@ -1,0 +1,16 @@
+migCnt:3.0  pmCnt:50.0  comcost:1.4150116E7 ban:12.0  migTime:1.7
+migCnt:6.0  pmCnt:49.0  comcost:1.4145152E7 ban:11.3  migTime:4.3
+migCnt:6.0  pmCnt:49.0  comcost:1.4176002E7 ban:11.7  migTime:4.1
+migCnt:6.0  pmCnt:49.0  comcost:1.4176002E7 ban:11.7  migTime:4.1
+migCnt:12.0  pmCnt:49.0  comcost:1.4104272E7 ban:11.0  migTime:8.2
+migCnt:16.0  pmCnt:49.0  comcost:1.4116676E7 ban:10.6  migTime:10.9
+migCnt:18.0  pmCnt:48.0  comcost:1.408637E7 ban:10.6  migTime:13.9
+migCnt:21.0  pmCnt:48.0  comcost:1.4086184E7 ban:10.9  migTime:16.1
+migCnt:22.0  pmCnt:48.0  comcost:1.4064536E7 ban:11.3  migTime:16.3
+migCnt:25.0  pmCnt:48.0  comcost:1.4132132E7 ban:10.0  migTime:19.1
+migCnt:32.0  pmCnt:47.0  comcost:1.4016304E7 ban:10.4  migTime:23.0
+migCnt:32.0  pmCnt:48.0  comcost:1.4094506E7 ban:10.2  migTime:24.0
+migCnt:38.0  pmCnt:45.0  comcost:1.4038424E7 ban:11.4  migTime:29.2
+migCnt:39.0  pmCnt:47.0  comcost:1.3991576E7 ban:10.9  migTime:27.5
+migCnt:43.0  pmCnt:46.0  comcost:1.407308E7 ban:10.2  migTime:33.3
+migCnt:46.0  pmCnt:46.0  comcost:1.3984002E7 ban:10.4  migTime:31.9

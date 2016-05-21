@@ -10,6 +10,7 @@ migCnt:14.0  pmCnts:10.0  comCosts:-2028.0  bans:1.0  migTimes:36.0
 #########rial
 migCnt:11.0  pmCnts:10.0  comCosts:4324.0  bans:1.0  migTimes:21.0  
 
+----------------------------------------------------------------------------
 
 Group 2: PM 30, VM 240
 consolidation time:[5.3, 11.7, 13.3, 11.3, 11.4, 12.6, 10.6, 6.7, 11.5, 10.2]
